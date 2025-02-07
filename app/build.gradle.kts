@@ -2,6 +2,7 @@ plugins {
     alias(libs.plugins.android.application)
     alias(libs.plugins.kotlin.android)
     alias(libs.plugins.kotlin.compose)
+    alias(libs.plugins.kotlin.ksp)
 }
 
 android {
@@ -74,13 +75,8 @@ dependencies {
 
     // Dependensi Ktor untuk koneksi client di Android
     implementation(libs.ktor.client.core)
-    implementation ("io.ktor:ktor-client-android:3.0.3")  // Android-specific client
-    implementation ("io.ktor:ktor-client-serialization:3.0.3")  // Untuk serialisasi JSON
-
-    implementation ("com.airbnb.android:lottie-compose:5.2.0")
-    implementation ("io.coil-kt:coil-compose:2.7.0")
-    implementation ("io.coil-kt:coil:2.1.0")
-    implementation ("androidx.compose.animation:animation:1.7.3")
-
+    implementation(libs.ktor.client.okhttp)
+    implementation(libs.kotlinx.coroutines.core)
+    implementation(libs.kotlinx.coroutines.android)
 
 }
