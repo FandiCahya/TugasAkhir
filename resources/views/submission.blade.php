@@ -309,6 +309,9 @@
                     if (data.success) {
                         fetchPengajuan(); // Re-fetch pengajuan setelah update
                         alert('Pengembangan berhasil ditambahkan');
+                        const modal = document.querySelector('#addPengembanganModal');
+                        const modalInstance = bootstrap.Modal.getInstance(modal);
+                        modalInstance.hide();
                     } else {
                         alert('Gagal menambahkan pengembangan');
                     }

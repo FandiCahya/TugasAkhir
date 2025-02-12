@@ -2,15 +2,15 @@
 
 namespace App\Http\Controllers\Api;
 
+use App\Models\Pengujian;
 use App\Models\Pengembangan;
-use App\Models\Pengajuan;
 use Illuminate\Http\Request;
 use App\Http\Controllers\Controller;
 use Illuminate\Validation\ValidationException;
 use Illuminate\Database\QueryException;
 use Illuminate\Support\Str;
 
-class PengembanganController extends Controller
+class PengujianController extends Controller
 {
     /**
      * Display a listing of the resource.
@@ -19,44 +19,51 @@ class PengembanganController extends Controller
     {
         try {
             $query = $request->input('search');
-            $pengembangan = Pengembangan::with('pengajuan', 'user') // Load relasi pengajuan dan user
+            $pengujian = pengujian::with('pengembangan', 'user') // Load relasi pengajuan dan user
                 ->when($query, function ($queryBuilder) use ($query) {
-                    return $queryBuilder->where('tahap', 'like', '%' . $query . '%'); // Pastikan menggunakan kolom yang benar
+                    return $queryBuilder->where('catatan', 'like', '%' . $query . '%'); // Pastikan menggunakan kolom yang benar
                 })
                 ->get();
 
-            // $users = pengembangan::all();
+            // $users = pengujian::all();
             return response()->json(
                 [
                     'success' => true,
-                    'payload' => $pengembangan->map(function ($item) {
+                    'payload' => $pengujian->map(function ($item) {
                         return [
                             'id' => $item->id,
-                            'tanggal_mulai' => $item->tanggal_mulai,
-                            'tanggal_selesai' => $item->tanggal_selesai,
-                            'tahap' => $item->tahap,
-                            'persentase' => $item->persentase,
-                            'keterangan' => $item->keterangan,
-                            'status' => $item->status,
+                            'hasil' => $item->hasil,
+                            'catatan' => $item->catatan,
                             'updated_at' => $item->updated_at,
                             'created_at' => $item->created_at,
-                            'pengajuan' => [
-                                'id' => $item->pengajuan->id ?? null,
-                                'tgl' => $item->pengajuan->tgl ?? null,
-                                'nama_sistem' => $item->pengajuan->nama_sistem ?? null,
-                                'jenis' => $item->pengajuan->jenis ?? null,
-                                'rencana_anggaran' => $item->pengajuan->rencana_anggaran ?? null,
-                                'masalah' => $item->pengajuan->masalah ?? null,
-                                'output' => $item->pengajuan->output ?? null,
-                                'tanda_tangan' => $item->pengajuan->tanda_tangan ?? null,
-                                'alasan_penolakan' => $item->pengajuan->alasan_penolakan ?? null,
-                                'status' => $item->pengajuan->status ?? null,
+                            'pengembangan' => [
+                                'id' => $item->pengembangan->id,
+                                'tanggal_mulai' => $item->pengembangan->tanggal_mulai,
+                                'tanggal_selesai' => $item->pengembangan->tanggal_selesai,
+                                'tahap' => $item->pengembangan->tahap,
+                                'persentase' => $item->pengembangan->persentase,
+                                'keterangan' => $item->pengembangan->keterangan,
+                                'status' => $item->pengembangan->status,
+                                'updated_at' => $item->pengembangan->updated_at,
+                                'created_at' => $item->pengembangan->created_at,
                                 'user' => [
                                     'id' => $item->user->id ?? null,
                                     'name' => $item->user->name ?? null,
                                     'email' => $item->user->email ?? null,
                                     'role' => $item->user->role ?? null,
                                     'devisi' => $item->user->devisi ?? null,
+                                ],
+                                'pengajuan' => [
+                                    'id' => $item->pengembangan->pengajuan->id,
+                                    'tgl' => $item->pengembangan->pengajuan->tgl,
+                                    'nama_sistem' => $item->pengembangan->pengajuan->nama_sistem,
+                                    'jenis' => $item->pengembangan->pengajuan->jenis,
+                                    'rencana_anggaran' => $item->pengembangan->pengajuan->rencana_anggaran,
+                                    'masalah' => $item->pengembangan->pengajuan->masalah,
+                                    'output' => $item->pengembangan->pengajuan->output,
+                                    'tanda_tangan' => $item->pengembangan->pengajuan->tangan_tangan,
+                                    'alasan_penolakan' => $item->pengembangan->pengajuan->alasan_penolakan,
+                                    'status' => $item->pengembangan->pengajuan->status,
                                 ],
                             ],
                         ];
@@ -94,44 +101,34 @@ class PengembanganController extends Controller
     public function store(Request $request)
     {
         try {
-            // Validasi inputan
+            // Validasi input
             $request->validate([
-                'pengajuan_id' => 'required|uuid|exists:pengajuan,id', // Pengajuan harus ada dan menggunakan UUID
-                'tanggal_mulai' => 'required|date',
-                'tanggal_selesai' => 'required|date',
-                'tahap' => 'required|string',
-                'persentase' => 'required|integer|min:0|max:100',
-                'keterangan' => 'nullable|string',
-                'status' => 'nullable|in:developed,finished',
+                'pengembangan_id' => 'required|uuid|exists:pengembangan,id', // Harus ada di tabel pengembangan
+                'hasil' => 'required|in:positif,negatif', // Hanya boleh positif atau negatif
+                'catatan' => 'nullable|string',
+                'tester_id' => 'required|uuid|exists:users,id', // Tester harus ada di tabel users
             ]);
 
-            // Mengambil data pengajuan berdasarkan pengajuan_id
-            $pengajuan = Pengajuan::findOrFail($request->pengajuan_id);
+            // Mengambil data pengembangan berdasarkan ID
+            // $pengembangan = Pengembangan::findOrFail($request->pengembangan_id);
 
-            // Mengambil user_id dari relasi pengajuan
-            $user_id = $pengajuan->user_id; // Mengambil user_id dari relasi pengajuan
-
-            // Membuat data pengembangan baru
-            $pengembangan = Pengembangan::create([
-                'pengajuan_id' => $request->pengajuan_id,
-                'tanggal_mulai' => $request->tanggal_mulai,
-                'tanggal_selesai' => $request->tanggal_selesai,
-                'tahap' => $request->tahap,
-                'persentase' => $request->persentase,
-                'keterangan' => $request->keterangan,
-                'status' => $request->status ?? 'developed',
-                'user_id' => $user_id, // Menyimpan user_id yang diambil dari pengajuan
+            // Membuat data pengujian baru
+            $pengujian = Pengujian::create([
+                'id' => Str::uuid(),
+                'pengembangan_id' => $request->pengembangan_id,
+                'hasil' => $request->hasil,
+                'catatan' => $request->catatan,
+                'tester_id' => $request->tester_id,
             ]);
 
             return response()->json(
                 [
                     'success' => true,
-                    'payload' => $pengembangan,
+                    'payload' => $pengujian,
                 ],
                 201,
             );
         } catch (ValidationException $e) {
-            // Jika validasi gagal
             return response()->json(
                 [
                     'success' => false,
@@ -139,13 +136,12 @@ class PengembanganController extends Controller
                     'error' => [
                         'code' => 422,
                         'message' => 'Validation failed',
-                        'details' => $e->errors(), // Menampilkan kesalahan validasi
+                        'details' => $e->errors(),
                     ],
                 ],
                 422,
             );
         } catch (QueryException $e) {
-            // Menangani error jika query gagal
             return response()->json(
                 [
                     'success' => false,
@@ -157,7 +153,6 @@ class PengembanganController extends Controller
                 $e->getCode() ?: 500,
             );
         } catch (\Exception $e) {
-            // Menangani error lainnya
             return response()->json(
                 [
                     'success' => false,
@@ -176,14 +171,14 @@ class PengembanganController extends Controller
      */
     public function show($id)
     {
-        $usulan = Pengembangan::where('id',  $id);
+        $usulan = Pengujian::where('id', $id);
         return response()->json($usulan);
     }
 
     /**
      * Show the form for editing the specified resource.
      */
-    public function edit(Pengembangan $pengembangan)
+    public function edit(Pengujian $pengujian)
     {
         //
     }
@@ -191,38 +186,29 @@ class PengembanganController extends Controller
     /**
      * Update the specified resource in storage.
      */
-    public function update(Request $request, Pengembangan $pengembangan)
+    public function update(Request $request, Pengujian $pengujian)
     {
         try {
-            // Validasi inputan
+            // Validasi input
             $request->validate([
-                'tanggal_mulai' => 'required|date',
-                'tanggal_selesai' => 'required|date',
-                'tahap' => 'required|string',
-                'persentase' => 'required|integer|min:0|max:100',
-                'keterangan' => 'nullable|string',
-                'status' => 'nullable|in:developed,finished',
+                'hasil' => 'required|in:positif,negatif', // Hanya boleh positif atau negatif
+                'catatan' => 'nullable|string',
             ]);
 
-            // Memperbarui data pengembangan
-            $pengembangan->update([
-                'tanggal_mulai' => $request->tanggal_mulai,
-                'tanggal_selesai' => $request->tanggal_selesai,
-                'tahap' => $request->tahap,
-                'persentase' => $request->persentase,
-                'keterangan' => $request->keterangan,
-                'status' => $request->status ?? 'developed',
+            // Update data pengujian
+            $pengujian->update([
+                'hasil' => $request->hasil,
+                'catatan' => $request->catatan,
             ]);
 
             return response()->json(
                 [
                     'success' => true,
-                    'payload' => $pengembangan,
+                    'payload' => $pengujian,
                 ],
                 200,
             );
         } catch (ValidationException $e) {
-            // Jika validasi gagal
             return response()->json(
                 [
                     'success' => false,
@@ -230,13 +216,12 @@ class PengembanganController extends Controller
                     'error' => [
                         'code' => 422,
                         'message' => 'Validation failed',
-                        'details' => $e->errors(), // Menampilkan kesalahan validasi
+                        'details' => $e->errors(),
                     ],
                 ],
                 422,
             );
         } catch (QueryException $e) {
-            // Menangani error jika query gagal
             return response()->json(
                 [
                     'success' => false,
@@ -248,7 +233,6 @@ class PengembanganController extends Controller
                 $e->getCode() ?: 500,
             );
         } catch (\Exception $e) {
-            // Menangani error lainnya
             return response()->json(
                 [
                     'success' => false,
@@ -265,16 +249,16 @@ class PengembanganController extends Controller
     /**
      * Remove the specified resource from storage.
      */
-    public function destroy(Pengembangan $pengembangan)
+    public function destroy(Pengujian $pengujian)
     {
         try {
             // Menghapus data pengembangan
-            $pengembangan->delete();
+            $pengujian->delete();
 
             return response()->json(
                 [
                     'success' => true,
-                    'message' => 'Pengembangan berhasil dihapus.',
+                    'message' => 'Pengujian berhasil dihapus.',
                 ],
                 200,
             );

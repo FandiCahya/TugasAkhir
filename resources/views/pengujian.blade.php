@@ -4,170 +4,108 @@
         <div class="card">
             <div class="card-body">
                 <h4 class="card-title">Pengujian</h4>
-                
-                <!-- Button to Open Add User Modal -->
-                <button class="btn btn-success btn-sm mb-3" data-bs-toggle="modal" data-bs-target="#addUserModal">Tambah
-                    User</button>
 
                 <!-- Search Input -->
-                <input type="text" id="search" class="form-control mb-3" placeholder="Search by name sistem.." />
+                <input type="text" id="search" class="form-control mb-3" placeholder="Search by .." />
 
                 <div class="table-responsive pt-3">
-                    <table class="table table-bordered">
+                    <table class="table table-bordered" id="pengujian-table">
                         <thead>
                             <tr>
-                                <th>Name <span id="sort-name" class="cursor-pointer">🔽</span></th>
-                                <th>Email</th>
-                                <th>Role</th>
-                                <th>Division</th>
+                                <th>Name Sistem</th>
+                                <th>Nama User</th>
+                                <th>Hasil</th>
+                                <th>Catatan</th>
                                 <th>Actions</th>
                             </tr>
                         </thead>
                         <tbody>
-                            <tr>
-                                <td>
-                                    1
-                                </td>
-                                <td>
-                                    Herman Beck
-                                </td>
-                                <td>
-                                    <div class="progress">
-                                        <div class="progress-bar bg-success" role="progressbar" style="width: 25%"
-                                            aria-valuenow="25" aria-valuemin="0" aria-valuemax="100"></div>
-                                    </div>
-                                </td>
-                                <td>
-                                    $ 77.99
-                                </td>
-                                <td>
-                                    May 15, 2015
-                                </td>
-                            </tr>
-                            <tr>
-                                <td>
-                                    2
-                                </td>
-                                <td>
-                                    Messsy Adam
-                                </td>
-                                <td>
-                                    <div class="progress">
-                                        <div class="progress-bar bg-danger" role="progressbar" style="width: 75%"
-                                            aria-valuenow="75" aria-valuemin="0" aria-valuemax="100"></div>
-                                    </div>
-                                </td>
-                                <td>
-                                    $245.30
-                                </td>
-                                <td>
-                                    July 1, 2015
-                                </td>
-                            </tr>
-                            <tr>
-                                <td>
-                                    3
-                                </td>
-                                <td>
-                                    John Richards
-                                </td>
-                                <td>
-                                    <div class="progress">
-                                        <div class="progress-bar bg-warning" role="progressbar" style="width: 90%"
-                                            aria-valuenow="90" aria-valuemin="0" aria-valuemax="100"></div>
-                                    </div>
-                                </td>
-                                <td>
-                                    $138.00
-                                </td>
-                                <td>
-                                    Apr 12, 2015
-                                </td>
-                            </tr>
-                            <tr>
-                                <td>
-                                    4
-                                </td>
-                                <td>
-                                    Peter Meggik
-                                </td>
-                                <td>
-                                    <div class="progress">
-                                        <div class="progress-bar bg-primary" role="progressbar" style="width: 50%"
-                                            aria-valuenow="50" aria-valuemin="0" aria-valuemax="100"></div>
-                                    </div>
-                                </td>
-                                <td>
-                                    $ 77.99
-                                </td>
-                                <td>
-                                    May 15, 2015
-                                </td>
-                            </tr>
-                            <tr>
-                                <td>
-                                    5
-                                </td>
-                                <td>
-                                    Edward
-                                </td>
-                                <td>
-                                    <div class="progress">
-                                        <div class="progress-bar bg-danger" role="progressbar" style="width: 35%"
-                                            aria-valuenow="35" aria-valuemin="0" aria-valuemax="100"></div>
-                                    </div>
-                                </td>
-                                <td>
-                                    $ 160.25
-                                </td>
-                                <td>
-                                    May 03, 2015
-                                </td>
-                            </tr>
-                            <tr>
-                                <td>
-                                    6
-                                </td>
-                                <td>
-                                    John Doe
-                                </td>
-                                <td>
-                                    <div class="progress">
-                                        <div class="progress-bar bg-info" role="progressbar" style="width: 65%"
-                                            aria-valuenow="65" aria-valuemin="0" aria-valuemax="100"></div>
-                                    </div>
-                                </td>
-                                <td>
-                                    $ 123.21
-                                </td>
-                                <td>
-                                    April 05, 2015
-                                </td>
-                            </tr>
-                            <tr>
-                                <td>
-                                    7
-                                </td>
-                                <td>
-                                    Henry Tom
-                                </td>
-                                <td>
-                                    <div class="progress">
-                                        <div class="progress-bar bg-warning" role="progressbar" style="width: 20%"
-                                            aria-valuenow="20" aria-valuemin="0" aria-valuemax="100"></div>
-                                    </div>
-                                </td>
-                                <td>
-                                    $ 150.00
-                                </td>
-                                <td>
-                                    June 16, 2015
-                                </td>
-                            </tr>
+
                         </tbody>
                     </table>
                 </div>
             </div>
         </div>
     </div>
+
+    <script>
+        let pengujian = []
+        let editPengujianId = null;
+        let addPengujian = null;
+
+        function fetchPengujian(query = '') {
+            fetch('/api/pengujian')
+                .then(response => response.json())
+                .then(data => {
+                    console.log('Data dari API:', data); // Debugging
+
+                    if (data.success) {
+                        pengujian = data.payload.map(p => ({
+                            id: p.id,
+                            nama_sistem: p.pengembangan?.pengajuan?.nama_sistem || 'N/A',
+                            nama_user: p.pengembangan?.user?.name || 'N/A',
+                            hasil: p.hasil,
+                            catatan: p.catatan
+                        }));
+
+                        // Filter berdasarkan query pencarian jika ada
+                        if (query) {
+                            pengujian = pengujian.filter(p =>
+                                p.nama_sistem.toLowerCase().includes(query.toLowerCase())
+                            );
+                        }
+
+                        renderTable(pengujian);
+                    } else {
+                        alert('Gagal memuat data pengujian');
+                    }
+                })
+                .catch(error => console.error('Error:', error));
+        }
+
+        function renderTable(pengujian) {
+            const tableBody = document.querySelector('#pengujian-table tbody');
+            tableBody.innerHTML = ''; // Clear the existing table body
+
+            pengujian.forEach(p => {
+                const row = document.createElement('tr');
+                row.innerHTML = `
+            <td>${p.nama_sistem}</td>
+            <td>${p.nama_user}</td>
+            <td>${p.hasil}</td>
+            <td>${p.catatan}</td>
+            <td>
+                <button class="btn btn-warning btn-sm" onclick="editPengujian('${p.id}')">Edit</button>
+                <button class="btn btn-danger btn-sm" onclick="deletePengujian('${p.id}')">Delete</button>
+                <button class="btn btn-info btn-sm" onclick="showPengembangan('${p.id}')">Approval</button>
+            </td>
+        `;
+                tableBody.appendChild(row);
+            });
+        }
+
+        function deletePengujian(id) {
+            if (confirm('Yakin ingin menghapus pengujian ini?')) {
+                fetch(`/api/pengujian/${id}`, {
+                        method: 'DELETE',
+                        headers: {
+                            'Content-Type': 'application/json',
+                            'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').getAttribute('content')
+                        },
+                    })
+                    .then(response => response.json())
+                    .then(data => {
+                        if (data.success) {
+                            fetchPengujian(); // Re-fetch pengajuan setelah hapus
+                            alert('Pengujian berhasil dihapus');
+                        } else {
+                            alert('Gagal menghapus pengujian');
+                        }
+                    })
+                    .catch(error => console.error('Error:', error));
+            }
+        }
+
+        fetchPengujian();
+    </script>
 @endsection

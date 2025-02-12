@@ -44,6 +44,12 @@
             </a>
         </li>
         <li class="nav-item">
+            <a class="nav-link" href="{{ route('pengujian') }}">
+                <i class="mdi mdi mdi-check-decagram menu-icon"></i>
+                <span class="menu-title">Approval</span>
+            </a>
+        </li>
+        <li class="nav-item">
             <a class="nav-link" href="{{ route('history') }}">
                 <i class="mdi mdi mdi-timer menu-icon"></i>
                 <span class="menu-title">Riwayat Pengajuan</span>

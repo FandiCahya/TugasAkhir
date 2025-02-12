@@ -5,6 +5,7 @@ use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\Api\UserController;
 use App\Http\Controllers\Api\PengajuanController;
 use App\Http\Controllers\Api\PengembanganController;
+use App\Http\Controllers\Api\PengujianController;
 
 // Route::get('/user', function (Request $request) {
 //     return $request->user();
@@ -15,3 +16,4 @@ use App\Http\Controllers\Api\PengembanganController;
 Route::resource('users', UserController::class);
 Route::resource('pengajuan', PengajuanController::class);
 Route::resource('pengembangan', PengembanganController::class);
+Route::resource('pengujian', PengujianController::class);
