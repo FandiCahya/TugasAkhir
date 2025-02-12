@@ -392,6 +392,11 @@
                     if (data.success) {
                         fetchPengajuan(); // Re-fetch pengajuan setelah update
                         alert('Pengajuan berhasil diupdate');
+                        let editModal = bootstrap.Modal.getInstance(document.getElementById(
+                            'editPengajuanModal'));
+                        if (editModal) {
+                            editModal.hide();
+                        }
                     } else {
                         alert('Gagal mengupdate pengajuan');
                     }

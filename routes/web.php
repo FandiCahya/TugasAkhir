@@ -32,6 +32,9 @@ Route::get(uri: '/pengembangan',action: function (){return view('pengembangan');
 Route::get('/pengujian',action: function (){return view('pengujian');
 })->middleware(['auth', 'verified'])->name(name: 'pengujian');
 
+Route::get('/approval',action: function (){return view('approval');
+})->middleware(['auth', 'verified'])->name(name: 'approval');
+
 Route::get('/history',action: function (){return view('history');
 })->middleware(['auth', 'verified'])->name(name: 'history');
 
