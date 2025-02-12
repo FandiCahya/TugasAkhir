@@ -32,8 +32,66 @@
         </div>
     </div>
 
+    {{-- Modal for Edit Pengembangan --}}
+    <div class="modal fade" id="editPengembanganModal" tabindex="-1" aria-labelledby="addPengembanganModalLabel"
+        aria-hidden="true">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="editPengembanganModalLabel">Edit Pengembangan</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body">
+                    <form id="editPengembanganForm">
+                        @csrf
+                        <div class="mb-3">
+                            <label for="pengajuan" class="form-label">Nama Sistem</label>
+                            <input type="text" class="form-control" id="pengajuan" required readonly>
+                        </div>
+                        <div class="mb-3">
+                            <label for="user" class="form-label">User</label>
+                            <input type="text" class="form-control" id="user" required readonly>
+                        </div>
+                        <div class="mb-3">
+                            <label for="tgl_mulai" class="form-label">Tanggal Mulai</label>
+                            <input type="date" class="form-control" id="tgl_mulai" required>
+                        </div>
+                        <div class="mb-3">
+                            <label for="tgl_selesai" class="form-label">Tanggal Selesai</label>
+                            <input type="date" class="form-control" id="tgl_selesai" required>
+                        </div>
+                        <div class="mb-3">
+                            <label for="tahap" class="form-label">Tahap</label>
+                            <input type="text" class="form-control" id="tahap" required>
+                        </div>
+                        <div class="mb-3">
+                            <label for="persentase" class="form-label">persentase</label>
+                            <input type="text" class="form-control" id="persentase" required>
+                        </div>
+                        <div class="mb-3">
+                            <label for="keterangan" class="form-label">Keterangan</label>
+                            <textarea class="form-control" id="keterangan" required></textarea>
+                        </div>
+                        <div class="mb-3">
+                            <label for="status_pengembangan" class="form-label">Status Pengembangan</label>
+                            <select class="form-control" id="status_pengembangan" required>
+                                <option value="developed">Developed</option>
+                                <option value="finished">Finished</option>
+                            </select>
+                        </div>
+                    </form>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Tutup</button>
+                    <button type="button" class="btn btn-primary" id="editPengembanganBtn">Edit Pengembangan</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
     <script>
         let pengembangan = [];
+        let editPengembanganId = null;
 
         function fetchPengembangan(query = '') {
             fetch('/api/pengembangan')
@@ -110,6 +168,59 @@
             }
         }
 
+        function editPengembangan(id) {
+            const p = pengembangan.find(p => p.id === id); // Find pengembangan by ID
+            if (!p) {
+                alert('Data tidak ditemukan!');
+                return;
+            }
+            document.getElementById('pengajuan').value = p.pengajuan.nama_sistem;
+            document.getElementById('user').value = p.pengajuan.user.name;
+            document.getElementById('tgl_mulai').value = p.tanggal_mulai;
+            document.getElementById('tgl_selesai').value = p.tanggal_selesai;
+            document.getElementById('tahap').value = p.tahap;
+            document.getElementById('persentase').value = p.persentase;
+            document.getElementById('keterangan').value = p.keterangan;
+            document.getElementById('status_pengembangan').value = p.status;
+            editPengembanganId = id;
+
+            // Show the modal
+            new bootstrap.Modal(document.getElementById('editPengembanganModal')).show();
+        }
+        
+        document.getElementById('editPengembanganBtn').addEventListener('click', function() {
+            const data = {
+                tanggal_mulai: document.getElementById('tgl_mulai').value,
+                tanggal_selesai: document.getElementById('tgl_selesai').value,
+                tahap: document.getElementById('tahap').value,
+                persentase: parseInt(document.getElementById('persentase').value) || 0,
+                keterangan: document.getElementById('keterangan').value,
+                status: document.getElementById('status_pengembangan').value,
+            };
+            // console.log("Data yang dikirim:", data);
+
+            fetch(`/api/pengembangan/${editPengembanganId}`, {
+                    method: 'PUT',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').getAttribute(
+                            'content')
+                    },
+                    body: JSON.stringify(data)
+                })
+                .then(response => response.json())
+                .then(data => {
+                    if (data.success) {
+                        fetchPengembangan(); // Re-fetch pengajuan setelah update
+                        alert('Pengembangan berhasil diupdate');
+                    } else {
+                        alert('Gagal mengupdate Pengembangan');
+                    }
+                })
+                .catch(error => console.error('Error:', error));
+        });
+
+        
         fetchPengembangan();
     </script>
 @endsection
