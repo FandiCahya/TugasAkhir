@@ -25,7 +25,7 @@ import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import com.example.applicationsop.loginScreen.LoginScreenActivity
+import com.example.applicationsop.MainActivity
 import com.example.applicationsop.R
 import kotlinx.coroutines.delay
 
@@ -42,7 +42,7 @@ fun SplashScreen() {
     LaunchedEffect(key1 = true) {
         startAnimation = true
         delay(3000)
-        context.startActivity(Intent(context, LoginScreenActivity::class.java))
+        context.startActivity(Intent(context, MainActivity::class.java))
         (context as? Activity)?.finish()
     }
 

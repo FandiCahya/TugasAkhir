@@ -26,6 +26,8 @@ import androidx.compose.ui.text.input.VisualTransformation
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
+import androidx.compose.ui.draw.clip
+import androidx.compose.ui.draw.shadow
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.text.font.Font
 import androidx.compose.ui.text.font.FontFamily
@@ -33,6 +35,7 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.input.ImeAction
+import androidx.navigation.NavController
 import com.example.applicationsop.MainActivity
 import com.example.applicationsop.R
 import com.example.applicationsop.ui.theme.Maroon
@@ -40,7 +43,7 @@ import com.example.applicationsop.ui.theme.PinkPudar
 import com.example.applicationsop.ui.theme.Putih
 
 @Composable
-fun LoginScreen() {
+fun LoginScreen(navController: NavController) {
     val context = LocalContext.current
     val username = remember { mutableStateOf("") }
     val password = remember { mutableStateOf("") }
@@ -101,8 +104,7 @@ fun LoginScreen() {
                 LoginButtonComposable {
                     // Log in action (add your logic)
 
-                    context.startActivity(Intent(context, MainActivity::class.java))
-                    (context as? Activity)?.finish()
+                    navController.navigate("home")
                 }
             }
         }
@@ -216,7 +218,7 @@ fun LoginButtonComposable(onClick: () -> Unit) {
         onClick = onClick,
         modifier = Modifier
             .fillMaxWidth()
-            .padding(start = 25.dp, end = 25.dp),
+            .padding(start = 80.dp, end = 30.dp),
         colors = ButtonDefaults.buttonColors(
             containerColor = Maroon
         )

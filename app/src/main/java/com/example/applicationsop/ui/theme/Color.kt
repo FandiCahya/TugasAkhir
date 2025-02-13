@@ -14,3 +14,7 @@ val Maroon = Color(0xFFB74360)
 val PinkPudar = Color(0xFFEC786B)
 val PinkTua = Color(0xFFE06B6B)
 val Putih = Color(0xFFF6F6F6)
+
+val Hijau = Color(0xFF2BA455)
+val abang = Color(0xFFD70C0C)
+val ijo = Color(0xFFFDB028)
