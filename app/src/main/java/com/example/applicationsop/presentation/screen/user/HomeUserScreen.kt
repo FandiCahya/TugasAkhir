@@ -2,6 +2,7 @@ package com.example.applicationsop.presentation.screen.user
 
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.shape.CircleShape
 //import androidx.compose.foundation.layout.ColumnScopeInstance.weight
@@ -26,14 +27,15 @@ import androidx.compose.material.icons.filled.Search
 import androidx.compose.material.icons.filled.Timer
 import androidx.compose.material.icons.filled.Verified
 import androidx.compose.ui.draw.clip
+import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.zIndex
 import com.example.applicationsop.ui.theme.Maroon
 import com.example.applicationsop.ui.theme.PinkPudar
 import com.example.applicationsop.ui.theme.Putih
-import com.example.applicationsop.ui.theme.Hijau
-import com.example.applicationsop.ui.theme.abang
 import com.example.applicationsop.ui.theme.ijo
+import com.example.applicationsop.ui.theme.abang
+import com.example.applicationsop.ui.theme.kuning
 import androidx.navigation.NavController
 import com.example.applicationsop.R
 
@@ -55,7 +57,7 @@ fun HomeUserScreen(navController: NavController) {
 
             // Pengajuan Section
             SectionTitle("Pengajuan")
-            SubmissionSection()
+            SubmissionSection(navController = navController)
 
             Spacer(modifier = Modifier.height(16.dp))
 
@@ -97,8 +99,14 @@ fun HeaderComposable(navController: NavController) {
     Box(
         modifier = Modifier
             .fillMaxWidth()
-            .background(Maroon)
-            .padding(16.dp)
+            .background(
+                brush = Brush.verticalGradient(
+                    colors = listOf(Maroon, Color.Transparent), // Gradasi dari Maroon ke Transparan
+                    startY = 0f,
+                    endY = Float.POSITIVE_INFINITY
+                )
+            )
+            .padding(20.dp)
     ) {
         Row(
             modifier = Modifier.fillMaxWidth(),
@@ -151,7 +159,7 @@ fun SectionTitle(title: String) {
 }
 
 @Composable
-fun SubmissionSection() {
+fun SubmissionSection(navController: NavController) {
     Row(
         modifier = Modifier
             .fillMaxWidth()
@@ -166,10 +174,13 @@ fun SubmissionSection() {
         ) {
             SubmissionCard(
                 "Butuh Konfirmasi",
-                color = ijo,
+                color = kuning,
                 icon = Icons.Filled.Timer,
-                modifier = Modifier.height(180.dp)
-            ) // Card lebih besar
+                modifier = Modifier.height(180.dp),
+                onClick = {
+                    navController.navigate("list_pengajuan")
+                }
+            )
         }
 
         // Kolom kedua - Card Ditolak (merah) dan Card Dikembangkan (hijau)
@@ -184,7 +195,7 @@ fun SubmissionSection() {
             Spacer(modifier = Modifier.height(16.dp)) // Memberikan jarak antara card
 
             // Card "Dikembangkan" (hijau) di bawah
-            SubmissionCard("Dikembangkan", color = Hijau, icon = Icons.Filled.Verified)
+            SubmissionCard("Dikembangkan", color = ijo, icon = Icons.Filled.Verified)
         }
     }
 }
@@ -194,12 +205,14 @@ fun SubmissionCard(
     text: String,
     color: Color,
     icon: androidx.compose.ui.graphics.vector.ImageVector,
-    modifier: Modifier = Modifier
+    modifier: Modifier = Modifier,
+    onClick: () -> Unit = {}
 ) {
     Card(
         modifier = modifier
             .width(150.dp) // Menentukan lebar card, agar tidak terlalu besar
-            .padding(4.dp), // Padding antar card
+            .padding(4.dp) // Padding antar card
+            .clickable(onClick = onClick),
         shape = RoundedCornerShape(16.dp), // Sudut card bulat
         colors = CardDefaults.cardColors(
             containerColor = color
