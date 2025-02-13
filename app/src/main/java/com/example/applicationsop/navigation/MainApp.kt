@@ -12,6 +12,7 @@ import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
 import com.example.applicationsop.loginScreen.LoginScreen
+import com.example.applicationsop.presentation.screen.ListPengajuanScreen
 import com.example.applicationsop.presentation.screen.ProfileScreen
 import com.example.applicationsop.presentation.screen.user.FormUsulanScreen
 import com.example.applicationsop.presentation.screen.user.HomeUserScreen
@@ -41,6 +42,11 @@ fun MainApp() {
         // Profile
         composable("profile") {
             ProfileScreen(navController = navController)
+        }
+
+        // List Pengajuan
+        composable("list_pengajuan") {
+            ListPengajuanScreen(navController = navController)
         }
     }
 }

@@ -1,4 +1,4 @@
-package com.example.applicationsop.presentation.screen.user
+package com.example.applicationsop.presentation.screen
 
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.*

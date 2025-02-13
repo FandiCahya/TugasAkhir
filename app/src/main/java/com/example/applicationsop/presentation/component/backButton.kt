@@ -15,7 +15,7 @@ import androidx.navigation.NavController
 import com.example.applicationsop.ui.theme.Maroon // Import the Maroon color from your theme
 
 @Composable
-fun BackButton(navController: NavController, colorVersion: String = "default") {
+fun BackButton(navController: NavController, colorVersion: String = "default", modifier: Modifier = Modifier) {
     // Set background color and icon tint based on version
     val backgroundColor = when (colorVersion) {
         "m" -> Maroon // Use Maroon from your UI theme for background

@@ -192,7 +192,7 @@ fun HeaderComposable(title: String, navController: NavController) {
                 colorVersion = "w"
             )  // Back Button on the left
 
-            Spacer(modifier = Modifier.weight(1f)) // This will push the title to the center
+            Spacer(modifier = Modifier.weight(1f))
 
             Text(
                 text = title,
