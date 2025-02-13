@@ -8,7 +8,7 @@ class Greeting {
     private val client = HttpClient()
 
     suspend fun greeting(): String {
-        val response = client.get("https://ktor.io/docs/")
+        val response = client.get("http://127.0.0.1:8000/api/")
         return response.bodyAsText()
     }
 }
