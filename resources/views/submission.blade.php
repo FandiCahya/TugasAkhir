@@ -262,7 +262,7 @@
                     <td>
                         <button class="btn btn-warning btn-sm" onclick="editPengajuan('${p.id}')" style="margin: 5px;">Edit</button>
                         <button class="btn btn-danger btn-sm" onclick="deletePengajuan('${p.id}')" style="margin: 5px;">Delete</button>
-                        <button class="btn btn-success btn-sm" onclick="showPengembangan('${p.id}')" style="margin: 5px;">Pengembangan</button>
+                        ${p.status === 'accepted' ? `<button class="btn btn-success btn-sm" onclick="showPengembangan('${p.id}')" style="margin: 5px;">Pengembangan</button>` : ''}
                     </td>
 
                 `;

@@ -2,77 +2,62 @@
 
 namespace App\Http\Controllers\Api;
 
-use App\Models\Pengujian;
-use App\Models\Pengembangan;
 use Illuminate\Http\Request;
+use App\Models\Pengujian;
+use Illuminate\Support\Str;
+use Carbon\Carbon;
 use App\Http\Controllers\Controller;
+use Illuminate\Database\Eloquent\ModelNotFoundException;
 use Illuminate\Validation\ValidationException;
 use Illuminate\Database\QueryException;
-use Illuminate\Support\Str;
 
 class PengujianController extends Controller
 {
-    /**
-     * Display a listing of the resource.
-     */
-    public function index(Request $request)
+    public function index()
     {
         try {
-            $query = $request->input('search');
-            $pengujian = pengujian::with('pengembangan', 'user') // Load relasi pengajuan dan user
-                ->when($query, function ($queryBuilder) use ($query) {
-                    return $queryBuilder->where('catatan', 'like', '%' . $query . '%'); // Pastikan menggunakan kolom yang benar
-                })
-                ->get();
+            $pengujians = Pengujian::with(['details'])->get();
 
-            // $users = pengujian::all();
             return response()->json(
                 [
                     'success' => true,
-                    'payload' => $pengujian->map(function ($item) {
+                    'payload' => $pengujians->map(function ($item) {
                         return [
                             'id' => $item->id,
-                            'hasil' => $item->hasil,
-                            'catatan' => $item->catatan,
+                            'perangkat_lunak' => $item->perangkat_lunak,
+                            'versi' => $item->versi,
+                            'tujuan' => $item->tujuan,
+                            'metode' => $item->metode,
+                            'tanggal' => $item->tanggal,
                             'updated_at' => $item->updated_at,
                             'created_at' => $item->created_at,
-                            'pengembangan' => [
-                                'id' => $item->pengembangan->id,
-                                'tanggal_mulai' => $item->pengembangan->tanggal_mulai,
-                                'tanggal_selesai' => $item->pengembangan->tanggal_selesai,
-                                'tahap' => $item->pengembangan->tahap,
-                                'persentase' => $item->pengembangan->persentase,
-                                'keterangan' => $item->pengembangan->keterangan,
-                                'status' => $item->pengembangan->status,
-                                'updated_at' => $item->pengembangan->updated_at,
-                                'created_at' => $item->pengembangan->created_at,
-                                'user' => [
-                                    'id' => $item->user->id ?? null,
-                                    'name' => $item->user->name ?? null,
-                                    'email' => $item->user->email ?? null,
-                                    'role' => $item->user->role ?? null,
-                                    'devisi' => $item->user->devisi ?? null,
-                                ],
-                                'pengajuan' => [
-                                    'id' => $item->pengembangan->pengajuan->id,
-                                    'tgl' => $item->pengembangan->pengajuan->tgl,
-                                    'nama_sistem' => $item->pengembangan->pengajuan->nama_sistem,
-                                    'jenis' => $item->pengembangan->pengajuan->jenis,
-                                    'rencana_anggaran' => $item->pengembangan->pengajuan->rencana_anggaran,
-                                    'masalah' => $item->pengembangan->pengajuan->masalah,
-                                    'output' => $item->pengembangan->pengajuan->output,
-                                    'tanda_tangan' => $item->pengembangan->pengajuan->tangan_tangan,
-                                    'alasan_penolakan' => $item->pengembangan->pengajuan->alasan_penolakan,
-                                    'status' => $item->pengembangan->pengajuan->status,
-                                ],
+                            'pelaksana' => [
+                                'id' => $item->user->id ?? null,
+                                'name' => $item->user->name ?? null,
+                                'email' => $item->user->email ?? null,
                             ],
+                            'pengembangan' => [
+                                'id' => $item->pengembangan->id ?? null,
+                                'tahap' => $item->pengembangan->tahap ?? null,
+                                'persentase' => $item->pengembangan->persentase ?? null,
+                                'status' => $item->pengembangan->status ?? null,
+                            ],
+                            'pengujian_detail' => $item->details->map(function ($detail) {
+                                return [
+                                    'id' => $detail->id,
+                                    'nama_uji' => $detail->nama_uji,
+                                    'kasus_uji' => $detail->kasus_uji,
+                                    'hasil_diharapkan' => $detail->hasil_diharapkan,
+                                    'hasil_pengujian' => $detail->hasil_pengujian,
+                                    'status' => $detail->status,
+                                ];
+                            }),
                         ];
                     }),
                 ],
                 200,
             );
         } catch (\Exception $e) {
-            // Menangani error lainnya
             return response()->json(
                 [
                     'success' => false,
@@ -87,48 +72,114 @@ class PengujianController extends Controller
         }
     }
 
-    /**
-     * Show the form for creating a new resource.
-     */
-    public function create()
-    {
-        //
-    }
-
-    /**
-     * Store a newly created resource in storage.
-     */
-    public function store(Request $request)
+    public function show($id)
     {
         try {
-            // Validasi input
-            $request->validate([
-                'pengembangan_id' => 'required|uuid|exists:pengembangan,id', // Harus ada di tabel pengembangan
-                'hasil' => 'required|in:positif,negatif', // Hanya boleh positif atau negatif
-                'catatan' => 'nullable|string',
-                'tester_id' => 'required|uuid|exists:users,id', // Tester harus ada di tabel users
-            ]);
+            $pengujian = Pengujian::with(['details', 'persetujuan.details.user', 'pengembangan', 'user'])->find($id);
 
-            // Mengambil data pengembangan berdasarkan ID
-            // $pengembangan = Pengembangan::findOrFail($request->pengembangan_id);
-
-            // Membuat data pengujian baru
-            $pengujian = Pengujian::create([
-                'id' => Str::uuid(),
-                'pengembangan_id' => $request->pengembangan_id,
-                'hasil' => $request->hasil,
-                'catatan' => $request->catatan,
-                'tester_id' => $request->tester_id,
-            ]);
+            if (!$pengujian) {
+                return response()->json(
+                    [
+                        'success' => false,
+                        'payload' => [],
+                        'error' => [
+                            'code' => 404,
+                            'message' => 'Pengujian tidak ditemukan',
+                        ],
+                    ],
+                    404,
+                );
+            }
 
             return response()->json(
                 [
                     'success' => true,
+                    'payload' => [
+                        'id' => $pengujian->id,
+                        'perangkat_lunak' => $pengujian->perangkat_lunak,
+                        'versi' => $pengujian->versi,
+                        'tujuan' => $pengujian->tujuan,
+                        'metode' => $pengujian->metode,
+                        'tanggal' => $pengujian->tanggal,
+                        'pelaksana' => [
+                            'id' => $pengujian->user->id ?? null,
+                            'name' => $pengujian->user->name ?? null,
+                            'email' => $pengujian->user->email ?? null,
+                        ],
+                        'pengembangan' => [
+                            'id' => $item->pengembangan->id ?? null,
+                            'tahap' => $item->pengembangan->tahap ?? null,
+                            'persentase' => $item->pengembangan->persentase ?? null,
+                            'status' => $item->pengembangan->status ?? null,
+                        ],
+                        'updated_at' => $pengujian->updated_at,
+                        'created_at' => $pengujian->created_at,
+                        'pengujian_detail' => $pengujian->details->map(function ($detail) {
+                            return [
+                                'id' => $detail->id,
+                                'nama_uji' => $detail->nama_uji,
+                                'kasus_uji' => $detail->kasus_uji,
+                                'hasil_diharapkan' => $detail->hasil_diharapkan,
+                                'hasil_pengujian' => $detail->hasil_pengujian,
+                                'status' => $detail->status,
+                            ];
+                        }),
+                    ],
+                ],
+                200,
+            );
+        } catch (\Exception $e) {
+            return response()->json(
+                [
+                    'success' => false,
+                    'payload' => [],
+                    'error' => [
+                        'code' => $e->getCode() ?: 500,
+                        'message' => $e->getMessage(),
+                    ],
+                ],
+                $e->getCode() ?: 500,
+            );
+        }
+    }
+
+    public function store(Request $request)
+    {
+        try {
+            // Validasi input
+            $validated = $request->validate([
+                'pengembangan_id' => 'required|uuid|exists:pengembangan,id',
+                'perangkat_lunak' => 'required|string',
+                'versi' => 'required|string',
+                'tujuan' => 'required|string',
+                'metode' => 'required|string',
+                'tanggal' => 'required|date',
+                'pelaksana_id' => 'required|uuid|exists:users,id',
+            ]);
+
+            // Buat pengujian baru
+            $pengujian = Pengujian::create([
+                'id' => Str::uuid(),
+                'pengembangan_id' => $validated['pengembangan_id'],
+                'perangkat_lunak' => $validated['perangkat_lunak'],
+                'versi' => $validated['versi'],
+                'tujuan' => $validated['tujuan'],
+                'metode' => $validated['metode'],
+                'tanggal' => Carbon::createFromFormat('Y-m-d', $validated['tanggal']),
+                'pelaksana_id' => $validated['pelaksana_id'],
+            ]);
+
+            // Kembalikan response sukses
+            return response()->json(
+                [
+                    'success' => true,
+                    'message' => 'Pengujian berhasil dibuat',
                     'payload' => $pengujian,
                 ],
                 201,
             );
         } catch (ValidationException $e) {
+            // Jika validasi gagal
             return response()->json(
                 [
                     'success' => false,
@@ -136,131 +187,10 @@ class PengujianController extends Controller
                     'error' => [
                         'code' => 422,
                         'message' => 'Validation failed',
-                        'details' => $e->errors(),
+                        'details' => $e->errors(), // Menampilkan kesalahan validasi
                     ],
                 ],
                 422,
-            );
-        } catch (QueryException $e) {
-            return response()->json(
-                [
-                    'success' => false,
-                    'error' => [
-                        'code' => $e->getCode(),
-                        'message' => $e->getMessage(),
-                    ],
-                ],
-                $e->getCode() ?: 500,
-            );
-        } catch (\Exception $e) {
-            return response()->json(
-                [
-                    'success' => false,
-                    'error' => [
-                        'code' => $e->getCode() ?: 500,
-                        'message' => $e->getMessage(),
-                    ],
-                ],
-                $e->getCode() ?: 500,
-            );
-        }
-    }
-
-    /**
-     * Display the specified resource.
-     */
-    public function show($id)
-    {
-        $usulan = Pengujian::where('id', $id);
-        return response()->json($usulan);
-    }
-
-    /**
-     * Show the form for editing the specified resource.
-     */
-    public function edit(Pengujian $pengujian)
-    {
-        //
-    }
-
-    /**
-     * Update the specified resource in storage.
-     */
-    public function update(Request $request, Pengujian $pengujian)
-    {
-        try {
-            // Validasi input
-            $request->validate([
-                'hasil' => 'required|in:positif,negatif', // Hanya boleh positif atau negatif
-                'catatan' => 'nullable|string',
-            ]);
-
-            // Update data pengujian
-            $pengujian->update([
-                'hasil' => $request->hasil,
-                'catatan' => $request->catatan,
-            ]);
-
-            return response()->json(
-                [
-                    'success' => true,
-                    'payload' => $pengujian,
-                ],
-                200,
-            );
-        } catch (ValidationException $e) {
-            return response()->json(
-                [
-                    'success' => false,
-                    'payload' => [],
-                    'error' => [
-                        'code' => 422,
-                        'message' => 'Validation failed',
-                        'details' => $e->errors(),
-                    ],
-                ],
-                422,
-            );
-        } catch (QueryException $e) {
-            return response()->json(
-                [
-                    'success' => false,
-                    'error' => [
-                        'code' => $e->getCode(),
-                        'message' => $e->getMessage(),
-                    ],
-                ],
-                $e->getCode() ?: 500,
-            );
-        } catch (\Exception $e) {
-            return response()->json(
-                [
-                    'success' => false,
-                    'error' => [
-                        'code' => $e->getCode() ?: 500,
-                        'message' => $e->getMessage(),
-                    ],
-                ],
-                $e->getCode() ?: 500,
-            );
-        }
-    }
-
-    /**
-     * Remove the specified resource from storage.
-     */
-    public function destroy(Pengujian $pengujian)
-    {
-        try {
-            // Menghapus data pengembangan
-            $pengujian->delete();
-
-            return response()->json(
-                [
-                    'success' => true,
-                    'message' => 'Pengujian berhasil dihapus.',
-                ],
-                200,
             );
         } catch (QueryException $e) {
             // Menangani error jika query gagal
@@ -272,19 +202,152 @@ class PengujianController extends Controller
                         'message' => $e->getMessage(),
                     ],
                 ],
-                $e->getCode() ?: 500,
+                500,
             );
         } catch (\Exception $e) {
-            // Menangani error lainnya
+            // Tangani error jika ada
+            return response()->json(
+                [
+                    'success' => false,
+                    'payload' => [],
+                    'error' => [
+                        'code' => $e->getCode(),
+                        'message' => $e->getMessage(),
+                    ],
+                ],
+                500,
+            );
+        }
+    }
+
+    public function update(Request $request, $id)
+    {
+        try {
+            // Validasi input
+            $validated = $request->validate([
+                'perangkat_lunak' => 'required|string',
+                'versi' => 'required|string',
+                'tujuan' => 'required|string',
+                'metode' => 'required|string',
+                'tanggal' => 'required|date',
+            ]);
+
+            // Cari pengujian berdasarkan ID
+            $pengujian = Pengujian::findOrFail($id);
+
+            // Update pengujian
+            $pengujian->update([
+                'perangkat_lunak' => $validated['perangkat_lunak'],
+                'versi' => $validated['versi'],
+                'tujuan' => $validated['tujuan'],
+                'metode' => $validated['metode'],
+                'tanggal' => Carbon::createFromFormat('Y-m-d', $validated['tanggal']),
+            ]);
+
+            // Kembalikan response sukses
+            return response()->json(
+                [
+                    'success' => true,
+                    'message' => 'Pengujian berhasil diperbarui',
+                    'payload' => $pengujian,
+                ],
+                200,
+            );
+        } catch (ValidationException $e) {
+            // Jika validasi gagal
+            return response()->json(
+                [
+                    'success' => false,
+                    'payload' => [],
+                    'error' => [
+                        'code' => 422,
+                        'message' => 'Validation failed',
+                        'details' => $e->errors(),
+                    ],
+                ],
+                422,
+            );
+        } catch (QueryException $e) {
+            // Menangani error jika query gagal
             return response()->json(
                 [
                     'success' => false,
                     'error' => [
-                        'code' => $e->getCode() ?: 500,
+                        'code' => $e->getCode(),
                         'message' => $e->getMessage(),
                     ],
                 ],
-                $e->getCode() ?: 500,
+                500,
+            );
+        } catch (\Exception $e) {
+            // Tangani error jika ada
+            return response()->json(
+                [
+                    'success' => false,
+                    'payload' => [],
+                    'error' => [
+                        'code' => $e->getCode(),
+                        'message' => $e->getMessage(),
+                    ],
+                ],
+                500,
+            );
+        }
+    }
+
+    public function destroy($id)
+    {
+        try {
+            // Cari pengujian berdasarkan ID
+            $pengujian = Pengujian::findOrFail($id);
+
+            // Hapus pengujian
+            $pengujian->delete();
+
+            // Kembalikan response sukses
+            return response()->json(
+                [
+                    'success' => true,
+                    'message' => 'Pengujian berhasil dihapus',
+                ],
+                200,
+            );
+        } catch (ModelNotFoundException $e) {
+            // Jika pengujian tidak ditemukan
+            return response()->json(
+                [
+                    'success' => false,
+                    'error' => [
+                        'code' => 404,
+                        'message' => 'Pengujian tidak ditemukan',
+                    ],
+                ],
+                404,
+            );
+        } catch (QueryException $e) {
+            // Menangani error jika query gagal
+            return response()->json(
+                [
+                    'success' => false,
+                    'error' => [
+                        'code' => $e->getCode(),
+                        'message' => $e->getMessage(),
+                    ],
+                ],
+                500,
+            );
+        } catch (\Exception $e) {
+            // Tangani error jika ada
+            return response()->json(
+                [
+                    'success' => false,
+                    'payload' => [],
+                    'error' => [
+                        'code' => $e->getCode(),
+                        'message' => $e->getMessage(),
+                    ],
+                ],
+                500,
             );
         }
     }

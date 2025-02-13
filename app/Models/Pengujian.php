@@ -4,33 +4,33 @@ namespace App\Models;
 
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
-use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Concerns\HasUuids;
 
 class Pengujian extends Model
 {
-    protected $table = 'pengujian';
-    protected $primaryKey = 'id';
-    public $incrementing = false;
-    protected $keyType = 'string';
+    use HasFactory, HasUuids;
+    protected $table = 'pengujian_perangkat_lunak';
+    protected $fillable = ['id','pengembangan_id','perangkat_lunak', 'versi', 'tujuan', 'metode', 'tanggal', 'pelaksana_id'];
 
-    protected $fillable = [
-        'id',
-        'pengembangan_id',
-        'hasil',
-        'catatan',
-        'tester_id',
-    ];
+    public function details()
+    {
+        return $this->hasMany(PengujianDetail::class, 'pengujian_id');
+    }
 
-    // Relasi ke Pengembangan
-    public function pengembangan(): BelongsTo
+    public function persetujuan()
+    {
+        return $this->hasOne(PersetujuanPengujian::class, 'pengujian_id');
+    }
+
+    public function pengembangan()
     {
         return $this->belongsTo(Pengembangan::class, 'pengembangan_id');
     }
 
-    // Relasi ke User (tester)
-    public function user(): BelongsTo
+    public function user()
     {
-        return $this->belongsTo(User::class, 'tester_id');
+        return $this->belongsTo(User::class, 'pelaksana_id');
     }
 }
+
+

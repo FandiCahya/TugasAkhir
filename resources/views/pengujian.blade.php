@@ -28,7 +28,7 @@
         </div>
     </div>
 
-    {{-- Modal for Edit Pengembangan --}}
+    {{-- Modal for Edit Pengujian --}}
     <div class="modal fade" id="editPengujianModal" tabindex="-1" aria-labelledby="addPengujianModalLabel"
         aria-hidden="true">
         <div class="modal-dialog">

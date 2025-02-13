@@ -16,4 +16,5 @@ use App\Http\Controllers\Api\PengujianController;
 Route::resource('users', UserController::class);
 Route::resource('pengajuan', PengajuanController::class);
 Route::resource('pengembangan', PengembanganController::class);
-Route::resource('pengujian', PengujianController::class);
+Route::resource('pengujian',PengujianController::class);
+

@@ -89,6 +89,47 @@
         </div>
     </div>
 
+    {{-- Modal for Add Pengujian --}}
+    <div class="modal fade" id="addPengujianModal" tabindex="-1" aria-labelledby="addPengujianModalLabel"
+        aria-hidden="true">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="addPengujianModalLabel">Add Pengujian</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body">
+                    <form id="addPengujianForm">
+                        @csrf
+                        <div class="mb-3">
+                            <label for="pengembangan_id" class="form-label">ID Pengembangan</label>
+                            <input type="text" class="form-control" id="pengembangan_id" required readonly>
+                        </div>
+                        <div class="mb-3">
+                            <label for="nama_sistem" class="form-label">Nama Sistem</label>
+                            <input type="text" class="form-control" id="nama_sistem" required readonly>
+                        </div>
+                        <div class="mb-3">
+                            <label for="hasil" class="form-label">Hasil</label>
+                            <select class="form-control" id="hasil" required>
+                                <option value="negatif">Negatif</option>
+                                <option value="positif">Positif</option>
+                            </select>
+                        </div>
+                        <div class="mb-3">
+                            <label for="catatan" class="form-label">Catatan</label>
+                            <textarea class="form-control" id="catatan" rows="3" required></textarea>
+                        </div>
+                    </form>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Tutup</button>
+                    <button type="button" class="btn btn-primary" id="addPengujianBtn">Edit Pengujian</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
     <script>
         let pengembangan = [];
         let editPengembanganId = null;
@@ -213,6 +254,11 @@
                     if (data.success) {
                         fetchPengembangan(); // Re-fetch pengajuan setelah update
                         alert('Pengembangan berhasil diupdate');
+                        let editModal = bootstrap.Modal.getInstance(document.getElementById(
+                            'editPengembanganModal'));
+                        if (editModal) {
+                            editModal.hide();
+                        }
                     } else {
                         alert('Gagal mengupdate Pengembangan');
                     }
@@ -220,7 +266,52 @@
                 .catch(error => console.error('Error:', error));
         });
 
-        
+        function showPengujian(id) {
+            const p = pengembangan.find(p => p.id === id); // Find pengajuan by ID
+            console.log("Hasil find:", p);
+            document.getElementById('pengembangan_id').value = p.id;
+            document.getElementById('nama_sistem').value = p.pengajuan.nama_sistem;
+            // Show the modal
+            new bootstrap.Modal(document.getElementById('addPengujianModal')).show();
+        }
+
+        document.getElementById('addPengujianBtn').addEventListener('click', function() {
+            const data = {
+                pengajuan_id: document.getElementById('pengajuan_id').value,
+                tanggal_mulai: document.getElementById('tgl_mulai').value,
+                tanggal_selesai: document.getElementById('tgl_selesai').value,
+                tahap: document.getElementById('tahap').value,
+                persentase: parseInt(document.getElementById('persentase').value) || 0,
+                keterangan: document.getElementById('keterangan').value,
+                status: document.getElementById('status_pengembangan').value,
+            };
+
+            // console.log("Data yang dikirim:", data); // Cek apakah datanya lengkap
+
+            fetch(`/api/pengujian`, {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').getAttribute(
+                            'content')
+                    },
+                    body: JSON.stringify(data)
+                })
+                .then(response => response.json())
+                .then(data => {
+                    if (data.success) {
+                        fetchPengajuan(); // Re-fetch pengajuan setelah update
+                        alert('Pengujian berhasil ditambahkan');
+                        const modal = document.querySelector('#addPengujianModal');
+                        const modalInstance = bootstrap.Modal.getInstance(modal);
+                        modalInstance.hide();
+                    } else {
+                        alert('Gagal menambahkan pengujian');
+                    }
+                })
+                .catch(error => console.error('Error:', error));
+        });
+
         fetchPengembangan();
     </script>
 @endsection
