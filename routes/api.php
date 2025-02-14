@@ -1,5 +1,6 @@
 <?php
 
+use App\Http\Controllers\Api\PersetujuanPengujianController;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\Api\UserController;
@@ -21,4 +22,7 @@ Route::resource('pengembangan', PengembanganController::class);
 Route::resource('pengujian',PengujianController::class);
 Route::resource('pengujian-detail',PengujianDetailController::class);
 Route::resource('catatan-pengujian',CatatanPengujianController::class);
+
+Route::post('persetujuan-pengujian/create', [PersetujuanPengujianController::class, 'createApproval']);
+Route::put('persetujuan-pengujian/{id}/approve', [PersetujuanPengujianController::class, 'approve']);
 

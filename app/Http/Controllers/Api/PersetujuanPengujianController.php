@@ -1,0 +1,145 @@
+<?php
+
+namespace App\Http\Controllers\Api;
+
+use Illuminate\Http\Request;
+use App\Http\Controllers\Controller;
+use App\Models\PersetujuanPengujian;
+use App\Models\PersetujuanPengujianDetail;
+
+class PersetujuanPengujianController extends Controller
+{
+    public function createApproval(Request $request)
+    {
+        try {
+            // Validate incoming data
+            $request->validate([
+                'pengujian_id' => 'required|exists:pengujian_perangkat_lunak,id',
+                'user_ids' => 'required|array|size:4', // Ensure exactly 4 users
+                'user_ids.*' => 'exists:users,id', // Ensure each user_id is valid
+            ]);
+
+            // Create the persetujuan record
+            $persetujuan = PersetujuanPengujian::create([
+                'pengujian_id' => $request->pengujian_id,
+            ]);
+
+            // Dynamically assign users based on the request data
+            $persetujuan->assignApprovalUsers($request->user_ids);
+
+            return response()->json(
+                [
+                    'success' => true,
+                    'message' => 'Approval users assigned successfully.',
+                    'data' => $persetujuan,
+                ],
+                201,
+            );
+        } catch (\Exception $e) {
+            return response()->json(
+                [
+                    'success' => false,
+                    'error' => $e->getMessage(),
+                ],
+                400,
+            );
+        }
+    }
+
+    public function approve(Request $request, $id)
+    {
+        try {
+            // Validate incoming data
+            $request->validate([
+                'user_id' => 'nullable|exists:users,id',
+                'status' => 'required|in:setuju,tidak_setuju',
+                'catatan' => 'nullable|string',
+                'signature' => 'nullable|image|mimes:jpeg,png,jpg,gif|max:2048', // Signature as image
+            ]);
+
+            // Find the approval record
+            $persetujuan = PersetujuanPengujian::findOrFail($id);
+
+            // Find or create the PersetujuanPengujianDetail record for this user
+            $detail = PersetujuanPengujianDetail::updateOrCreate(
+                ['persetujuan_pengujian_id' => $persetujuan->id, 'user_id' => $request->user_id],
+                [
+                    'status' => $request->status,
+                    'catatan' => $request->catatan,
+                    'signature' => $this->handleSignatureUpload($request), // Upload signature
+                ],
+            );
+
+            // After each approval, check if all 4 users have approved
+            if ($this->checkIfAllApproved($persetujuan)) {
+                // If all users approved, set the status of PersetujuanPengujian to 'approved'
+                $persetujuan->update(['status' => 'approved']);
+            }
+
+            // Check if there is any rejection
+            if ($this->checkIfRejected($persetujuan)) {
+                return response()->json(
+                    [
+                        'success' => false,
+                        'message' => 'Approval failed due to rejection from one or more users',
+                        'data' => $persetujuan,
+                    ],
+                    400,
+                );
+            }
+
+            // Check if all approvals are completed (all 4 approved)
+            if ($this->checkIfAllApproved($persetujuan)) {
+                return response()->json(
+                    [
+                        'success' => true,
+                        'message' => 'Approval completed successfully',
+                        'data' => $persetujuan,
+                    ],
+                    200,
+                );
+            }
+
+            return response()->json(
+                [
+                    'success' => true,
+                    'message' => 'Approval submitted successfully, waiting for other users',
+                    'data' => $persetujuan,
+                ],
+                200,
+            );
+        } catch (\Exception $e) {
+            return response()->json(
+                [
+                    'success' => false,
+                    'error' => $e->getMessage(),
+                ],
+                500,
+            );
+        }
+    }
+
+    // Helper method to check if all users approved
+    protected function checkIfAllApproved($persetujuan)
+    {
+        // Ensure all 4 users have approved and signed
+        return $persetujuan->details->where('status', 'setuju')->count() === 4 && $persetujuan->details->whereNotNull('signature')->count() === 4;
+    }
+
+    // Helper method to check if there is any rejection
+    protected function checkIfRejected($persetujuan)
+    {
+        return $persetujuan->details->where('status', 'tidak_setuju')->count() > 0;
+    }
+
+    // Handle image upload for signature
+    protected function handleSignatureUpload(Request $request)
+    {
+        if ($request->hasFile('signature')) {
+            $signature = $request->file('signature');
+            $signaturePath = $signature->storeAs('signatures', $signature->getClientOriginalName(), 'public');
+            return $signaturePath;
+        }
+        return null;
+    }
+}
