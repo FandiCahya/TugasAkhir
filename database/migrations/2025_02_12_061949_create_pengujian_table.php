@@ -49,6 +49,8 @@ return new class extends Migration
             $table->timestamps();
 
             $table->foreign('pengujian_id')->references('id')->on('pengujian_perangkat_lunak')->onDelete('cascade');
+            $table->foreign(  'penanggung_jawab_id')->references('id')->on('users')->onDelete('cascade');
+
         });
 
         

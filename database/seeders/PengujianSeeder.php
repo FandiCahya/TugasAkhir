@@ -62,7 +62,7 @@ class PengujianSeeder extends Seeder
             'pengujian_id' => $pengujianId,
             'uraian' => 'Tidak ada kendala yang ditemukan',
             'rencana_tindak_lanjut' => null,
-            'penanggung_jawab_id' => Str::uuid(),
+            'penanggung_jawab_id' => $user?->id,
             'created_at' => now(),
             'updated_at' => now(),
         ]);

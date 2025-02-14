@@ -19,4 +19,9 @@ class CatatanPengujian extends Model
     {
         return $this->belongsTo(Pengujian::class, 'pengujian_id');
     }
+
+    public function user()
+    {
+        return $this->belongsTo(User::class, foreignKey: 'penanggung_jawab_id');
+    }
 }

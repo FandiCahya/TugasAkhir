@@ -29,7 +29,7 @@ class Pengujian extends Model
 
     public function user()
     {
-        return $this->belongsTo(User::class, 'pelaksana_id');
+        return $this->belongsTo(User::class, 'penanggung_jawab_id');
     }
 }
 
