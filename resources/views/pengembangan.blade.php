@@ -127,7 +127,9 @@
                         </div>
                         <div class="mb-3">
                             <label for="pelaksana_id" class="form-label">Pelaksana</label>
-                            <input type="text" class="form-control" id="pelaksana_id" required>
+                            <select class="form-select" id="pelaksana_id" required>
+                                <option value="" disabled selected>Pilih Pelaksana</option>
+                            </select>
                         </div>
                     </form>
                 </div>
@@ -142,6 +144,7 @@
     <script>
         let pengembangan = [];
         let editPengembanganId = null;
+        let users = [];
 
         function fetchPengembangan(query = '') {
             fetch('/api/pengembangan')
@@ -237,7 +240,7 @@
             // Show the modal
             new bootstrap.Modal(document.getElementById('editPengembanganModal')).show();
         }
-        
+
         document.getElementById('editPengembanganBtn').addEventListener('click', function() {
             const data = {
                 tanggal_mulai: document.getElementById('tgl_mulai').value,
@@ -319,6 +322,50 @@
                 })
                 .catch(error => console.error('Error:', error));
         });
+
+        function fetchUsers() {
+            fetch('/api/users') // Adjust the API endpoint accordingly
+                .then(response => response.json())
+                .then(data => {
+                    if (data.success) {
+                        users = data.payload; // Assuming the response has 'payload' containing user data
+                        populatePelaksanaDropdown();
+                    } else {
+                        alert('Failed to load users.');
+                    }
+                })
+                .catch(error => {
+                    console.error('Error fetching users:', error);
+                    alert('An error occurred while fetching users.');
+                });
+        }
+
+        function populatePelaksanaDropdown() {
+            const pelaksanaDropdown = document.getElementById('pelaksana_id');
+            pelaksanaDropdown.innerHTML = ''; // Clear existing options
+
+            // Create the default option
+            const defaultOption = document.createElement('option');
+            defaultOption.value = '';
+            defaultOption.disabled = true;
+            defaultOption.selected = true;
+            defaultOption.textContent = 'Pilih Pelaksana';
+            pelaksanaDropdown.appendChild(defaultOption);
+
+            // Add each user as an option, including the role
+            users.forEach(user => {
+                const option = document.createElement('option');
+                option.value = user.id; // User ID will be sent to the backend
+
+                // Display user name and role together
+                option.textContent = `${user.name} (${user.role})`; // Showing name and role in the dropdown
+
+                pelaksanaDropdown.appendChild(option);
+            });
+        }
+
+        // Fetch the users when the page loads
+        fetchUsers();
 
         fetchPengembangan();
     </script>

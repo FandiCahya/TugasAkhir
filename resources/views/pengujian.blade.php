@@ -68,7 +68,9 @@
                         </div>
                         <div class="mb-3">
                             <label for="pelaksana_id" class="form-label">Pelaksana</label>
-                            <input type="text" class="form-control" id="pelaksana_id" required>
+                            <select class="form-select" id="pelaksana_id" required>
+                                <option value="" disabled selected>Pilih Pelaksana</option>
+                            </select>
                         </div>
                     </form>
                 </div>
@@ -154,8 +156,10 @@
                             <input type="text" class="form-control" id="rencana_tindak_lanjut" required>
                         </div>
                         <div class="mb-3">
-                            <label for="penanggung_jawab_id" class="form-label">Penanggung Jawab</label>
-                            <input type="text" class="form-control" id="penanggung_jawab_id" required>
+                            <label for="penanggung_jawab_id" class="form-label">Pelaksana</label>
+                            <select class="form-select" id="penanggung_jawab_id" required>
+                                <option value="" disabled selected>Pilih Pelaksana</option>
+                            </select>
                         </div>
                     </form>
                 </div>
@@ -168,11 +172,267 @@
         </div>
     </div>
 
+    <!-- Approval Modal -->
+    <div class="modal fade" id="approvalModal" tabindex="-1" aria-labelledby="approvalModalLabel" aria-hidden="true">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="approvalModalLabel">Persetujuan Pengujian</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body">
+                    <form id="approvalForm">
+                        @csrf
 
+                        <!-- Admin Section -->
+                        <div class="mb-3">
+                            <label class="form-label"><strong>Admin</strong></label>
+                            <div id="adminUsers" class="form-check">
+                                <!-- Admin users will be populated here dynamically -->
+                            </div>
+                        </div>
+
+                        <!-- User Section -->
+                        <div class="mb-3">
+                            <label class="form-label"><strong>User</strong></label>
+                            <div id="userUsers" class="form-check">
+                                <!-- User users will be populated here dynamically -->
+                            </div>
+                        </div>
+
+                        <!-- MQR Section -->
+                        <div class="mb-3">
+                            <label class="form-label"><strong>MQR</strong></label>
+                            <div id="mqrUsers" class="form-check">
+                                <!-- MQR users will be populated here dynamically -->
+                            </div>
+                        </div>
+
+                        <!-- Kepala Cabang Section -->
+                        <div class="mb-3">
+                            <label class="form-label"><strong>Kepala Cabang</strong></label>
+                            <div id="kepalaCabangUsers" class="form-check">
+                                <!-- Kepala Cabang users will be populated here dynamically -->
+                            </div>
+                        </div>
+
+                    </form>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Tutup</button>
+                    <button type="button" class="btn btn-primary" id="submitApprovalBtn">Kirim Persetujuan</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <style>
+        .modal-body {
+            max-height: 70vh; /* Set max height for modal body */
+            overflow-y: auto; /* Enable scrolling if content exceeds height */
+        }
+    
+        .form-check {
+            margin-bottom: 10px; 
+            margin-left:10px;
+            display: flex;
+            align-items: center;
+            flex-wrap: wrap; 
+            justify-content: space-between; 
+        }
+    
+        .form-check-label {
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+            flex: 1; /* Allow the label to grow and take available space */
+        }
+    
+        .form-check-input {
+            margin-right: 10px; /* Space between checkbox and label */
+            transform: scale(1.2); /* Optional: Increase checkbox size */
+        }
+    
+        .modal-content {
+            width: 100%; /* Ensure modal content stretches fully */
+            padding: 20px;
+        }
+    
+        .modal-header, .modal-footer {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+    
+        .form-select {
+            width: 100%; /* Ensure the select box stretches full width */
+        }
+    
+        /* Optional: Style the modal buttons for better spacing */
+        .modal-footer button {
+            padding: 10px 20px; /* Increase padding for better usability */
+        }
+    </style>
+    
     <script>
         let pengujian = []
         let editPengujianId = null;
         let addPengujian = null;
+        let users = [];
+
+        function fetchUsers() {
+            fetch('/api/users') // Adjust the API endpoint accordingly
+                .then(response => response.json())
+                .then(data => {
+                    if (data.success) {
+                        users = data.payload; // Assuming the response has 'payload' containing user data
+                        populatePelaksanaDropdown();
+                        UsersPenanggungJawab();
+                        ApprovalUser();
+                    } else {
+                        alert('Failed to load users.');
+                    }
+                })
+                .catch(error => {
+                    console.error('Error fetching users:', error);
+                    alert('An error occurred while fetching users.');
+                });
+        }
+
+        function ApprovalUser() {
+            // Group users by role
+            const roles = {
+                admin: document.getElementById('adminUsers'),
+                user: document.getElementById('userUsers'),
+                mqr: document.getElementById('mqrUsers'),
+                kepalacabang: document.getElementById('kepalaCabangUsers')
+            };
+
+            // Clear the sections
+            Object.keys(roles).forEach(role => {
+                roles[role].innerHTML = ''; // Clear existing options
+            });
+
+            // Loop through users and populate them under their respective role sections
+            users.forEach(user => {
+                const option = document.createElement('div');
+                option.classList.add('form-check');
+
+                const checkbox = document.createElement('input');
+                checkbox.type = 'checkbox';
+                checkbox.classList.add('form-check-input');
+                checkbox.value = user.id; // User ID will be sent in the request
+                checkbox.id = `user-${user.id}`;
+
+                const label = document.createElement('label');
+                label.classList.add('form-check-label');
+                label.setAttribute('for', `user-${user.id}`);
+                label.textContent = `${user.name} (${user.role})`; // Display name and role
+
+                option.appendChild(checkbox);
+                option.appendChild(label);
+
+                // Append to the appropriate role section
+                if (roles[user.role]) {
+                    roles[user.role].appendChild(option);
+                }
+            });
+        }
+
+        document.getElementById('submitApprovalBtn').addEventListener('click', function() {
+            const selectedUsers = [];
+
+            // Collect selected user IDs from the checkboxes
+            document.querySelectorAll('.form-check-input:checked').forEach(checkbox => {
+                selectedUsers.push(checkbox.value);
+            });
+
+            if (selectedUsers.length === 4) {
+                const data = {
+                    pengujian_id: currentPengujianId,
+                    user_ids: selectedUsers // Send the selected user IDs
+                };
+
+                // Send the data to the backend
+                fetch('/api/persetujuan-pengujian/create', {
+                        method: 'POST',
+                        headers: {
+                            'Content-Type': 'application/json',
+                            'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').getAttribute(
+                                'content')
+                        },
+                        body: JSON.stringify(data)
+                    })
+                    .then(response => response.json())
+                    .then(data => {
+                        if (data.success) {
+                            alert('Persetujuan berhasil dikirim');
+                            const modal = bootstrap.Modal.getInstance(document.getElementById('approvalModal'));
+                            modal.hide();
+                        } else {
+                            alert('Gagal mengirim persetujuan');
+                        }
+                    })
+                    .catch(error => console.error('Error:', error));
+            } else {
+                alert('Harap pilih tepat 4 pengguna');
+            }
+        });
+
+        function showApprovalModal(pengujianId) {
+            currentPengujianId = pengujianId;
+
+            // Show the approval modal
+            new bootstrap.Modal(document.getElementById('approvalModal')).show();
+        }
+
+        function populatePelaksanaDropdown() {
+            const pelaksanaDropdown = document.getElementById('pelaksana_id');
+            pelaksanaDropdown.innerHTML = ''; // Clear existing options
+
+            // Create the default option
+            const defaultOption = document.createElement('option');
+            defaultOption.value = '';
+            defaultOption.disabled = true;
+            defaultOption.selected = true;
+            defaultOption.textContent = 'Pilih Pelaksana';
+            pelaksanaDropdown.appendChild(defaultOption);
+
+            // Add each user as an option, including the role
+            users.forEach(user => {
+                const option = document.createElement('option');
+                option.value = user.id; // User ID will be sent to the backend
+
+                // Display user name and role together
+                option.textContent = `${user.name} (${user.role})`; // Showing name and role in the dropdown
+
+                pelaksanaDropdown.appendChild(option);
+            });
+        }
+
+        function UsersPenanggungJawab() {
+            const pelaksanaDropdown = document.getElementById('penanggung_jawab_id');
+            pelaksanaDropdown.innerHTML = ''; // Clear existing options
+
+            // Create the default option
+            const defaultOption = document.createElement('option');
+            defaultOption.value = '';
+            defaultOption.disabled = true;
+            defaultOption.selected = true;
+            defaultOption.textContent = 'Pilih Pelaksana';
+            pelaksanaDropdown.appendChild(defaultOption);
+
+            // Add each user as an option, including the role
+            users.forEach(user => {
+                const option = document.createElement('option');
+                option.value = user.id; // User ID will be sent to the backend
+
+                // Display user name and role together
+                option.textContent = `${user.name} (${user.role})`; // Showing name and role in the dropdown
+
+                pelaksanaDropdown.appendChild(option);
+            });
+        }
 
         function fetchPengujian(query = '') {
             fetch('/api/pengujian')
@@ -224,7 +484,7 @@
             <td>
                 <button class="btn btn-warning btn-sm" onclick="editPengujian('${p.id}')" style="margin: 5px;">Edit</button>
                 <button class="btn btn-danger btn-sm" onclick="deletePengujian('${p.id}')" style="margin: 5px;">Delete</button>
-                <button class="btn btn-primary btn-sm" onclick="showPengembangan('${p.id}')" style="margin: 5px;">Approval</button>
+                <button class="btn btn-primary btn-sm" onclick="showApprovalModal('${p.id}')" style="margin: 5px;">Approval</button>
                 <button class="btn btn-secondary btn-sm" onclick="showCatatanPengujian('${p.id}')" style="margin: 5px;">Tambah Catatan</button>
                 <button class="btn btn-info btn-sm" onclick="showPengujianDetail('${p.id}')" style="margin: 5px;">Tambah Detail</button>
             </td>
@@ -444,6 +704,8 @@
                 });
         });
 
+        // Fetch the users when the page loads
+        fetchUsers();
         fetchPengujian();
     </script>
 @endsection
