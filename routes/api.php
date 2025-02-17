@@ -25,4 +25,4 @@ Route::resource('catatan-pengujian',CatatanPengujianController::class);
 
 Route::post('persetujuan-pengujian/create', [PersetujuanPengujianController::class, 'createApproval']);
 Route::put('persetujuan-pengujian/{id}/approve', [PersetujuanPengujianController::class, 'approve']);
-
+Route::get('approval', [PersetujuanPengujianController::class, 'showall']);

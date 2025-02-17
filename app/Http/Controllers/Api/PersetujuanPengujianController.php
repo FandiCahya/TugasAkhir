@@ -6,9 +6,52 @@ use Illuminate\Http\Request;
 use App\Http\Controllers\Controller;
 use App\Models\PersetujuanPengujian;
 use App\Models\PersetujuanPengujianDetail;
+use App\Models\PersetujuanPengujianModel;
 
 class PersetujuanPengujianController extends Controller
 {
+    public function showall()
+    {
+        try {
+            $data = PersetujuanPengujianModel::all();
+
+            // Return the data as a JSON response
+            return response()->json([
+                'success' => true,
+                'payload' => $data->map(function ($item) {
+                    return [
+                        'id' => $item->id,
+                        'status' => $item->status,
+                        'catatan' => $item->catatan,
+                        'signature' => $item->signature,
+                        'role' => $item->role,
+                        'pengujian' => [
+                            'id' => $item->persetujuan->id ?? null, // Check if pengujian is not null
+                            'status' => $item->status ?? null,
+                            'created_at' => $item->persetujuan->created_at ?? null,
+                            'updated_at' => $item->persetujuan->updated_at ?? null,
+                        ],
+                        'user' => [
+                            'id' => $item->user->id ?? null, // Check if user is not null
+                            'name' => $item->user->name ?? null,
+                            'email' => $item->user->email ?? null,
+                        ],
+                    ];
+                }),
+            ]);
+        } catch (\Exception $e) {
+            // Return error details if something goes wrong
+            return response()->json(
+                [
+                    'success' => false,
+                    'message' => 'Something went wrong while fetching the data.',
+                    'error' => $e->getMessage(),
+                ],
+                500,
+            );
+        }
+    }
+
     public function createApproval(Request $request)
     {
         try {
