@@ -16,6 +16,7 @@ import com.example.applicationsop.presentation.screen.ListPengajuanScreen
 import com.example.applicationsop.presentation.screen.ProfileScreen
 import com.example.applicationsop.presentation.screen.user.FormUsulanScreen
 import com.example.applicationsop.presentation.screen.user.HomeUserScreen
+import com.example.applicationsop.presentation.screen.user.ListPengembanganScreen
 
 @Composable
 fun MainApp() {
@@ -47,6 +48,11 @@ fun MainApp() {
         // List Pengajuan
         composable("list_pengajuan") {
             ListPengajuanScreen(navController = navController)
+        }
+
+        // Pengembangaan user
+        composable("pengembangan") {
+            ListPengembanganScreen(navController = navController)
         }
     }
 }

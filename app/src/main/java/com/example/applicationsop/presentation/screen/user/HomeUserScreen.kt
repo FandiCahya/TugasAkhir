@@ -37,6 +37,7 @@ import com.example.applicationsop.ui.theme.ijo
 import com.example.applicationsop.ui.theme.abang
 import com.example.applicationsop.ui.theme.kuning
 import androidx.navigation.NavController
+import androidx.navigation.compose.rememberNavController
 import com.example.applicationsop.R
 
 @Composable
@@ -70,7 +71,7 @@ fun HomeUserScreen(navController: NavController) {
 
             // Progres Section
             SectionTitle("Progres")
-            ProgressSection()
+            ProgressSection(navController = navController)
         }
 
         // Floating Action Button (FAB)
@@ -154,7 +155,7 @@ fun SectionTitle(title: String) {
         fontSize = 18.sp,
         fontWeight = FontWeight.Bold,
         modifier = Modifier.padding(horizontal = 25.dp, vertical = 8.dp),
-        color = Maroon
+        color = Color.Black
     )
 }
 
@@ -245,17 +246,17 @@ fun SubmissionCard(
 }
 
 @Composable
-fun ProgressSection() {
+fun ProgressSection(navController: NavController) {
     Column(
         modifier = Modifier
             .fillMaxWidth()
             .padding(horizontal = 16.dp) // Memberikan padding horizontal pada ProgressSection
     ) {
         // Menampilkan beberapa ProgressCard
-        ProgressCard("Pengembangan", Icons.Filled.Timer, Maroon)
-        ProgressCard("Pengujian", Icons.Filled.History, Maroon)
+        ProgressCard("Pengembangan", Icons.Filled.Timer, Maroon, navController)
+        ProgressCard("Pengujian", Icons.Filled.History, Maroon, navController)
 
-        //garis tengah
+        // Garis tengah
         Divider(
             color = Color.Gray,
             thickness = 1.dp,
@@ -274,12 +275,18 @@ fun ProgressSection() {
 fun ProgressCard(
     title: String,
     icon: androidx.compose.ui.graphics.vector.ImageVector,
-    color: Color
+    color: Color,
+    navController: NavController
 ) {
     Card(
         modifier = Modifier
             .fillMaxWidth()
-            .padding(vertical = 10.dp), // Padding vertikal antar card
+            .padding(vertical = 10.dp)
+            .clickable { // Menambahkan aksi klik untuk navigasi
+                if (title == "Pengembangan") {
+                    navController.navigate("pengembangan") // Arahkan ke halaman pengembangan
+                }
+            },
         colors = CardDefaults.cardColors(
             containerColor = color
         ),

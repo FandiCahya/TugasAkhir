@@ -74,7 +74,7 @@ fun FormUsulanScreen(navController: NavController) {
             .background(Putih)
     ) {
         // Header
-        HeaderComposable("Form Pembuatan Perangkat Lunak", navController)
+        HeaderComposableFormUsulan("Form Pembuatan Perangkat Lunak", navController)
 
         // Form Fields
         Column(
@@ -174,7 +174,7 @@ fun FormUsulanScreen(navController: NavController) {
 
 
 @Composable
-fun HeaderComposable(title: String, navController: NavController) {
+fun HeaderComposableFormUsulan(title: String, navController: NavController) {
     Box(
         modifier = Modifier
             .fillMaxWidth()
@@ -213,7 +213,7 @@ fun DatePickerField(label: String) {
     // Menampilkan OutlinedTextField yang bisa di-klik untuk memilih tanggal
     OutlinedTextField(
         value = selectedDate,
-        onValueChange = { selectedDate = it },  // Mengubah nilai saat input
+        onValueChange = { selectedDate = it },
         label = { Text(label) },
         placeholder = { Text("Pilih Tanggal") },
         modifier = Modifier
