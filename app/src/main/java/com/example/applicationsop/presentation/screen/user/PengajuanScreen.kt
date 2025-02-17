@@ -27,7 +27,6 @@ import com.example.applicationsop.ui.theme.Putih
 fun PengajuanScreen() {
     var searchQuery by remember { mutableStateOf("") }
     var filterExpanded by remember { mutableStateOf(false) }
-    var selectedFilter by remember { mutableStateOf("Sort by") }
     val filterOptions = listOf("Terbaru", "Terlama")
     val submissions = listOf(
         SubmissionData("Sistem A", "Menunggu konfirmasi"),
@@ -41,17 +40,43 @@ fun PengajuanScreen() {
             .fillMaxSize()
             .background(Putih)
     ) {
-        // Header
-        HeaderComposable(
-            title = "Pengajuan",
-            searchQuery = searchQuery,
-            onSearchChange = { searchQuery = it },
-            onFilterClick = { filterExpanded = !filterExpanded },
-            filterExpanded = filterExpanded,
-            filterOptions = filterOptions,
-            selectedFilter = selectedFilter,
-            onFilterSelect = { selectedFilter = it }
-        )
+        // Header dengan search dan filter di kanan
+        Row(
+            modifier = Modifier
+                .fillMaxWidth()
+                .padding(16.dp),
+            verticalAlignment = Alignment.CenterVertically,
+            horizontalArrangement = Arrangement.SpaceBetween
+        ) {
+            // Search bar
+            OutlinedTextField(
+                value = searchQuery,
+                onValueChange = { searchQuery = it },
+                label = { Text("Cari") },
+                leadingIcon = {
+                    Icon(
+                        imageVector = Icons.Default.Search,
+                        contentDescription = "Search Icon"
+                    )
+                },
+                modifier = Modifier
+                    .weight(1f)  // Pastikan search bar mengambil ruang yang cukup
+                    .padding(end = 8.dp), // Memberikan sedikit jarak antara search bar dan filter
+                shape = RoundedCornerShape(16.dp),
+                colors = OutlinedTextFieldDefaults.colors(
+                    focusedBorderColor = Putih,
+                    unfocusedBorderColor = Putih
+                )
+            )
+
+            // Filter button (kita bisa menggunakan icon untuk filter)
+            IconButton(onClick = { filterExpanded = !filterExpanded }) {
+                Icon(
+                    imageVector = Icons.Default.FilterList,
+                    contentDescription = "Toggle Filter"
+                )
+            }
+        }
 
         // List Pengajuan
         Text(

@@ -218,7 +218,8 @@ fun LoginButtonComposable(onClick: () -> Unit) {
         onClick = onClick,
         modifier = Modifier
             .fillMaxWidth()
-            .padding(start = 80.dp, end = 30.dp),
+            .padding(start = 80.dp, end = 30.dp)
+            .shadow(4.dp, shape = RoundedCornerShape(16.dp), clip = false),
         colors = ButtonDefaults.buttonColors(
             containerColor = Maroon
         )
