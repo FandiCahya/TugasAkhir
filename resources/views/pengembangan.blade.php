@@ -106,25 +106,34 @@
                             <input type="text" class="form-control" id="pengembangan_id" required readonly>
                         </div>
                         <div class="mb-3">
-                            <label for="nama_sistem" class="form-label">Nama Sistem</label>
-                            <input type="text" class="form-control" id="nama_sistem" required readonly>
+                            <label for="perangkat_lunak" class="form-label">Perangkat Lunak</label>
+                            <input type="text" class="form-control" id="perangkat_lunak" required>
                         </div>
                         <div class="mb-3">
-                            <label for="hasil" class="form-label">Hasil</label>
-                            <select class="form-control" id="hasil" required>
-                                <option value="negatif">Negatif</option>
-                                <option value="positif">Positif</option>
-                            </select>
+                            <label for="versi" class="form-label">Versi</label>
+                            <input type="text" class="form-control" id="versi" required>
                         </div>
                         <div class="mb-3">
-                            <label for="catatan" class="form-label">Catatan</label>
-                            <textarea class="form-control" id="catatan" rows="3" required></textarea>
+                            <label for="tujuan" class="form-label">Tujuan</label>
+                            <input type="text" class="form-control" id="tujuan" required>
+                        </div>
+                        <div class="mb-3">
+                            <label for="metode_pengujian" class="form-label">Metode</label>
+                            <input type="text" class="form-control" id="metode_pengujian" required>
+                        </div>
+                        <div class="mb-3">
+                            <label for="tanggal_pengujian" class="form-label">Tanggal</label>
+                            <input type="date" class="form-control" id="tanggal_pengujian" required>
+                        </div>
+                        <div class="mb-3">
+                            <label for="pelaksana_id" class="form-label">Pelaksana</label>
+                            <input type="text" class="form-control" id="pelaksana_id" required>
                         </div>
                     </form>
                 </div>
                 <div class="modal-footer">
                     <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Tutup</button>
-                    <button type="button" class="btn btn-primary" id="addPengujianBtn">Edit Pengujian</button>
+                    <button type="button" class="btn btn-primary" id="addPengujianBtn">Tambah Pengujian</button>
                 </div>
             </div>
         </div>
@@ -268,22 +277,21 @@
 
         function showPengujian(id) {
             const p = pengembangan.find(p => p.id === id); // Find pengajuan by ID
-            console.log("Hasil find:", p);
+            // console.log("Hasil find:", p);
             document.getElementById('pengembangan_id').value = p.id;
-            document.getElementById('nama_sistem').value = p.pengajuan.nama_sistem;
             // Show the modal
             new bootstrap.Modal(document.getElementById('addPengujianModal')).show();
         }
 
         document.getElementById('addPengujianBtn').addEventListener('click', function() {
             const data = {
-                pengajuan_id: document.getElementById('pengajuan_id').value,
-                tanggal_mulai: document.getElementById('tgl_mulai').value,
-                tanggal_selesai: document.getElementById('tgl_selesai').value,
-                tahap: document.getElementById('tahap').value,
-                persentase: parseInt(document.getElementById('persentase').value) || 0,
-                keterangan: document.getElementById('keterangan').value,
-                status: document.getElementById('status_pengembangan').value,
+                pengembangan_id: document.getElementById('pengembangan_id').value,
+                perangkat_lunak: document.getElementById('perangkat_lunak').value,
+                versi: document.getElementById('versi').value,
+                tujuan: document.getElementById('tujuan').value,
+                metode: document.getElementById('metode_pengujian').value,
+                tanggal: document.getElementById('tanggal_pengujian').value,
+                pelaksana_id: document.getElementById('pelaksana_id').value,
             };
 
             // console.log("Data yang dikirim:", data); // Cek apakah datanya lengkap
@@ -300,7 +308,7 @@
                 .then(response => response.json())
                 .then(data => {
                     if (data.success) {
-                        fetchPengajuan(); // Re-fetch pengajuan setelah update
+                        fetchPengembangan(); // Re-fetch pengajuan setelah update
                         alert('Pengujian berhasil ditambahkan');
                         const modal = document.querySelector('#addPengujianModal');
                         const modalInstance = bootstrap.Modal.getInstance(modal);

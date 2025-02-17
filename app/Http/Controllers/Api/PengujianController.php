@@ -32,15 +32,18 @@ class PengujianController extends Controller
                             'updated_at' => $item->updated_at,
                             'created_at' => $item->created_at,
                             'pelaksana' => [
-                                'id' => $item->user->id ?? null,
-                                'name' => $item->user->name ?? null,
-                                'email' => $item->user->email ?? null,
+                                'id' => $item->pengembangan->pengajuan->user->id ?? null,
+                                'name' => $item->pengembangan->pengajuan->user->name ?? null,
+                                'email' => $item->pengembangan->pengajuan->user->email ?? null,
                             ],
                             'pengembangan' => [
                                 'id' => $item->pengembangan->id ?? null,
                                 'tahap' => $item->pengembangan->tahap ?? null,
                                 'persentase' => $item->pengembangan->persentase ?? null,
                                 'status' => $item->pengembangan->status ?? null,
+                                'pengajuan' => [
+                                    'nama_sistem' => $item->pengembangan->pengajuan->nama_sistem ?? null,
+                                ],
                             ],
                             'pengujian_detail' => $item->details->map(function ($detail) {
                                 return [
@@ -230,6 +233,7 @@ class PengujianController extends Controller
                 'tujuan' => 'required|string',
                 'metode' => 'required|string',
                 'tanggal' => 'required|date',
+                'pelaksana_id' => 'nullable|uuid|exists:users,id',
             ]);
 
             // Cari pengujian berdasarkan ID
@@ -242,6 +246,7 @@ class PengujianController extends Controller
                 'tujuan' => $validated['tujuan'],
                 'metode' => $validated['metode'],
                 'tanggal' => Carbon::createFromFormat('Y-m-d', $validated['tanggal']),
+                'pelaksana_id' => $validated['pelaksana_id'] ?? $pengujian->pelaksana_id,
             ]);
 
             // Kembalikan response sukses
