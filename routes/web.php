@@ -32,6 +32,12 @@ Route::get(uri: '/pengembangan',action: function (){return view('pengembangan');
 Route::get('/pengujian',action: function (){return view('pengujian');
 })->middleware(['auth', 'verified'])->name(name: 'pengujian');
 
+Route::get('/pengujian-detail',action: function (){return view('detail-pengujian');
+})->middleware(['auth', 'verified'])->name(name: 'pengujian-detail');
+
+Route::get('/pengujian-catatan',action: function (){return view('catatan-pengujian');
+})->middleware(['auth', 'verified'])->name(name: 'pengujian-catatan');
+
 Route::get('/approval',action: function (){return view('approval');
 })->middleware(['auth', 'verified'])->name(name: 'approval');
 

@@ -66,7 +66,7 @@ class CatatanPengujianController extends Controller
                 'pengujian_id' => 'required|exists:pengujian_perangkat_lunak,id',
                 'uraian' => 'required|string|max:255',
                 'rencana_tindak_lanjut' => 'required|string|max:255',
-                'penanggung_jawab_id' => 'required|exists:users,id',
+                'penanggung_jawab_id' => 'nullable|exists:users,id',
             ]);
 
             // Create the catatan pengujian

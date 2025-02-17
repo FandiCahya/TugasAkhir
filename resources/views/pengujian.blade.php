@@ -225,8 +225,8 @@
                 <button class="btn btn-warning btn-sm" onclick="editPengujian('${p.id}')" style="margin: 5px;">Edit</button>
                 <button class="btn btn-danger btn-sm" onclick="deletePengujian('${p.id}')" style="margin: 5px;">Delete</button>
                 <button class="btn btn-primary btn-sm" onclick="showPengembangan('${p.id}')" style="margin: 5px;">Approval</button>
-                <button class="btn btn-secondary btn-sm" onclick="showCatatanPengujian('${p.id}')" style="margin: 5px;">Catatan</button>
-                <button class="btn btn-info btn-sm" onclick="showPengujianDetail('${p.id}')" style="margin: 5px;">Detail</button>
+                <button class="btn btn-secondary btn-sm" onclick="showCatatanPengujian('${p.id}')" style="margin: 5px;">Tambah Catatan</button>
+                <button class="btn btn-info btn-sm" onclick="showPengujianDetail('${p.id}')" style="margin: 5px;">Tambah Detail</button>
             </td>
         `;
                 tableBody.appendChild(row);
@@ -405,7 +405,7 @@
 
         document.getElementById('addCatatanPengujianBtn').addEventListener('click', function() {
             const data = {
-                pengujian_id: document.getElementById('pengujian_id').value,
+                pengujian_id: document.getElementById('pengujian_id_catatan').value,
                 uraian: document.getElementById('uraian').value,
                 rencana_tindak_lanjut: document.getElementById('rencana_tindak_lanjut').value,
                 penanggung_jawab_id: document.getElementById('penanggung_jawab_id').value,
