@@ -82,4 +82,7 @@ dependencies {
     // Icon
     implementation(libs.androidx.material.icons.extended)
 
+    // Ktor Client dependencies
+    implementation("io.ktor:ktor-serialization-kotlinx-json:3.0.3")
+    implementation("io.ktor:ktor-client-content-negotiation:3.0.3")
 }
