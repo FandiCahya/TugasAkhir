@@ -1,23 +1,21 @@
 package com.example.applicationsop.navigation
 
-import android.content.Context
-import androidx.compose.animation.AnimatedContentTransitionScope
-import androidx.compose.animation.core.tween
+import android.os.Build
+import androidx.annotation.RequiresApi
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.LaunchedEffect
-import androidx.compose.ui.platform.LocalContext
-import androidx.lifecycle.viewmodel.compose.viewModel
-import androidx.navigation.NavController
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
 import com.example.applicationsop.loginScreen.LoginScreen
-import com.example.applicationsop.presentation.screen.ListPengajuanScreen
+import com.example.applicationsop.presentation.screen.pengguna.ListPengajuanScreen
 import com.example.applicationsop.presentation.screen.ProfileScreen
-import com.example.applicationsop.presentation.screen.user.FormUsulanScreen
-import com.example.applicationsop.presentation.screen.user.HomeUserScreen
-import com.example.applicationsop.presentation.screen.user.ListPengembanganScreen
+import com.example.applicationsop.presentation.screen.admin.HomeAdminScreen
+import com.example.applicationsop.presentation.screen.admin.ListPengajuanScreenAdmin
+import com.example.applicationsop.presentation.screen.pengguna.FormUsulanScreen
+import com.example.applicationsop.presentation.screen.pengguna.HomeUserScreen
+import com.example.applicationsop.presentation.screen.pengguna.ListPengembanganScreen
 
+@RequiresApi(Build.VERSION_CODES.O)
 @Composable
 fun MainApp() {
     val navController = rememberNavController()
@@ -30,8 +28,9 @@ fun MainApp() {
             LoginScreen(navController = navController) // Pass navController ke LoginScreen
         }
 
+        //User Navigation
         // Rute untuk HomeUserScreen
-        composable("home") {
+        composable("homeUser") {
             HomeUserScreen(navController = navController) // Pass navController ke HomeUserScreen
         }
 
@@ -53,6 +52,17 @@ fun MainApp() {
         // Pengembangaan user
         composable("pengembangan") {
             ListPengembanganScreen(navController = navController)
+        }
+
+        //Admin Navigation
+        // Pengembangaan user
+        composable("homeAdmin") {
+            HomeAdminScreen(navController = navController)
+        }
+
+        // List Pengajuan
+        composable("list_pengajuan") {
+            ListPengajuanScreenAdmin(navController = navController)
         }
     }
 }

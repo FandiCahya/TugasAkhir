@@ -1,11 +1,10 @@
-package com.example.applicationsop.presentation.screen.user
+package com.example.applicationsop.presentation.screen.pengguna
 
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
-import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
@@ -23,14 +22,11 @@ import androidx.compose.ui.draw.shadow
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
-import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.navigation.NavController
 import com.example.applicationsop.presentation.component.BackButton
-import com.example.applicationsop.presentation.screen.Rectangle1217
 import com.example.applicationsop.ui.theme.Maroon
-import com.example.applicationsop.ui.theme.Putih
 import com.example.applicationsop.ui.theme.abang
 import com.example.applicationsop.ui.theme.ijo
 import com.example.applicationsop.ui.theme.kuning
@@ -236,7 +232,7 @@ fun SchedulePopup(
                         Column(
                             modifier = Modifier.weight(1f)
                         ) {
-                            Text("Nama Sistem", fontWeight = FontWeight.Bold, color = Color.Black)
+                            Text("Perangkat yang dikembangkan", fontWeight = FontWeight.Bold, color = Color.Black)
                         }
 
                         // Kolom 2 (Isi)

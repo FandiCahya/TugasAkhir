@@ -1,6 +1,5 @@
-package com.example.applicationsop.presentation.screen
+package com.example.applicationsop.presentation.screen.admin
 
-import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
@@ -15,7 +14,6 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.unit.dp
 import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.ArrowBack
 import androidx.compose.material.icons.filled.Person
 import androidx.compose.material.icons.filled.Search
 import androidx.compose.material.icons.filled.Timer
@@ -23,22 +21,18 @@ import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
-import androidx.compose.ui.draw.clip
 import androidx.compose.ui.draw.shadow
 import androidx.compose.ui.graphics.Brush
-import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.sp
 import androidx.compose.ui.zIndex
 import androidx.navigation.NavController
 import com.example.applicationsop.presentation.component.BackButton
-import com.example.applicationsop.ui.theme.Maroon // Import the Maroon color from your theme
+import com.example.applicationsop.ui.theme.Maroon
 import com.example.applicationsop.ui.theme.abang
 import com.example.applicationsop.ui.theme.ijo
 import com.example.applicationsop.ui.theme.kuning
-import java.time.format.TextStyle
-import kotlin.math.abs
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -189,7 +183,7 @@ fun ListPengajuanItem(
 }
 
 @Composable
-fun ListPengajuanScreen(navController: NavController) {
+fun ListPengajuanScreenAdmin(navController: NavController) {
     var showPopup by remember { mutableStateOf(false) }
     var selectedDetail by remember { mutableStateOf(DetailInfo()) }
 
@@ -242,8 +236,15 @@ fun ListPengajuanScreen(navController: NavController) {
             rencanaAnggaran = selectedDetail.rencanaAnggaran,
             masalahSistem = selectedDetail.masalahSistem,
             outputHasil = selectedDetail.outputHasil,
-            status = selectedDetail.status,  // Use the dynamically selected status
+            status = selectedDetail.status,  // Gunakan status yang dipilih secara dinamis
             alasan = if (selectedDetail.status == "Pengajuan ditolak") "Output kurang jelas" else null, // Alasan hanya muncul jika status ditolak
+            isAdmin = true, // Menambahkan parameter isAdmin yang bisa ditentukan sesuai pengguna
+            onAcceptClick = {
+                // Aksi terima (ubah status atau lakukan tindakan lainnya)
+            },
+            onRejectClick = { alasan ->
+                // Aksi tolak dengan alasan yang dimasukkan
+            },
             onEditClick = {
                 navController.navigate("form_usulan") // Ganti dengan rute yang sesuai
             }
@@ -262,8 +263,14 @@ fun DetailPopup(
     outputHasil: String,
     status: String,
     alasan: String? = null, // Alasan hanya ada jika status ditolak
+    isAdmin: Boolean, // Menambahkan parameter untuk memeriksa peran
+    onAcceptClick: () -> Unit, // Fungsi untuk menerima usulan
+    onRejectClick: (String) -> Unit, // Fungsi untuk menolak usulan
     onEditClick: () -> Unit // Fungsi untuk navigasi ke form edit
 ) {
+    var inputAlasan by remember { mutableStateOf(alasan.orEmpty()) }
+    var showAlasanInput by remember { mutableStateOf(false) }
+
     Box(modifier = Modifier.fillMaxSize()) {
         // Gelap di latar belakang
         Box(
@@ -330,7 +337,11 @@ fun DetailPopup(
                             Column(
                                 modifier = Modifier.weight(1f)
                             ) {
-                                Text("Hari/Tanggal", fontWeight = FontWeight.Bold, color = Color.Black)
+                                Text(
+                                    "Hari/Tanggal",
+                                    fontWeight = FontWeight.Bold,
+                                    color = Color.Black
+                                )
                             }
 
                             // Kolom 2 (Isi)
@@ -351,7 +362,11 @@ fun DetailPopup(
                             Column(
                                 modifier = Modifier.weight(1f)
                             ) {
-                                Text("Nama Sistem", fontWeight = FontWeight.Bold, color = Color.Black)
+                                Text(
+                                    "Nama Sistem",
+                                    fontWeight = FontWeight.Bold,
+                                    color = Color.Black
+                                )
                             }
 
                             // Kolom 2 (Isi)
@@ -393,7 +408,11 @@ fun DetailPopup(
                             Column(
                                 modifier = Modifier.weight(1f)
                             ) {
-                                Text("Rencana Anggaran", fontWeight = FontWeight.Bold, color = Color.Black)
+                                Text(
+                                    "Rencana Anggaran",
+                                    fontWeight = FontWeight.Bold,
+                                    color = Color.Black
+                                )
                             }
 
                             // Kolom 2 (Isi)
@@ -414,7 +433,11 @@ fun DetailPopup(
                             Column(
                                 modifier = Modifier.weight(1f)
                             ) {
-                                Text("Masalah pada sistem", fontWeight = FontWeight.Bold, color = Color.Black)
+                                Text(
+                                    "Masalah pada sistem",
+                                    fontWeight = FontWeight.Bold,
+                                    color = Color.Black
+                                )
                             }
 
                             // Kolom 2 (Isi)
@@ -435,7 +458,11 @@ fun DetailPopup(
                             Column(
                                 modifier = Modifier.weight(1f)
                             ) {
-                                Text("Output/Hasil yang diharapkan", fontWeight = FontWeight.Bold, color = Color.Black)
+                                Text(
+                                    "Output/Hasil yang diharapkan",
+                                    fontWeight = FontWeight.Bold,
+                                    color = Color.Black
+                                )
                             }
 
                             // Kolom 2 (Isi)
@@ -469,57 +496,73 @@ fun DetailPopup(
                     }
                 }
 
-                // Show reason if status is "Ditolak"
-                if (status == "Pengajuan ditolak" && alasan != null) {
-                    Spacer(modifier = Modifier.height(16.dp))
-                    Divider()
-                    Text("Alasan: $alasan", color = Color.Black, fontWeight = FontWeight.Bold)
-                }
+                // Line separator
+                Divider(modifier = Modifier.padding(vertical = 8.dp))
 
-                // Close Button
-                Spacer(modifier = Modifier.height(16.dp))
-                Row(
-                    modifier = Modifier.fillMaxWidth(), // Take the full width
-                    horizontalArrangement = Arrangement.End // Align to the right
-                ) {
-                    Button(
-                        onClick = onDismiss,
+                // Button for Accept or Reject
+                if (isAdmin) {
+                    Row(
                         modifier = Modifier
-                            .padding(end = 16.dp) // Optional padding to give some space from the edge
-                            .width(100.dp) // Set the width of the button to a smaller size
-                            .shadow(4.dp, RoundedCornerShape(16.dp)), // Add shadow to the button
-                        colors = ButtonDefaults.buttonColors(containerColor = Maroon),
-                        shape = RoundedCornerShape(16.dp)
+                            .fillMaxWidth()
+                            .padding(top = 15.dp),
+                        horizontalArrangement = Arrangement.Center
                     ) {
-                        Text(
-                            text = "Tutup",
-                            fontWeight = FontWeight.Bold,
-                            color = Color.White
-                        )
+                        // Menampilkan tombol Terima dan Tolak hanya jika alasan belum diinput
+                        if (!showAlasanInput) {
+                            Button(
+                                onClick = onAcceptClick,
+                                modifier = Modifier
+                                    .width(120.dp) // Menyesuaikan lebar tombol
+                                    .shadow(4.dp, RoundedCornerShape(16.dp)), // Menambahkan shadow pada tombol
+                                colors = ButtonDefaults.buttonColors(containerColor = ijo),
+                                shape = RoundedCornerShape(16.dp) // Membuat tombol dengan sudut yang membulat
+                            ) {
+                                Text("Terima", color = Color.White)
+                            }
+
+                            Spacer(modifier = Modifier.weight(1f))
+
+                            Button(
+                                onClick = { showAlasanInput = true }, // Menampilkan input alasan jika Tolak ditekan
+                                modifier = Modifier
+                                    .width(120.dp) // Menyesuaikan lebar tombol
+                                    .shadow(4.dp, RoundedCornerShape(16.dp)), // Menambahkan shadow pada tombol
+                                colors = ButtonDefaults.buttonColors(containerColor = abang),
+                                shape = RoundedCornerShape(16.dp) // Membuat tombol dengan sudut yang membulat
+                            ) {
+                                Text("Tolak", color = Color.White)
+                            }
+                        }
                     }
                 }
 
-                // Button for Edit (only shows when status is "Ditolak")
-                if (status == "Pengajuan ditolak") {
-                    Spacer(modifier = Modifier.height(16.dp))
+                // Input alasan jika ditolak
+                if (showAlasanInput) {
+                    // Menampilkan TextField untuk alasan
+                    TextField(
+                        value = inputAlasan,
+                        onValueChange = { inputAlasan = it },
+                        label = { Text("Alasan Penolakan") },
+                        modifier = Modifier.fillMaxWidth()
+                    )
+
+                    // Tombol Kirim untuk mengirim alasan
                     Button(
-                        onClick = onEditClick,
-                        modifier = Modifier.fillMaxWidth(),
+                        onClick = { onRejectClick(inputAlasan) }, // Kirim alasan penolakan
+                        modifier = Modifier
+                            .width(120.dp)
+                            .align(Alignment.End) // Menempatkan tombol di ujung kanan
+                            .shadow(4.dp, RoundedCornerShape(16.dp)), // Menambahkan shadow pada tombol
                         colors = ButtonDefaults.buttonColors(containerColor = Maroon),
-                        shape = RoundedCornerShape(16.dp)
+                        shape = RoundedCornerShape(16.dp) // Membuat tombol dengan sudut yang membulat
                     ) {
-                        Text(
-                            text = "Edit",
-                            fontWeight = FontWeight.Bold,
-                            color = Color.White
-                        )
+                        Text("Kirim", color = Color.White)
                     }
                 }
             }
         }
     }
 }
-
 
 
 // Data class for storing the detail information

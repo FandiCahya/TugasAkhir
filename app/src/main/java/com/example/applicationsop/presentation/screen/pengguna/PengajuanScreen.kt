@@ -1,4 +1,4 @@
-package com.example.applicationsop.presentation.screen.user
+package com.example.applicationsop.presentation.screen.pengguna
 
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
@@ -20,7 +20,6 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.example.applicationsop.ui.theme.Maroon
-import com.example.applicationsop.ui.theme.PinkPudar
 import com.example.applicationsop.ui.theme.Putih
 
 @Composable

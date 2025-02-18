@@ -31,6 +31,7 @@ import androidx.compose.ui.geometry.Offset
 import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.FontWeight
+import com.example.applicationsop.presentation.component.BackButton
 import kotlin.io.path.Path
 
 @Composable
@@ -52,13 +53,11 @@ fun ProfileScreen(navController: NavController) {
             verticalAlignment = Alignment.CenterVertically,
             horizontalArrangement = Arrangement.Start
         ) {
-            IconButton(onClick = { navController.popBackStack() }) {
-                Icon(
-                    imageVector = Icons.Filled.ArrowBack,
-                    contentDescription = "Back",
-                    tint = Color.Black
-                )
-            }
+            BackButton(
+                navController = navController,
+                colorVersion = "m"
+            )  // Back Button on the left
+
             Spacer(modifier = Modifier.width(8.dp))
             Text(
                 text = "Back to Home",
