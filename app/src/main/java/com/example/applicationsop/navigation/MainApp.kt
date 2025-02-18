@@ -11,6 +11,7 @@ import com.example.applicationsop.presentation.screen.pengguna.ListPengajuanScre
 import com.example.applicationsop.presentation.screen.ProfileScreen
 import com.example.applicationsop.presentation.screen.admin.HomeAdminScreen
 import com.example.applicationsop.presentation.screen.admin.ListPengajuanScreenAdmin
+import com.example.applicationsop.presentation.screen.admin.ListPengembanganAdminScreen
 import com.example.applicationsop.presentation.screen.pengguna.FormUsulanScreen
 import com.example.applicationsop.presentation.screen.pengguna.HomeUserScreen
 import com.example.applicationsop.presentation.screen.pengguna.ListPengembanganScreen
@@ -45,12 +46,12 @@ fun MainApp() {
         }
 
         // List Pengajuan
-        composable("list_pengajuan") {
+        composable("list_pengajuanUser") {
             ListPengajuanScreen(navController = navController)
         }
 
         // Pengembangaan user
-        composable("pengembangan") {
+        composable("pengembanganUser") {
             ListPengembanganScreen(navController = navController)
         }
 
@@ -61,8 +62,13 @@ fun MainApp() {
         }
 
         // List Pengajuan
-        composable("list_pengajuan") {
+        composable("list_pengajuanAdmin") {
             ListPengajuanScreenAdmin(navController = navController)
+        }
+
+        // Pengembangaan user
+        composable("pengembanganAdmin") {
+            ListPengembanganAdminScreen(navController = navController)
         }
     }
 }
