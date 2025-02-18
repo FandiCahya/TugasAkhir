@@ -1,4 +1,4 @@
-package com.example.applicationsop.presentation.screen.user
+package com.example.applicationsop.presentation.screen.pengguna
 
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
@@ -7,15 +7,12 @@ import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.shape.CircleShape
 //import androidx.compose.foundation.layout.ColumnScopeInstance.weight
 import androidx.compose.foundation.shape.RoundedCornerShape
-import androidx.compose.foundation.text.KeyboardActions
-import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material3.*
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.font.FontWeight
-import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.compose.material.icons.Icons
@@ -23,12 +20,10 @@ import androidx.compose.material.icons.filled.Add
 import androidx.compose.material.icons.filled.Close
 import androidx.compose.material.icons.filled.History
 import androidx.compose.material.icons.filled.Person
-import androidx.compose.material.icons.filled.Search
 import androidx.compose.material.icons.filled.Timer
 import androidx.compose.material.icons.filled.Verified
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Brush
-import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.zIndex
 import com.example.applicationsop.ui.theme.Maroon
 import com.example.applicationsop.ui.theme.PinkPudar
@@ -37,8 +32,6 @@ import com.example.applicationsop.ui.theme.ijo
 import com.example.applicationsop.ui.theme.abang
 import com.example.applicationsop.ui.theme.kuning
 import androidx.navigation.NavController
-import androidx.navigation.compose.rememberNavController
-import com.example.applicationsop.R
 
 @Composable
 fun HomeUserScreen(navController: NavController) {

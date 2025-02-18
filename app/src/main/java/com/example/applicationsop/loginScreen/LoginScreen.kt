@@ -104,7 +104,7 @@ fun LoginScreen(navController: NavController) {
                 LoginButtonComposable {
                     // Log in action (add your logic)
 
-                    navController.navigate("home")
+                    navController.navigate("homeAdmin")
                 }
             }
         }

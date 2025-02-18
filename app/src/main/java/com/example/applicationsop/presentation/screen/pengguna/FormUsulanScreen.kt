@@ -1,4 +1,4 @@
-package com.example.applicationsop.presentation.screen.user
+package com.example.applicationsop.presentation.screen.pengguna
 
 import android.app.DatePickerDialog
 import android.content.Context
@@ -22,7 +22,6 @@ import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.text.KeyboardActions
 import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.ArrowBack
 import androidx.compose.material.icons.filled.ArrowDropDown
 import androidx.compose.material.icons.filled.Close
 import androidx.compose.material3.Button
@@ -447,8 +446,8 @@ fun SignatureDialog(
 
                         Button(
                             onClick = {
-                                onSignatureComplete(Path())  // Saving signature and closing the dialog
-                                onDismiss()  // Close the dialog after saving
+                                onSignatureComplete(Path())
+                                onDismiss()
                             },
                             colors = ButtonDefaults.buttonColors(containerColor = Maroon)
                         ) {
