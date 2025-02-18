@@ -41,13 +41,20 @@ import com.example.applicationsop.R
 import com.example.applicationsop.ui.theme.Maroon
 import com.example.applicationsop.ui.theme.PinkPudar
 import com.example.applicationsop.ui.theme.Putih
+import com.example.applicationsop.logic.AuthRepository
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.launch
+import kotlinx.coroutines.runBlocking
 
 @Composable
 fun LoginScreen(navController: NavController) {
     val context = LocalContext.current
-    val username = remember { mutableStateOf("") }
+    val email = remember { mutableStateOf("") }
     val password = remember { mutableStateOf("") }
     val passwordVisible = remember { mutableStateOf(false) }
+
+    val authRepository = AuthRepository()
 
     Surface(
         modifier = Modifier.fillMaxSize(),
@@ -66,13 +73,13 @@ fun LoginScreen(navController: NavController) {
             // Subtitle Text
             SubtitleTextComposable()
 
-            // Username TextField
+            // email TextField
             TextInputComposable(
-                label = "Username",
-                value = username.value,
-                onValueChange = { username.value = it },
-                iconId = R.drawable.ic_home, // Ganti dengan ikon yang sesuai untuk username
-                isPassword = false // Untuk username, tidak perlu hide/show password
+                label = "email",
+                value = email.value,
+                onValueChange = { email.value = it },
+                iconId = R.drawable.ic_home, // Ganti dengan ikon yang sesuai untuk email
+                isPassword = false // Untuk email, tidak perlu hide/show password
             )
 
             Spacer(modifier = Modifier.height(16.dp))
@@ -215,7 +222,20 @@ fun TextInputComposable(
 @Composable
 fun LoginButtonComposable(onClick: () -> Unit) {
     Button(
-        onClick = onClick,
+        onClick = {
+            // Call the login function when button is clicked
+            CoroutineScope(Dispatchers.Main).launch {
+                val response = authRepository.login(email.value, password.value)
+                if (response != null) {
+                    // Login successful, save token, navigate to the next screen
+                    val token = response.token
+                    navController.navigate("homeAdmin")
+                } else {
+                    // Show login failed message
+                    Toast.makeText(context, "Login failed, please try again.", Toast.LENGTH_SHORT).show()
+                }
+            }
+        },
         modifier = Modifier
             .fillMaxWidth()
             .padding(start = 80.dp, end = 30.dp)
