@@ -175,7 +175,7 @@ fun SubmissionSection(navController: NavController) {
                 icon = Icons.Filled.Timer,
                 modifier = Modifier.height(180.dp),
                 onClick = {
-                    navController.navigate("list_pengajuan")
+                    navController.navigate("list_pengajuanAdmin")
                 }
             )
         }
@@ -280,7 +280,7 @@ fun ProgressCard(
             .padding(vertical = 10.dp)
             .clickable { // Menambahkan aksi klik untuk navigasi
                 if (title == "Pengembangan") {
-                    navController.navigate("pengembangan") // Arahkan ke halaman pengembangan
+                    navController.navigate("pengembanganAdmin") // Arahkan ke halaman pengembangan
                 }
             },
         colors = CardDefaults.cardColors(

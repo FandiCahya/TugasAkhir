@@ -542,8 +542,10 @@ fun DetailPopup(
                     TextField(
                         value = inputAlasan,
                         onValueChange = { inputAlasan = it },
-                        label = { Text("Alasan Penolakan") },
-                        modifier = Modifier.fillMaxWidth()
+                        label = { Text("Alasan") },
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .padding(bottom = 10.dp),
                     )
 
                     // Tombol Kirim untuk mengirim alasan

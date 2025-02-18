@@ -1,5 +1,7 @@
 package com.example.applicationsop.presentation.screen.pengguna
 
+import android.os.Build
+import androidx.annotation.RequiresApi
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
@@ -32,7 +34,9 @@ import com.example.applicationsop.ui.theme.ijo
 import com.example.applicationsop.ui.theme.abang
 import com.example.applicationsop.ui.theme.kuning
 import androidx.navigation.NavController
+import java.time.LocalTime
 
+@RequiresApi(Build.VERSION_CODES.O)
 @Composable
 fun HomeUserScreen(navController: NavController) {
     Box(
@@ -88,8 +92,18 @@ fun HomeUserScreen(navController: NavController) {
     }
 }
 
+@RequiresApi(Build.VERSION_CODES.O)
 @Composable
 fun HeaderComposable(navController: NavController) {
+    // Ambil waktu saat ini
+    val currentTime = LocalTime.now()
+    val greeting = when {
+        currentTime.isBefore(LocalTime.NOON) -> "Selamat Pagi"
+        currentTime.isBefore(LocalTime.of(18, 0)) -> "Selamat Siang"
+        currentTime.isBefore(LocalTime.of(19, 0)) -> "Selamat Sore"
+        else -> "Selamat Malam"
+    }
+
     Box(
         modifier = Modifier
             .fillMaxWidth()
@@ -107,12 +121,18 @@ fun HeaderComposable(navController: NavController) {
             horizontalArrangement = Arrangement.SpaceBetween, // Membuat teks dan ikon berada di ujung kiri dan kanan
             verticalAlignment = Alignment.CenterVertically // Agar teks dan ikon sejajar secara vertikal
         ) {
-            // Teks "Hi, boys"
+            // Menampilkan ucapan sesuai waktu
             Column(
                 verticalArrangement = Arrangement.Center
             ) {
                 Text(
-                    text = "Hi, boys",
+                    text = greeting, // Menampilkan ucapan berdasarkan waktu
+                    fontSize = 16.sp,
+                    fontWeight = FontWeight.Normal,
+                    color = Putih
+                )
+                Text(
+                    text = "Hi, Mutant",
                     fontSize = 24.sp,
                     fontWeight = FontWeight.Bold,
                     color = Putih
@@ -137,7 +157,6 @@ fun HeaderComposable(navController: NavController) {
 
         // Search Bar (tetap berada di bawah teks dan ikon)
         Spacer(modifier = Modifier.height(10.dp))
-//        SearchBar()
     }
 }
 
@@ -172,7 +191,7 @@ fun SubmissionSection(navController: NavController) {
                 icon = Icons.Filled.Timer,
                 modifier = Modifier.height(180.dp),
                 onClick = {
-                    navController.navigate("list_pengajuan")
+                    navController.navigate("list_pengajuanUser")
                 }
             )
         }
@@ -277,7 +296,7 @@ fun ProgressCard(
             .padding(vertical = 10.dp)
             .clickable { // Menambahkan aksi klik untuk navigasi
                 if (title == "Pengembangan") {
-                    navController.navigate("pengembangan") // Arahkan ke halaman pengembangan
+                    navController.navigate("pengembanganUser") // Arahkan ke halaman pengembangan
                 }
             },
         colors = CardDefaults.cardColors(
