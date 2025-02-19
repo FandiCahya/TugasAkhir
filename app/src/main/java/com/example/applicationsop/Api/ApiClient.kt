@@ -1,7 +1,5 @@
 package com.example.applicationsop.Api
 
-// File: ApiClient.kt
-
 import io.ktor.client.*
 import io.ktor.client.request.*
 import io.ktor.client.plugins.contentnegotiation.*
@@ -20,20 +18,29 @@ val client = HttpClient {
         json(Json { ignoreUnknownKeys = true })  // Menangani JSON dengan Kotlinx Serialization
     }
 }
-
+//Function loginUser
 suspend fun loginUser(email: String, password: String): LoginResponse? {
     return try {
-        // Mengirimkan request POST untuk login dan mengembalikan LoginResponse
         val response: HttpResponse = client.post("${ApiConfig.BASE_URL}login") {
-            contentType(ContentType.Application.Json)  // Menentukan jenis konten yang dikirim
-            setBody(LoginRequest(email, password))  // Mengirimkan data login dalam body request
+            contentType(ContentType.Application.Json)
+            setBody(LoginRequest(email, password))
         }
 
-        // Mengambil body dari response dan mengonversinya menjadi LoginResponse
-        response.body<LoginResponse>()
+        // Log the response body for debugging
+        val responseBody = response.bodyAsText()
+        println("Data Response Body: $responseBody")  // This will show the full response in logcat
+
+        if (response.status == HttpStatusCode.OK) {
+            response.body<LoginResponse>()
+        } else {
+            println("Login failed with status: ${response.status}")
+            null
+        }
     } catch (e: Exception) {
-        // Tangani error jika ada masalah dengan koneksi atau API
         e.printStackTrace()
         null
     }
 }
+
+
+
