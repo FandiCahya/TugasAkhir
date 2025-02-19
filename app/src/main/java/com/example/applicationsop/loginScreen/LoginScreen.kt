@@ -1,7 +1,9 @@
 package com.example.applicationsop.loginScreen
 
 import android.app.Activity
+import android.content.Context
 import android.content.Intent
+import android.widget.Toast
 import androidx.compose.material3.IconButton
 import androidx.compose.foundation.layout.*
 import androidx.compose.material3.Button
@@ -45,7 +47,9 @@ import com.example.applicationsop.logic.AuthRepository
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
-import kotlinx.coroutines.runBlocking
+import com.example.applicationsop.Api.loginUser
+import androidx.compose.ui.platform.LocalContext
+
 
 @Composable
 fun LoginScreen(navController: NavController) {
@@ -108,11 +112,11 @@ fun LoginScreen(navController: NavController) {
                 }
 
                 // Login Button
-                LoginButtonComposable {
-                    // Log in action (add your logic)
-
-                    navController.navigate("homeAdmin")
-                }
+                LoginButtonComposable(
+                    email = email.value,
+                    password = password.value,
+                    navController = navController
+                )
             }
         }
     }
@@ -220,18 +224,28 @@ fun TextInputComposable(
 }
 
 @Composable
-fun LoginButtonComposable(onClick: () -> Unit) {
+fun LoginButtonComposable(
+    email: String,
+    password: String,
+    navController: NavController,
+) {
+    val context = LocalContext.current
     Button(
         onClick = {
-            // Call the login function when button is clicked
+            // Memanggil API login ketika tombol diklik
             CoroutineScope(Dispatchers.Main).launch {
-                val response = authRepository.login(email.value, password.value)
-                if (response != null) {
-                    // Login successful, save token, navigate to the next screen
-                    val token = response.token
+                // Panggil fungsi login dari API
+                val response = loginUser(email, password)
+
+                // Cek apakah login berhasil
+                if (response != null && response.token != null) {
+                    // Login berhasil, simpan token
+                    saveToken(context, response.token)
+                    // Anda bisa menyimpan token di SharedPreferences atau sesi lainnya jika diperlukan
+                    Toast.makeText(context, "Login successful!", Toast.LENGTH_SHORT).show()
                     navController.navigate("homeAdmin")
                 } else {
-                    // Show login failed message
+                    // Jika login gagal, tampilkan pesan error
                     Toast.makeText(context, "Login failed, please try again.", Toast.LENGTH_SHORT).show()
                 }
             }
@@ -257,3 +271,17 @@ fun ForgotPasswordLinkComposable(onClick: () -> Unit) {
         Text("Lupa password?", fontSize = 12.sp, color = Gray)
     }
 }
+
+fun saveToken(context: Context, token: String) {
+    val sharedPreferences = context.getSharedPreferences("MyPrefs", Activity.MODE_PRIVATE)
+    val editor = sharedPreferences.edit()
+    editor.putString("TOKEN", token)  // Save the token with the key "TOKEN"
+    editor.apply()  // Commit changes
+}
+
+fun getToken(context: Context): String? {
+    val sharedPreferences = context.getSharedPreferences("MyPrefs", Activity.MODE_PRIVATE)
+    return sharedPreferences.getString("TOKEN", null)  // Return null if the token doesn't exist
+}
+
+
