@@ -35,7 +35,6 @@ import com.example.applicationsop.R
 import com.example.applicationsop.ui.theme.Maroon
 import com.example.applicationsop.ui.theme.PinkPudar
 import com.example.applicationsop.ui.theme.Putih
-import com.example.applicationsop.logic.AuthRepository
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
@@ -49,7 +48,6 @@ fun LoginScreen(navController: NavController) {
     val password = remember { mutableStateOf("") }
     val passwordVisible = remember { mutableStateOf(false) }
 
-    val authRepository = AuthRepository()
 
     Surface(
         modifier = Modifier.fillMaxSize(),
@@ -232,9 +230,24 @@ fun LoginButtonComposable(
                 if (response != null && response.token != null) {
                     // Login berhasil, simpan token
                     saveToken(context, response.token)
+                    // Menentukan navigasi berdasarkan role
+                    when (response.user.role) {
+                        "admin" -> {
+                            navController.navigate("homeAdmin")
+                        }
+                        "user" -> {
+                            navController.navigate("homeUser")
+                        }
+                        "mqr", "kepalacabang" -> {
+                            navController.navigate("homeAdmin")
+                        }
+                        else -> {
+                            Toast.makeText(context, "Role tidak dikenal.", Toast.LENGTH_SHORT).show()
+                        }
+                    }
                     // Anda bisa menyimpan token di SharedPreferences atau sesi lainnya jika diperlukan
                     Toast.makeText(context, "Login successful!", Toast.LENGTH_SHORT).show()
-                    navController.navigate("homeAdmin")
+
                 } else {
                     // Jika login gagal, tampilkan pesan error
                     Toast.makeText(context, "Login failed, please try again.", Toast.LENGTH_SHORT).show()
