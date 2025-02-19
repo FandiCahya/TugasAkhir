@@ -18,7 +18,7 @@ val client = HttpClient {
         json(Json { ignoreUnknownKeys = true })  // Menangani JSON dengan Kotlinx Serialization
     }
 }
-
+//Function loginUser
 suspend fun loginUser(email: String, password: String): LoginResponse? {
     return try {
         val response: HttpResponse = client.post("${ApiConfig.BASE_URL}login") {
