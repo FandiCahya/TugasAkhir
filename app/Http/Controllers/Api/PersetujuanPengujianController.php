@@ -7,6 +7,7 @@ use App\Http\Controllers\Controller;
 use App\Models\PersetujuanPengujian;
 use App\Models\PersetujuanPengujianDetail;
 use App\Models\PersetujuanPengujianModel;
+use Illuminate\Support\Facades\Log;
 
 class PersetujuanPengujianController extends Controller
 {
@@ -26,10 +27,10 @@ class PersetujuanPengujianController extends Controller
                         'signature' => $item->signature,
                         'role' => $item->role,
                         'pengujian' => [
-                            'id' => $item->persetujuan->id ?? null, // Check if pengujian is not null
+                            'id' => $item->persetujuanPengujian->id ?? null, // Check if pengujian is not null
                             'status' => $item->status ?? null,
-                            'created_at' => $item->persetujuan->created_at ?? null,
-                            'updated_at' => $item->persetujuan->updated_at ?? null,
+                            'created_at' => $item->persetujuanPengujian->created_at ?? null,
+                            'updated_at' => $item->persetujuanPengujian->updated_at ?? null,
                         ],
                         'user' => [
                             'id' => $item->user->id ?? null, // Check if user is not null
@@ -101,7 +102,7 @@ class PersetujuanPengujianController extends Controller
             ]);
 
             // Find the approval record
-            $persetujuan = PersetujuanPengujian::findOrFail($id);
+            $persetujuan = PersetujuanPengujianModel::findOrFail($id);
 
             // Find or create the PersetujuanPengujianDetail record for this user
             $detail = PersetujuanPengujianDetail::updateOrCreate(
@@ -112,6 +113,80 @@ class PersetujuanPengujianController extends Controller
                     'signature' => $this->handleSignatureUpload($request), // Upload signature
                 ],
             );
+
+            // After each approval, check if all 4 users have approved
+            if ($this->checkIfAllApproved($persetujuan)) {
+                // If all users approved, set the status of PersetujuanPengujian to 'approved'
+                $persetujuan->update(['status' => 'approved']);
+            }
+
+            // Check if there is any rejection
+            if ($this->checkIfRejected($persetujuan)) {
+                return response()->json(
+                    [
+                        'success' => false,
+                        'message' => 'Approval failed due to rejection from one or more users',
+                        'data' => $persetujuan,
+                    ],
+                    400,
+                );
+            }
+
+            // Check if all approvals are completed (all 4 approved)
+            if ($this->checkIfAllApproved($persetujuan)) {
+                return response()->json(
+                    [
+                        'success' => true,
+                        'message' => 'Approval completed successfully',
+                        'data' => $persetujuan,
+                    ],
+                    200,
+                );
+            }
+
+            return response()->json(
+                [
+                    'success' => true,
+                    'message' => 'Approval submitted successfully, waiting for other users',
+                    'data' => $persetujuan,
+                ],
+                200,
+            );
+        } catch (\Exception $e) {
+            return response()->json(
+                [
+                    'success' => false,
+                    'error' => $e->getMessage(),
+                ],
+                500,
+            );
+        }
+    }
+
+    public function approval(Request $request, $id)
+    {
+        try {
+            // Validate incoming data
+            $request->validate([
+                'status' => 'required|in:setuju,tidak_setuju',
+                'catatan' => 'nullable|string',
+                'signature' => 'nullable|image|mimes:jpeg,png,jpg,gif|max:2048', // Signature as image
+            ]);
+            Log::info('Request data:', $request->all());
+
+
+            // Find the PersetujuanPengujianDetail record by its ID
+            $persetujuanDetail = PersetujuanPengujianModel::findOrFail($id); // We now search by PersetujuanPengujianDetail ID
+
+            // Update or create the PersetujuanPengujianDetail record
+            $persetujuanDetail->update([
+                'status' => $request->status,
+                'catatan' => $request->catatan,
+                'signature' => $this->handleSignatureUpload($request), // Handle the signature upload
+            ]);
+
+            // Retrieve the associated PersetujuanPengujian model (for checking approval)
+            $persetujuan = $persetujuanDetail->persetujuanPengujian;
 
             // After each approval, check if all 4 users have approved
             if ($this->checkIfAllApproved($persetujuan)) {

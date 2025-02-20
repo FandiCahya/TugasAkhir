@@ -2,9 +2,10 @@
 
 use App\Http\Controllers\ProfileController;
 use Illuminate\Support\Facades\Route;
-use App\Http\Controllers\Auth\AuthenticatedSessionController;
+// use App\Http\Controllers\Auth\AuthenticatedSessionController;
+use App\Http\Controllers\Api\AuthController;
 
-Route::get('/', [AuthenticatedSessionController::class, 'create'])->name('login');
+// Route::get('/', [AuthenticatedSessionController::class, 'create'])->name('login');
 
 
 Route::middleware('auth')->group(function () {
@@ -13,8 +14,13 @@ Route::middleware('auth')->group(function () {
     Route::delete('/profile', [ProfileController::class, 'destroy'])->name('profile.destroy');
 });
 
-require __DIR__.'/auth.php';
-
+// require __DIR__.'/auth.php';
+// use App\Http\Controllers\AuthController;
+Route::view('/', 'layouts/login')->name('login');
+Route::view('/login', 'layouts/login')->name('login');  // Untuk menampilkan halaman login
+Route::view('/register', 'register')->name('register');
+  // Jika Anda ingin halaman register
+Route::middleware('auth:sanctum')->post('logout', [AuthController::class, 'logout']);
 
 Route::get('/dashboard', function () {
     return view('dashboard');

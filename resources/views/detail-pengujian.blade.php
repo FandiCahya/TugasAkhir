@@ -90,8 +90,6 @@
 
     <script>
         let DetailPengujian = [];
-        // let editPengujianId = null;
-        // let addPengujian = null;
         let currentEditId = null;
         let currentDeleteId = null;
 

@@ -65,14 +65,15 @@
             </a>
         </li>
         <li class="nav-item sidebar-category">
-            <p>Logs</p>
+            <p>Logout</p>
             <span></span>
         </li>
         <li class="nav-item">
-            <a class="nav-link" href="{{ route('logs') }}">
-                <i class="mdi mdi mdi-laptop menu-icon"></i>
-                <span class="menu-title">Logs</span>
+            <a class="nav-link" href="#" id="logout-btn">
+                <i class="mdi mdi-logout menu-icon"></i>
+                <span class="menu-title">Logout</span>
             </a>
         </li>
+        
     </ul>
 </nav>

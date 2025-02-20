@@ -73,10 +73,13 @@ class PersetujuanPengujianDetail extends Model
     protected $table = 'persetujuan_pengujian_details';
     protected $fillable = ['id', 'persetujuan_pengujian_id', 'user_id', 'status', 'catatan', 'signature'];
 
-    public function persetujuan()
-    {
-        return $this->belongsTo(PersetujuanPengujian::class, 'persetujuan_pengujian_id');
-    }
+    // public function persetujuan()
+    // {
+    //     return $this->belongsTo(PersetujuanPengujian::class, 'persetujuan_pengujian_id');
+    // }
 
-    
+    public function persetujuanPengujian()
+    {
+        return $this->belongsTo(PersetujuanPengujian::class);
+    }
 }

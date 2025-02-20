@@ -15,14 +15,13 @@ class PersetujuanPengujianModel extends Model
     protected $table = 'persetujuan_pengujian_details';
     protected $fillable = ['id', 'persetujuan_pengujian_id', 'user_id', 'status', 'catatan', 'signature'];
 
-    public function persetujuan()
+    public function persetujuanPengujian()
     {
         return $this->belongsTo(PersetujuanPengujian::class, 'persetujuan_pengujian_id');
     }
-    public function user()
-{
-    return $this->belongsTo(User::class, 'user_id'); // Replace with correct foreign key if different
-}
-    
-}
 
+    public function user()
+    {
+        return $this->belongsTo(User::class, 'user_id'); // Replace with correct foreign key if different
+    }
+}
