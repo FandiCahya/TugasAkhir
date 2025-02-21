@@ -40,6 +40,7 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.Path
 import androidx.compose.ui.graphics.StrokeCap
@@ -177,7 +178,13 @@ fun HeaderComposableFormUsulan(title: String, navController: NavController) {
     Box(
         modifier = Modifier
             .fillMaxWidth()
-            .background(Maroon)
+            .background(
+                Brush.horizontalGradient(
+                    colors = listOf(Maroon, Color.White.copy(alpha = 0f)),
+                    startX = 0f,
+                    endX = Float.POSITIVE_INFINITY
+                )
+            )
             .padding(16.dp)
     ) {
         // Header with Back Button and Title
@@ -347,28 +354,6 @@ fun SignaturePad(onSignatureComplete: (Path) -> Unit) {
             )
         }
     }
-
-//    // Handle "Clear" and "Save" buttons
-//    Row(
-//        modifier = Modifier
-//            .fillMaxWidth()
-//            .padding(top = 8.dp),
-//        horizontalArrangement = Arrangement.SpaceBetween
-//    ) {
-//        Button(
-//            onClick = { path = Path() },  // Clear the signature
-//            colors = ButtonDefaults.buttonColors(containerColor = Color.Gray)
-//        ) {
-//            Text("Clear", color = Color.Black)
-//        }
-//
-//        Button(
-//            onClick = { onSignatureComplete(path) },  // Save the signature
-//            colors = ButtonDefaults.buttonColors(containerColor = Maroon)
-//        ) {
-//            Text("Save", color = Color.White)
-//        }
-//    }
 }
 
 
