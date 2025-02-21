@@ -81,10 +81,10 @@ fun HeaderComposable(navController: NavController) {
     // Ambil waktu saat ini
     val currentTime = LocalTime.now()
     val greeting = when {
-        currentTime.isBefore(LocalTime.NOON) -> "Selamat Pagi"
-        currentTime.isBefore(LocalTime.of(18, 0)) -> "Selamat Siang"
+        currentTime.isBefore(LocalTime.of(11, 0)) -> "Selamat Pagi"
+        currentTime.isBefore(LocalTime.of(16, 0)) -> "Selamat Siang"
         currentTime.isBefore(LocalTime.of(19, 0)) -> "Selamat Sore"
-        else -> "Selamat Malam"
+        else -> "Selamat Malam"  // Mulai jam 19
     }
 
     Box(
@@ -166,7 +166,6 @@ fun SubmissionSection(navController: NavController) {
         // Kolom pertama - Card Butuh Konfirmasi (kuning) dengan ukuran lebih besar
         Column(
             modifier = Modifier
-//                .fillMaxHeight() // Membuat kolom pertama memanjang ke bawah
                 .weight(1f) // Membuat kolom pertama lebih besar
         ) {
             SubmissionCard(
@@ -175,7 +174,7 @@ fun SubmissionSection(navController: NavController) {
                 icon = Icons.Filled.Timer,
                 modifier = Modifier.height(180.dp),
                 onClick = {
-                    navController.navigate("list_pengajuanAdmin")
+                    navController.navigate("list_pengajuanAdmin?status=Menunggu konfirmasi")
                 }
             )
         }
@@ -183,19 +182,33 @@ fun SubmissionSection(navController: NavController) {
         // Kolom kedua - Card Ditolak (merah) dan Card Dikembangkan (hijau)
         Column(
             modifier = Modifier
-//                .fillMaxHeight() // Membuat kolom kedua memanjang ke bawah
                 .weight(1f) // Membuat kolom kedua lebih besar dan seimbang
         ) {
             // Card "Ditolak" (merah)
-            SubmissionCard("Ditolak", color = abang, icon = Icons.Filled.Close)
+            SubmissionCard(
+                "Ditolak",
+                color = abang,
+                icon = Icons.Filled.Close,
+                onClick = {
+                    navController.navigate("list_pengajuanAdmin?status=Pengujian ditolak")
+                }
+            )
 
             Spacer(modifier = Modifier.height(16.dp)) // Memberikan jarak antara card
 
             // Card "Dikembangkan" (hijau) di bawah
-            SubmissionCard("Dikembangkan", color = ijo, icon = Icons.Filled.Verified)
+            SubmissionCard(
+                "Dikembangkan",
+                color = ijo,
+                icon = Icons.Filled.Verified,
+                onClick = {
+                    navController.navigate("list_pengajuanAdmin?status=Pengajuan diterima")
+                }
+            )
         }
     }
 }
+
 
 @Composable
 fun SubmissionCard(
@@ -281,6 +294,8 @@ fun ProgressCard(
             .clickable { // Menambahkan aksi klik untuk navigasi
                 if (title == "Pengembangan") {
                     navController.navigate("pengembanganAdmin") // Arahkan ke halaman pengembangan
+                } else if (title == "Pengujian") {
+                    navController.navigate("pengujianAdmin") // Arahkan ke halaman pengujian
                 }
             },
         colors = CardDefaults.cardColors(

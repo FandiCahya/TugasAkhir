@@ -5,6 +5,7 @@ import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
+import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.*
@@ -27,12 +28,16 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.sp
 import androidx.compose.ui.zIndex
+import androidx.media3.common.util.Log
+import androidx.media3.common.util.UnstableApi
 import androidx.navigation.NavController
+import com.example.applicationsop.data.DetailInfo
 import com.example.applicationsop.presentation.component.BackButton
 import com.example.applicationsop.ui.theme.Maroon
 import com.example.applicationsop.ui.theme.abang
 import com.example.applicationsop.ui.theme.ijo
 import com.example.applicationsop.ui.theme.kuning
+import com.example.applicationsop.data.getSampleSubmissions
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -174,7 +179,7 @@ fun ListPengajuanItem(
                 color = when (status) {
                     "Menunggu konfirmasi" -> kuning
                     "Pengujian ditolak" -> abang
-                    "Pengajuan Diterima" -> ijo
+                    "Pengajuan diterima" -> ijo
                     else -> Color.Black
                 }
             )
@@ -244,13 +249,78 @@ fun ListPengajuanScreenAdmin(navController: NavController) {
             },
             onRejectClick = { alasan ->
                 // Aksi tolak dengan alasan yang dimasukkan
-            },
-            onEditClick = {
-                navController.navigate("form_usulan") // Ganti dengan rute yang sesuai
             }
         )
     }
 }
+
+//@Composable
+//fun ListPengajuanScreenAdmin(navController: NavController) {
+//    var showPopup by remember { mutableStateOf(false) }
+//    var selectedDetail by remember { mutableStateOf(DetailInfo()) }
+//
+//    // Ambil parameter 'status' dari navigasi
+//    val status = navController.currentBackStackEntry?.arguments?.getString("status") ?: "defaultStatus"
+////    Log.d("status", "Status diterima di ListPengajuanScreenAdmin: $status")  // Debug log
+//
+//    // Ambil data submissions dari data.kt
+//    val submissions = getSampleSubmissions()
+//
+//    // Filter submissions berdasarkan status yang diteruskan
+//    val filteredSubmissions = submissions.filter { it.status == status }
+////    Log.d("filteredSubmissions", "Filtered submissions count: ${filteredSubmissions.size}")  // Debug log
+//
+//    Column(
+//        modifier = Modifier
+//            .fillMaxSize()
+//            .background(Color.White)
+//    ) {
+//        // Header with back button and search icon
+//        Rectangle1217(navController = navController)
+//        Spacer(modifier = Modifier.height(20.dp))
+//
+//        // List of submissions yang sudah difilter
+//        LazyColumn(modifier = Modifier.fillMaxSize()) {
+//            items(filteredSubmissions) { submission ->
+//                ListPengajuanItem(
+//                    namaSistem = submission.namaSistem,
+//                    tanggal = submission.tanggal,
+//                    jenisSistem = submission.jenisSistem,
+//                    rencanaAnggaran = submission.rencanaAnggaran,
+//                    masalahSistem = submission.masalahSistem,
+//                    outputHasil = submission.outputHasil,
+//                    status = submission.status,
+//                    onClick = {
+//                        selectedDetail = submission // Menetapkan data detail yang diklik
+//                        showPopup = true // Menampilkan popup untuk detail
+//                    }
+//                )
+//            }
+//        }
+//    }
+//
+//    // Tampilkan popup jika showPopup true
+//    if (showPopup) {
+//        DetailPopup(
+//            onDismiss = { showPopup = false },
+//            hariTanggal = selectedDetail.tanggal,
+//            namaSistem = selectedDetail.namaSistem,
+//            jenisSistem = selectedDetail.jenisSistem,
+//            rencanaAnggaran = selectedDetail.rencanaAnggaran,
+//            masalahSistem = selectedDetail.masalahSistem,
+//            outputHasil = selectedDetail.outputHasil,
+//            status = selectedDetail.status,  // Gunakan status yang dipilih secara dinamis
+//            alasan = if (selectedDetail.status == "Pengajuan ditolak") "Output kurang jelas" else null, // Alasan hanya muncul jika status ditolak
+//            isAdmin = true, // Menambahkan parameter isAdmin yang bisa ditentukan sesuai pengguna
+//            onAcceptClick = {
+//                // Aksi terima (ubah status atau lakukan tindakan lainnya)
+//            },
+//            onRejectClick = { alasan ->
+//                // Aksi tolak dengan alasan yang dimasukkan
+//            }
+//        )
+//    }
+//}
 
 @Composable
 fun DetailPopup(
@@ -265,8 +335,7 @@ fun DetailPopup(
     alasan: String? = null, // Alasan hanya ada jika status ditolak
     isAdmin: Boolean, // Menambahkan parameter untuk memeriksa peran
     onAcceptClick: () -> Unit, // Fungsi untuk menerima usulan
-    onRejectClick: (String) -> Unit, // Fungsi untuk menolak usulan
-    onEditClick: () -> Unit // Fungsi untuk navigasi ke form edit
+    onRejectClick: (String) -> Unit // Fungsi untuk menolak usulan
 ) {
     var inputAlasan by remember { mutableStateOf(alasan.orEmpty()) }
     var showAlasanInput by remember { mutableStateOf(false) }
@@ -565,18 +634,6 @@ fun DetailPopup(
         }
     }
 }
-
-
-// Data class for storing the detail information
-data class DetailInfo(
-    val namaSistem: String = "",
-    val tanggal: String = "",
-    val jenisSistem: String = "",
-    val rencanaAnggaran: String = "",
-    val masalahSistem: String = "",
-    val outputHasil: String = "",
-    val status: String = ""
-)
 
 
 

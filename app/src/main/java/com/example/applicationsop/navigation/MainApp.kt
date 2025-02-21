@@ -9,9 +9,11 @@ import androidx.navigation.compose.rememberNavController
 import com.example.applicationsop.loginScreen.LoginScreen
 import com.example.applicationsop.presentation.screen.pengguna.ListPengajuanScreen
 import com.example.applicationsop.presentation.screen.ProfileScreen
+import com.example.applicationsop.presentation.screen.admin.FormPengujianAdmin
 import com.example.applicationsop.presentation.screen.admin.HomeAdminScreen
 import com.example.applicationsop.presentation.screen.admin.ListPengajuanScreenAdmin
 import com.example.applicationsop.presentation.screen.admin.ListPengembanganAdminScreen
+import com.example.applicationsop.presentation.screen.admin.ListPengujianScreenAdmin
 import com.example.applicationsop.presentation.screen.pengguna.FormUsulanScreen
 import com.example.applicationsop.presentation.screen.pengguna.HomeUserScreen
 import com.example.applicationsop.presentation.screen.pengguna.ListPengembanganScreen
@@ -69,6 +71,16 @@ fun MainApp() {
         // Pengembangaan user
         composable("pengembanganAdmin") {
             ListPengembanganAdminScreen(navController = navController)
+        }
+
+        // Pengujian user
+        composable("pengujianAdmin") {
+            ListPengujianScreenAdmin(navController = navController)
+        }
+
+        // Halaman FormUsulanScreen
+        composable("formPengujian") {
+            FormPengujianAdmin(navController = navController) // Pastikan ini sesuai dengan nama layar
         }
     }
 }

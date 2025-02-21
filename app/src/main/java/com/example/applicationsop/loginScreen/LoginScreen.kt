@@ -75,8 +75,6 @@ fun LoginScreen(navController: NavController) {
                 isPassword = false // Untuk email, tidak perlu hide/show password
             )
 
-            Spacer(modifier = Modifier.height(16.dp))
-
             // Password TextField
             TextInputComposable(
                 label = "Password",
