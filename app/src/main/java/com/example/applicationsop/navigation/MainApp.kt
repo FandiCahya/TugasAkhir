@@ -9,11 +9,12 @@ import androidx.navigation.compose.rememberNavController
 import com.example.applicationsop.loginScreen.LoginScreen
 import com.example.applicationsop.presentation.screen.pengguna.ListPengajuanScreen
 import com.example.applicationsop.presentation.screen.ProfileScreen
-import com.example.applicationsop.presentation.screen.admin.FormPengujianAdmin
+import com.example.applicationsop.presentation.screen.admin.form.FormPengujianAdmin
 import com.example.applicationsop.presentation.screen.admin.HomeAdminScreen
 import com.example.applicationsop.presentation.screen.admin.ListPengajuanScreenAdmin
 import com.example.applicationsop.presentation.screen.admin.ListPengembanganAdminScreen
 import com.example.applicationsop.presentation.screen.admin.ListPengujianScreenAdmin
+import com.example.applicationsop.presentation.screen.admin.form.ScheduleForm
 import com.example.applicationsop.presentation.screen.pengguna.FormUsulanScreen
 import com.example.applicationsop.presentation.screen.pengguna.HomeUserScreen
 import com.example.applicationsop.presentation.screen.pengguna.ListPengembanganScreen
@@ -81,6 +82,17 @@ fun MainApp() {
         // Halaman FormUsulanScreen
         composable("formPengujian") {
             FormPengujianAdmin(navController = navController) // Pastikan ini sesuai dengan nama layar
+        }
+
+        // Direct tambah jadwal pengembangan
+        composable("addSchedule") {
+            ScheduleForm(
+                navController = navController,
+                onSave = { scheduleItem ->
+                    // Misalnya, kamu menyimpan scheduleItem ke database atau state management
+                    navController.popBackStack() // Kembali ke halaman sebelumnya setelah menyimpan
+                }
+            )
         }
     }
 }

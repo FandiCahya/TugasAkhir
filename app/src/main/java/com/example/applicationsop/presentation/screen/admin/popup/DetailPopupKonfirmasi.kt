@@ -1,259 +1,48 @@
-package com.example.applicationsop.presentation.screen.admin
+package com.example.applicationsop.presentation.screen.admin.popup
 
 import androidx.compose.foundation.background
-import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
-import androidx.compose.foundation.layout.*
-import androidx.compose.foundation.lazy.LazyColumn
-import androidx.compose.foundation.shape.CircleShape
+import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.shape.RoundedCornerShape
-import androidx.compose.material3.*
-import androidx.compose.runtime.Composable
-import androidx.compose.ui.Alignment
-import androidx.compose.ui.Modifier
-import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.unit.dp
 import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.Person
-import androidx.compose.material.icons.filled.Search
 import androidx.compose.material.icons.filled.Timer
+import androidx.compose.material3.Button
+import androidx.compose.material3.ButtonDefaults
+import androidx.compose.material3.Card
+import androidx.compose.material3.CardDefaults
+import androidx.compose.material3.Divider
+import androidx.compose.material3.Icon
+import androidx.compose.material3.Text
+import androidx.compose.material3.TextField
+import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
+import androidx.compose.ui.Alignment
+import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.shadow
-import androidx.compose.ui.graphics.Brush
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
+import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import androidx.compose.ui.zIndex
-import androidx.navigation.NavController
-import com.example.applicationsop.data.DetailInfo
-import com.example.applicationsop.presentation.component.BackButton
 import com.example.applicationsop.ui.theme.Maroon
 import com.example.applicationsop.ui.theme.abang
 import com.example.applicationsop.ui.theme.ijo
-import com.example.applicationsop.ui.theme.kuning
-
-@OptIn(ExperimentalMaterial3Api::class)
-@Composable
-fun Rectangle1217(navController: NavController) {
-    Box(
-        modifier = Modifier
-            .fillMaxWidth()
-            .height(160.dp)
-//            .clip(shape = RoundedCornerShape(bottomStart = 80.dp, bottomEnd = 80.dp))
-            .background(
-                brush = Brush.verticalGradient(
-                    colors = listOf(Maroon, Color.Transparent), // Gradasi dari Maroon ke Transparan
-                    startY = 0f,
-                    endY = Float.POSITIVE_INFINITY
-                )
-            )
-            .zIndex(1f)
-    ) {
-        // Back Button on the left
-        BackButton(
-            navController = navController,
-            colorVersion = "w"
-        )
-
-        // Title Text "Pengajuan" aligned in the center
-        Text(
-            text = "Pengajuan",
-            fontSize = 24.sp,
-            fontWeight = FontWeight.Bold,
-            color = Color.White,
-            modifier = Modifier
-                .align(Alignment.Center)
-                .padding(bottom = 90.dp)
-        )
-
-        // Search bar positioned below "Pengajuan" text and center it vertically
-        Column(
-            modifier = Modifier
-                .fillMaxWidth()
-                .align(Alignment.BottomCenter) // Align the search bar at the bottom and center horizontally
-                .padding(horizontal = 50.dp)
-                .padding(bottom = 30.dp)
-        ) {
-            TextField(
-                value = "",
-                onValueChange = { /* Handle text input here */ },
-                placeholder = {
-                    Text(
-                        text = "Cari",
-                        color = Color.Gray, // Adjust color as needed
-                        style = androidx.compose.ui.text.TextStyle(fontSize = 12.sp)
-                    )
-                },
-                leadingIcon = {
-                    Icon(
-                        imageVector = Icons.Filled.Search,
-                        contentDescription = "Search",
-                        tint = Maroon,
-                        modifier = Modifier.padding(start = 20.dp)
-                    )
-                },
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .height(45.dp),
-                shape = RoundedCornerShape(50.dp),
-                colors = TextFieldDefaults.textFieldColors(
-                    containerColor = Color.White,
-                    focusedIndicatorColor = Color.Transparent,  // Remove the focus indicator line
-                    unfocusedIndicatorColor = Color.Transparent // Remove the unfocused indicator line
-                )
-            )
-
-        }
-    }
-}
 
 @Composable
-fun ListPengajuanItem(
-    namaSistem: String,
-    tanggal: String,
-    jenisSistem: String,
-    rencanaAnggaran: String,
-    masalahSistem: String,
-    outputHasil: String,
-    status: String,
-    onClick: () -> Unit // Fungsi untuk menangani klik
-) {
-    Row(
-        modifier = Modifier
-            .fillMaxWidth()
-            .padding(horizontal = 30.dp, vertical = 10.dp)
-            .background(
-                Color(0xFFF6F6F6),
-                RoundedCornerShape(20.dp)
-            )
-            .padding(16.dp)
-            .clickable { onClick() }, // Menambahkan aksi klik pada seluruh item
-        verticalAlignment = Alignment.CenterVertically
-    ) {
-        // Circular icon (human icon) with border
-        Box(
-            modifier = Modifier
-                .size(40.dp)
-                .background(
-                    kuning,
-                    shape = CircleShape
-                )
-                .border(2.dp, Color.Black, shape = CircleShape)
-        ) {
-            Icon(
-                imageVector = Icons.Filled.Person,
-                contentDescription = "Profile Icon",
-                modifier = Modifier.fillMaxSize(),
-                tint = Color.Black
-            )
-        }
-
-        Spacer(modifier = Modifier.width(16.dp))
-
-        Column(
-            modifier = Modifier.weight(1f)
-        ) {
-            Text(
-                text = namaSistem,
-                fontSize = 16.sp,
-                fontWeight = FontWeight.Bold,
-                color = Color.Black
-            )
-            Spacer(modifier = Modifier.height(4.dp))
-
-            Divider(
-                color = Color.Gray,
-                modifier = Modifier.padding(vertical = 4.dp)
-            )
-
-            Text(
-                text = status,
-                fontSize = 14.sp,
-                color = when (status) {
-                    "Menunggu konfirmasi" -> kuning
-                    "Pengujian ditolak" -> abang
-                    "Pengajuan diterima" -> ijo
-                    else -> Color.Black
-                }
-            )
-        }
-    }
-}
-
-@Composable
-fun ListPengajuanScreenAdmin(navController: NavController) {
-    var showPopup by remember { mutableStateOf(false) }
-    var selectedDetail by remember { mutableStateOf(DetailInfo(id = 0)) }
-
-    Column(
-        modifier = Modifier
-            .fillMaxSize()
-            .background(Color.White)
-    ) {
-        // Header with back button and search icon
-        Rectangle1217(navController = navController)
-        Spacer(modifier = Modifier.height(20.dp))
-
-        // List of submissions
-        LazyColumn(modifier = Modifier.fillMaxSize()) {
-            items(2) { index ->
-                // Assign the status dynamically based on the index (or data)
-                val status = if (index % 2 == 0) "Menunggu konfirmasi" else "Pengujian ditolak"
-
-                ListPengajuanItem(
-                    namaSistem = "Nama Sistem ${index + 1}",
-                    tanggal = "25/10/2025",
-                    jenisSistem = "Sistem Baru",
-                    rencanaAnggaran = "Termasuk dalam perencanaan",
-                    masalahSistem = "Bug tampilan...",
-                    outputHasil = "Hasil yang diinginkan...",
-                    status = status,
-                    onClick = {
-                        selectedDetail = DetailInfo(
-                            id = index,
-                            namaSistem = "Nama Sistem ${index + 1}",
-                            tanggal = "25/10/2025",
-                            jenisSistem = "Sistem Baru",
-                            rencanaAnggaran = "Termasuk dalam perencanaan",
-                            masalahSistem = "Bug tampilan beranda",
-                            outputHasil = "Tampilan bug clear",
-                            status = status // Assign the correct status here
-                        )
-                        showPopup = true
-                    }
-                )
-            }
-        }
-    }
-
-    if (showPopup) {
-        DetailPopup(
-            onDismiss = { showPopup = false },
-            hariTanggal = selectedDetail.tanggal,
-            namaSistem = selectedDetail.namaSistem,
-            jenisSistem = selectedDetail.jenisSistem,
-            rencanaAnggaran = selectedDetail.rencanaAnggaran,
-            masalahSistem = selectedDetail.masalahSistem,
-            outputHasil = selectedDetail.outputHasil,
-            status = selectedDetail.status,  // Gunakan status yang dipilih secara dinamis
-            alasan = if (selectedDetail.status == "Pengajuan ditolak") "Output kurang jelas" else null, // Alasan hanya muncul jika status ditolak
-            isAdmin = true, // Menambahkan parameter isAdmin yang bisa ditentukan sesuai pengguna
-            onAcceptClick = {
-                // Aksi terima (ubah status atau lakukan tindakan lainnya)
-            },
-            onRejectClick = { alasan ->
-                // Aksi tolak dengan alasan yang dimasukkan
-            },
-            navController = navController
-        )
-    }
-}
-
-@Composable
-fun DetailPopup(
+fun DetailPopupUsulan(
     onDismiss: () -> Unit,
     hariTanggal: String,
     namaSistem: String,
@@ -265,8 +54,7 @@ fun DetailPopup(
     alasan: String? = null, // Alasan hanya ada jika status ditolak
     isAdmin: Boolean, // Menambahkan parameter untuk memeriksa peran
     onAcceptClick: () -> Unit, // Fungsi untuk menerima usulan
-    onRejectClick: (String) -> Unit, // Fungsi untuk menolak usulan
-    navController: NavController
+    onRejectClick: (String) -> Unit // Fungsi untuk menolak usulan
 ) {
     var inputAlasan by remember { mutableStateOf(alasan.orEmpty()) }
     var showAlasanInput by remember { mutableStateOf(false) }
@@ -513,10 +301,7 @@ fun DetailPopup(
                                 onClick = onAcceptClick,
                                 modifier = Modifier
                                     .width(120.dp) // Menyesuaikan lebar tombol
-                                    .shadow(
-                                        4.dp,
-                                        RoundedCornerShape(16.dp)
-                                    ), // Menambahkan shadow pada tombol
+                                    .shadow(4.dp, RoundedCornerShape(16.dp)), // Menambahkan shadow pada tombol
                                 colors = ButtonDefaults.buttonColors(containerColor = ijo),
                                 shape = RoundedCornerShape(16.dp) // Membuat tombol dengan sudut yang membulat
                             ) {
@@ -526,15 +311,10 @@ fun DetailPopup(
                             Spacer(modifier = Modifier.weight(1f))
 
                             Button(
-                                onClick = {
-                                    showAlasanInput = true
-                                }, // Menampilkan input alasan jika Tolak ditekan
+                                onClick = { showAlasanInput = true }, // Menampilkan input alasan jika Tolak ditekan
                                 modifier = Modifier
                                     .width(120.dp) // Menyesuaikan lebar tombol
-                                    .shadow(
-                                        4.dp,
-                                        RoundedCornerShape(16.dp)
-                                    ), // Menambahkan shadow pada tombol
+                                    .shadow(4.dp, RoundedCornerShape(16.dp)), // Menambahkan shadow pada tombol
                                 colors = ButtonDefaults.buttonColors(containerColor = abang),
                                 shape = RoundedCornerShape(16.dp) // Membuat tombol dengan sudut yang membulat
                             ) {
@@ -544,49 +324,32 @@ fun DetailPopup(
                     }
                 }
 
-                // Tombol Add Schedule
-                Button(
-                    onClick = { navController.navigate("addSchedule") }, // Navigasi ke addSchedule
-                    modifier = Modifier
-                        .width(150.dp)
-                        .padding(top = 6.dp)
-                        .align(alignment = Alignment.End)
-                        .shadow(4.dp, RoundedCornerShape(16.dp)),
-                    colors = ButtonDefaults.buttonColors(containerColor = Maroon),
-                    shape = RoundedCornerShape(16.dp)
-                ) {
-                    Text("Add Schedule", color = Color.White)
+                // Input alasan jika ditolak
+                if (showAlasanInput) {
+                    // Menampilkan TextField untuk alasan
+                    TextField(
+                        value = inputAlasan,
+                        onValueChange = { inputAlasan = it },
+                        label = { Text("Alasan") },
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .padding(bottom = 10.dp),
+                    )
+
+                    // Tombol Kirim untuk mengirim alasan
+                    Button(
+                        onClick = { onRejectClick(inputAlasan) }, // Kirim alasan penolakan
+                        modifier = Modifier
+                            .width(120.dp)
+                            .align(Alignment.End) // Menempatkan tombol di ujung kanan
+                            .shadow(4.dp, RoundedCornerShape(16.dp)), // Menambahkan shadow pada tombol
+                        colors = ButtonDefaults.buttonColors(containerColor = Maroon),
+                        shape = RoundedCornerShape(16.dp) // Membuat tombol dengan sudut yang membulat
+                    ) {
+                        Text("Kirim", color = Color.White)
+                    }
                 }
             }
         }
     }
-
-    // Input alasan jika ditolak
-    if (showAlasanInput) {
-        // Menampilkan TextField untuk alasan
-        TextField(
-            value = inputAlasan,
-            onValueChange = { inputAlasan = it },
-            label = { Text("Alasan") },
-            modifier = Modifier
-                .fillMaxWidth()
-                .padding(bottom = 10.dp),
-        )
-
-        // Tombol Kirim untuk mengirim alasan
-        Button(
-            onClick = { onRejectClick(inputAlasan) }, // Kirim alasan penolakan
-            modifier = Modifier
-                .width(120.dp)
-//                .align(Alignment.End) // Menempatkan tombol di ujung kanan
-                .shadow(4.dp, RoundedCornerShape(16.dp)), // Menambahkan shadow pada tombol
-            colors = ButtonDefaults.buttonColors(containerColor = Maroon),
-            shape = RoundedCornerShape(16.dp) // Membuat tombol dengan sudut yang membulat
-        ) {
-            Text("Kirim", color = Color.White)
-        }
-    }
 }
-
-
-

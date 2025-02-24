@@ -1,7 +1,6 @@
-package com.example.applicationsop.presentation.screen.admin
+package com.example.applicationsop.presentation.screen.admin.form
 
 import androidx.compose.ui.graphics.Brush
-import androidx.compose.ui.graphics.LinearGradient
 import android.app.DatePickerDialog
 import android.content.Context
 import androidx.compose.foundation.Canvas
@@ -12,24 +11,21 @@ import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
-import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
-import androidx.compose.foundation.layout.width
+import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.text.KeyboardActions
 import androidx.compose.foundation.text.KeyboardOptions
+import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.ArrowDropDown
 import androidx.compose.material.icons.filled.Close
 import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
-import androidx.compose.material3.DropdownMenu
-import androidx.compose.material3.DropdownMenuItem
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.OutlinedTextField
@@ -60,7 +56,6 @@ import com.example.applicationsop.presentation.component.ActionButton
 import com.example.applicationsop.presentation.component.BackButton
 import com.example.applicationsop.ui.theme.Maroon
 import com.example.applicationsop.ui.theme.Putih
-import com.example.applicationsop.ui.theme.ijo
 import java.util.Calendar
 
 @Composable
@@ -75,13 +70,17 @@ fun FormPengujianAdmin(navController: NavController) {
     var catatan by remember { mutableStateOf("") }
     var uraian by remember { mutableStateOf("") }
 
+    // Membuat scrollable column
+    val scrollState = rememberScrollState()
+
     Column(
         modifier = Modifier
             .fillMaxSize()
-            .background(Putih) // Ensure the background is set here
+            .background(Putih)
+            .verticalScroll(scrollState)
     ) {
         // Header Section
-        HeaderComposableFormUsulan("Formulir Pengujian", navController)
+        HeaderComposableFormPengujian("Formulir Pengujian", navController)
 
         // Form Fields Section
         Column(
@@ -169,7 +168,7 @@ fun FormPengujianAdmin(navController: NavController) {
 }
 
 @Composable
-fun HeaderComposableFormUsulan(title: String, navController: NavController) {
+fun HeaderComposableFormPengujian(title: String, navController: NavController) {
     Box(
         modifier = Modifier
             .fillMaxWidth()
@@ -194,7 +193,7 @@ fun HeaderComposableFormUsulan(title: String, navController: NavController) {
 
             Text(
                 text = title,
-                Modifier.padding(start = 45.dp),
+                Modifier.padding(start = 5.dp),
                 fontSize = 24.sp,
                 fontWeight = FontWeight.Bold,
                 color = Putih,
@@ -202,7 +201,7 @@ fun HeaderComposableFormUsulan(title: String, navController: NavController) {
             )
         }
     }
-}
+}   
 
 @Composable
 fun FormField(label: String, placeholder: String) {

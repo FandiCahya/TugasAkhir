@@ -9,7 +9,6 @@ import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Person
-import androidx.compose.material.icons.filled.Timer
 import androidx.compose.material3.*
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
@@ -26,20 +25,11 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.navigation.NavController
 import com.example.applicationsop.presentation.component.BackButton
+import com.example.applicationsop.presentation.screen.pengguna.ScheduleItem
 import com.example.applicationsop.ui.theme.Maroon
 import com.example.applicationsop.ui.theme.abang
 import com.example.applicationsop.ui.theme.ijo
 import com.example.applicationsop.ui.theme.kuning
-
-// Data model for the schedule
-data class ScheduleItem(
-    val task: String,
-    val startDate: String,
-    val endDate: String,
-    val description: String,
-    val stage: String,
-    val progressPercentage: Int // Ensure this is an Int
-)
 
 @Composable
 fun ListPengembangan(
