@@ -13,7 +13,9 @@ import androidx.compose.material3.TextButton
 import androidx.compose.material3.ButtonDefaults
 import androidx.compose.ui.res.painterResource
 import androidx.compose.foundation.Image
+import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.foundation.verticalScroll
 import androidx.compose.material3.Icon
 import androidx.compose.material3.OutlinedTextFieldDefaults
 import androidx.compose.ui.Alignment
@@ -47,6 +49,7 @@ fun LoginScreen(navController: NavController) {
     val email = remember { mutableStateOf("") }
     val password = remember { mutableStateOf("") }
     val passwordVisible = remember { mutableStateOf(false) }
+    val scrollState = rememberScrollState()
 
 
     Surface(
@@ -56,6 +59,7 @@ fun LoginScreen(navController: NavController) {
         Column(
             modifier = Modifier
                 .fillMaxSize()
+                .verticalScroll(scrollState)
         ) {
             // Logo
             LogoComposable()
@@ -244,11 +248,11 @@ fun LoginButtonComposable(
                         }
                     }
                     // Anda bisa menyimpan token di SharedPreferences atau sesi lainnya jika diperlukan
-                    Toast.makeText(context, "Login successful!", Toast.LENGTH_SHORT).show()
+                    Toast.makeText(context, "Login berhasil!", Toast.LENGTH_SHORT).show()
 
                 } else {
                     // Jika login gagal, tampilkan pesan error
-                    Toast.makeText(context, "Login failed, please try again.", Toast.LENGTH_SHORT).show()
+                    Toast.makeText(context, "Login gagal, silahkan coba lagi.", Toast.LENGTH_SHORT).show()
                 }
             }
         },

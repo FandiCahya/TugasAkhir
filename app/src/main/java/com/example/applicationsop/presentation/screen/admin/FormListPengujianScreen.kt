@@ -185,7 +185,7 @@ fun ListPengujianItem(
 @Composable
 fun ListPengujianScreenAdmin(navController: NavController) {
     var showPopup by remember { mutableStateOf(false) }
-    var selectedDetail by remember { mutableStateOf(DetailInfo()) }
+    var selectedDetail by remember { mutableStateOf(DetailInfo(id = 0)) }
 
     Column(
         modifier = Modifier
@@ -201,6 +201,7 @@ fun ListPengujianScreenAdmin(navController: NavController) {
                 val status = if (index % 2 == 0) "Pengembangan" else "Pengembangan belum selesai"
 
                 ListPengujianItem(
+//                    id = index,
                     namaSistem = "Nama Sistem ${index + 1}",
                     tanggal = "25/10/2025",
                     jenisSistem = "Sistem Baru",
@@ -210,6 +211,7 @@ fun ListPengujianScreenAdmin(navController: NavController) {
                     status = status,
                     onClick = {
                         selectedDetail = DetailInfo(
+                            id = index, // Berikan nilai ID yang unik
                             namaSistem = "Nama Sistem ${index + 1}",
                             tanggal = "25/10/2025",
                             jenisSistem = "Sistem Baru",
