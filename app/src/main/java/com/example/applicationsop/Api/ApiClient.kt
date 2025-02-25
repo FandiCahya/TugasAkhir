@@ -11,14 +11,23 @@ import com.example.applicationsop.models.LoginRequest
 import com.example.applicationsop.models.LoginResponse
 import io.ktor.client.call.body
 import com.example.applicationsop.core.ApiConfig
+import io.ktor.client.engine.okhttp.*
+import io.ktor.client.plugins.HttpTimeout
+import io.ktor.client.plugins.*
 
 // Inisialisasi HttpClient dengan plugin ContentNegotiation untuk JSON
-val client = HttpClient {
+val client = HttpClient(OkHttp) {
     install(ContentNegotiation) {
         json(Json { ignoreUnknownKeys = true })  // Menangani JSON dengan Kotlinx Serialization
     }
+
+    install(HttpTimeout) {
+        requestTimeoutMillis = 10000
+    }
+
 }
-//Function loginUser
+
+// Function to login
 suspend fun loginUser(email: String, password: String): LoginResponse? {
     return try {
         val response: HttpResponse = client.post("${ApiConfig.BASE_URL}login") {
@@ -41,6 +50,3 @@ suspend fun loginUser(email: String, password: String): LoginResponse? {
         null
     }
 }
-
-
-

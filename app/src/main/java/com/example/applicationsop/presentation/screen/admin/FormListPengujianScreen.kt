@@ -29,8 +29,6 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.sp
 import androidx.compose.ui.zIndex
-import androidx.media3.common.util.Log
-import androidx.media3.common.util.UnstableApi
 import androidx.navigation.NavController
 import com.example.applicationsop.data.DetailInfo
 import com.example.applicationsop.presentation.component.BackButton

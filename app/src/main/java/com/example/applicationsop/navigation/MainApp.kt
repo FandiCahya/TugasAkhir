@@ -32,11 +32,6 @@ fun MainApp() {
             LoginScreen(navController = navController) // Pass navController ke LoginScreen
         }
 
-        //User Navigation
-        // Rute untuk HomeUserScreen
-        composable("homeUser") {
-            HomeUserScreen(navController = navController) // Pass navController ke HomeUserScreen
-        }
 
         // Halaman FormUsulanScreen
         composable("form_usulan") {
@@ -58,10 +53,28 @@ fun MainApp() {
             ListPengembanganScreen(navController = navController)
         }
 
-        //Admin Navigation
-        // Pengembangaan user
-        composable("homeAdmin") {
-            HomeAdminScreen(navController = navController)
+        //User Navigation
+        // Rute untuk HomeUserScreen
+        composable("homeUser/{token}/{userId}/{role}/{name}/{email}/{devisi}") { backStackEntry ->
+            val token = backStackEntry.arguments?.getString("token")
+            val userId = backStackEntry.arguments?.getString("userId")
+            val role = backStackEntry.arguments?.getString("role")
+            val name = backStackEntry.arguments?.getString("name")
+            val email = backStackEntry.arguments?.getString("email")
+            val devisi = backStackEntry.arguments?.getString("devisi")
+            HomeUserScreen(navController = navController, token = token, userId = userId, role = role, name = name, email = email, devisi = devisi)
+        }
+
+        // Admin Navigation
+        // Rute untuk HomeAdminScreen dengan parameter
+        composable("homeAdmin/{token}/{userId}/{role}/{name}/{email}/{devisi}") { backStackEntry ->
+            val token = backStackEntry.arguments?.getString("token")
+            val userId = backStackEntry.arguments?.getString("userId")
+            val role = backStackEntry.arguments?.getString("role")
+            val name = backStackEntry.arguments?.getString("name")
+            val email = backStackEntry.arguments?.getString("email")
+            val devisi = backStackEntry.arguments?.getString("devisi")
+            HomeAdminScreen(navController = navController, token = token, userId = userId, role = role, name = name, email = email, devisi = devisi)
         }
 
         // List Pengajuan

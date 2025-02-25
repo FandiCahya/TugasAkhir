@@ -37,6 +37,11 @@ import com.example.applicationsop.ui.theme.Maroon
 import com.example.applicationsop.ui.theme.abang
 import com.example.applicationsop.ui.theme.ijo
 import com.example.applicationsop.ui.theme.kuning
+import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.collectAsState
+import com.example.applicationsop.Api.fetchPengajuanList
+import com.example.applicationsop.models.Pengajuan
+import kotlinx.coroutines.launch
 
 @Composable
 fun ListPengajuanItem(
@@ -115,6 +120,14 @@ fun ListPengajuanItem(
 fun ListPengajuanScreenAdmin(navController: NavController) {
     var showPopup by remember { mutableStateOf(false) }
     var selectedDetail by remember { mutableStateOf(DetailInfo(id = 0)) }
+    var pengajuanList by remember { mutableStateOf<List<Pengajuan>>(emptyList()) }
+
+    LaunchedEffect(Unit) {
+        // Fetching the data when the Composable is first launched
+        val fetchedPengajuanList = fetchPengajuanList() // Fetch the data
+        pengajuanList = fetchedPengajuanList // Updating the state
+        println("Pengajuan List View :${pengajuanList}")
+    }
 
     Column(
         modifier = Modifier
@@ -515,6 +528,5 @@ fun DetailPopup(
         }
     }
 }
-
 
 
