@@ -9,6 +9,7 @@ import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Person
+import androidx.compose.material.icons.filled.Timer
 import androidx.compose.material3.*
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
@@ -25,6 +26,7 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.navigation.NavController
 import com.example.applicationsop.presentation.component.BackButton
+import com.example.applicationsop.presentation.component.HeaderWithSearch
 import com.example.applicationsop.presentation.screen.pengguna.ScheduleItem
 import com.example.applicationsop.ui.theme.Maroon
 import com.example.applicationsop.ui.theme.abang
@@ -114,7 +116,7 @@ fun ListPengembanganAdminScreen(navController: NavController) {
             .background(Color.White)
     ) {
         // Header with back button and search icon
-        Rectangle1217(navController = navController)
+        HeaderWithSearch(navController = navController, title = "Pengembangan")
         Spacer(modifier = Modifier.height(20.dp))
 
         // List of submissions
@@ -126,8 +128,8 @@ fun ListPengembanganAdminScreen(navController: NavController) {
                     startDate = "25/10/2025",
                     endDate = "30/10/2025",
                     description = "Deskripsi singkat",
-                    stage = "Desain Ui/Ux",
-                    progressPercentage = 50
+                    stage = "Desain UI/Ux",
+                    progressPercentage = 79
                 )
 
                 // Pass actual schedule data to the ListPengembangan composable
@@ -151,9 +153,16 @@ fun ListPengembanganAdminScreen(navController: NavController) {
                 onDismiss = { showPopup = false },
                 onSave = { newSchedule ->
                     // Fungsi untuk menyimpan jadwal baru
-                    // Anda bisa menambahkan jadwal baru ke dalam list atau database sesuai kebutuhan
+                    // Update schedule item yang dipilih dengan data baru
+                    selectedScheduleItem = newSchedule
                     showPopup = false // Menutup popup setelah menyimpan
-                }
+                },
+                taskName = scheduleItem.task,
+                startDate = scheduleItem.startDate,
+                endDate = scheduleItem.endDate,
+                description = scheduleItem.description,
+                selectedStages = scheduleItem.stage.split(", "), // Misalnya, split tahapan yang dipilih
+                progressPercentage = scheduleItem.progressPercentage
             )
         }
     }
@@ -162,17 +171,28 @@ fun ListPengembanganAdminScreen(navController: NavController) {
 @Composable
 fun SchedulePopup(
     onDismiss: () -> Unit,
-    onSave: (ScheduleItem) -> Unit // Fungsi untuk menyimpan jadwal
+    onSave: (ScheduleItem) -> Unit,
+    taskName: String,
+    startDate: String,
+    endDate: String,
+    description: String,
+    selectedStages: List<String>,
+    progressPercentage: Int
 ) {
-    var taskName by remember { mutableStateOf("") }
-    var startDate by remember { mutableStateOf("") }
-    var endDate by remember { mutableStateOf("") }
-    var description by remember { mutableStateOf("") }
-    var selectedStages by remember { mutableStateOf(listOf<String>()) } // Untuk menyimpan tahap yang dipilih
-    var progressPercentage by remember { mutableStateOf(0) }
+    var taskNameState by remember { mutableStateOf(taskName) }
+    var startDateState by remember { mutableStateOf(startDate) }
+    var endDateState by remember { mutableStateOf(endDate) }
+    var descriptionState by remember { mutableStateOf(description) }
+    var selectedStagesState by remember { mutableStateOf(selectedStages) }
+    var progressPercentageState by remember { mutableStateOf(progressPercentage) }
 
-    val availableStages =
-        listOf("Analisis", "Desain UI/UX", "Pengerjaan", "Penyelesaian", "Testing")
+    val isDropdownExpanded = remember { mutableStateOf(false) }
+
+    // Menyimpan status tahap pengerjaan
+    var completedStagesState by remember { mutableStateOf(selectedStagesState) }
+    var ongoingStageState by remember { mutableStateOf("") } // Tahap yang sedang dikerjakan
+
+    val availableStages = listOf("Analisis", "Desain UI/UX", "Pengerjaan", "Penyelesaian", "Testing")
 
     Box(modifier = Modifier.fillMaxSize()) {
         // Gelap di latar belakang
@@ -193,12 +213,24 @@ fun SchedulePopup(
             shape = RoundedCornerShape(16.dp),
             colors = CardDefaults.cardColors(containerColor = Color.White)
         ) {
-            Column(
-                modifier = Modifier.padding(16.dp)
-            ) {
-                // Title
+            Column(modifier = Modifier.padding(16.dp)) {
+                // Header dengan Icon dan Title
+                Row(
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .padding(bottom = 8.dp),
+                    horizontalArrangement = Arrangement.Center
+                ) {
+                    Icon(
+                        imageVector = Icons.Filled.Timer,
+                        contentDescription = "Timer Icon",
+                        modifier = Modifier.size(24.dp),
+                        tint = Maroon
+                    )
+                }
+
                 Text(
-                    text = "Tambah Jadwal Pengembangan",
+                    text = "Jadwal Pengembangan",
                     fontSize = 18.sp,
                     fontWeight = FontWeight.Bold,
                     color = Color.Black,
@@ -206,133 +238,139 @@ fun SchedulePopup(
                     modifier = Modifier.padding(start = 40.dp)
                 )
 
-                Spacer(modifier = Modifier.height(16.dp))
+                // Line separator
+                Divider(modifier = Modifier.padding(vertical = 8.dp))
 
-                // Input for Nama Perangkat
-                TextField(
-                    value = taskName,
-                    onValueChange = { taskName = it },
-                    label = { Text("Perangkat yang dikembangkan") },
-                    modifier = Modifier.fillMaxWidth()
-                )
+                // Konten dengan dua kolom (label dan nilai)
+                Column(modifier = Modifier.fillMaxWidth()) {
+                    // Perangkat yang dikembangkan
+                    Row(modifier = Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.Start) {
+                        Column(modifier = Modifier.weight(1f)) {
+                            Text("Perangkat", fontWeight = FontWeight.Bold, color = Color.Black)
+                        }
+                        Column(modifier = Modifier.weight(2f)) {
+                            Text(": $taskNameState", color = Color.Black)
+                        }
+                    }
+                    Spacer(modifier = Modifier.height(8.dp))
 
-                Spacer(modifier = Modifier.height(8.dp))
+                    // Tanggal Mulai
+                    Row(modifier = Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.Start) {
+                        Column(modifier = Modifier.weight(1f)) {
+                            Text("Tanggal Mulai", fontWeight = FontWeight.Bold, color = Color.Black)
+                        }
+                        Column(modifier = Modifier.weight(2f)) {
+                            Text(": $startDateState", color = Color.Black)
+                        }
+                    }
+                    Spacer(modifier = Modifier.height(8.dp))
 
-                // Input for Tanggal Mulai
-                TextField(
-                    value = startDate,
-                    onValueChange = { startDate = it },
-                    label = { Text("Tanggal Mulai") },
-                    modifier = Modifier.fillMaxWidth()
-                )
+                    // Tanggal Selesai
+                    Row(modifier = Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.Start) {
+                        Column(modifier = Modifier.weight(1f)) {
+                            Text("Tanggal Selesai", fontWeight = FontWeight.Bold, color = Color.Black)
+                        }
+                        Column(modifier = Modifier.weight(2f)) {
+                            Text(": $endDateState", color = Color.Black)
+                        }
+                    }
+                    Spacer(modifier = Modifier.height(8.dp))
 
-                Spacer(modifier = Modifier.height(8.dp))
+                    // Keterangan
+                    Row(modifier = Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.Start) {
+                        Column(modifier = Modifier.weight(1f)) {
+                            Text("Keterangan", fontWeight = FontWeight.Bold, color = Color.Black)
+                        }
+                        Column(modifier = Modifier.weight(2f)) {
+                            Text(": $descriptionState", color = Color.Black)
+                        }
+                    }
+                    Spacer(modifier = Modifier.height(16.dp))
 
-                // Input for Tanggal Selesai
-                TextField(
-                    value = endDate,
-                    onValueChange = { endDate = it },
-                    label = { Text("Tanggal Selesai") },
-                    modifier = Modifier.fillMaxWidth()
-                )
-
-                Spacer(modifier = Modifier.height(8.dp))
-
-                // Input for Keterangan
-                TextField(
-                    value = description,
-                    onValueChange = { description = it },
-                    label = { Text("Keterangan") },
-                    modifier = Modifier.fillMaxWidth()
-                )
-
-                Spacer(modifier = Modifier.height(16.dp))
-
-                // RadioButton untuk memilih tahapan
-                Text("Pilih Tahap Pengerjaan:", fontWeight = FontWeight.Bold)
-                availableStages.forEach { stage ->
                     Row(
-                        modifier = Modifier
-                            .fillMaxWidth()
-                            .padding(4.dp)
+                        modifier = Modifier.fillMaxWidth(),
+                        horizontalArrangement = Arrangement.Start
                     ) {
-                        // RadioButton untuk tiap tahap
-                        RadioButton(
-                            selected = selectedStages.contains(stage),
-                            onClick = {
-                                if (selectedStages.contains(stage)) {
-                                    selectedStages = selectedStages.filter { it != stage }
-                                } else {
-                                    selectedStages = selectedStages + stage
-                                }
+                        // Kolom untuk label "Progres"
+                        Column(modifier = Modifier.weight(1f)) {
+                            Text("Progres", fontWeight = FontWeight.Bold, color = Color.Black)
+                        }
 
-                                // Menghitung persentase berdasarkan tahapan yang dipilih
-                                progressPercentage =
-                                    (selectedStages.size * 100) / availableStages.size
+                        // Kolom untuk Circular Progress Indicator dengan persentase
+                        Column(
+                            modifier = Modifier
+                                .weight(2f),
+                            horizontalAlignment = Alignment.CenterHorizontally // Memastikan isinya di tengah
+                        ) {
+                            Box(
+                                contentAlignment = Alignment.Center,
+                                modifier = Modifier.size(100.dp) // Ukuran untuk CircularProgressIndicator
+                            ) {
+                                CircularProgressIndicator(
+                                    progress = progressPercentageState / 100f, // Menghitung progres
+                                    modifier = Modifier.fillMaxSize(),
+                                    color = Maroon, // Warna progres
+                                    strokeWidth = 20.dp // Lebar lingkaran
+                                )
+
+                                // Persentase di tengah Circular Progress Indicator
+                                Text(
+                                    text = "$progressPercentageState%",
+                                    fontSize = 16.sp,
+                                    fontWeight = FontWeight.Bold,
+                                    color = Color.Black
+                                )
                             }
-                        )
-                        Text(stage, modifier = Modifier.padding(start = 8.dp))
+                        }
                     }
-                }
 
-                Spacer(modifier = Modifier.height(16.dp))
+                    Spacer(modifier = Modifier.height(16.dp))
 
-                // Menampilkan progress dan persentase
-                Text("Progres: $progressPercentage%", fontWeight = FontWeight.Bold)
-
-                Spacer(modifier = Modifier.height(16.dp))
-
-                // Button Save
-                Row(
-                    modifier = Modifier.fillMaxWidth(),
-                    horizontalArrangement = Arrangement.End
-                ) {
-                    Button(
-                        onClick = {
-                            // Menyimpan data jadwal progres
-                            val schedule = ScheduleItem(
-                                task = taskName,
-                                startDate = startDate,
-                                endDate = endDate,
-                                description = description,
-                                stage = selectedStages.joinToString(", "),
-                                progressPercentage = progressPercentage
-                            )
-                            onSave(schedule) // Fungsi untuk menyimpan jadwal
-                        },
-                        modifier = Modifier
-                            .width(120.dp)
-                            .shadow(4.dp, RoundedCornerShape(16.dp)),
-                        colors = ButtonDefaults.buttonColors(containerColor = Maroon),
-                        shape = RoundedCornerShape(16.dp)
+                    // Tombol Update dan Close berdampingan
+                    Row(
+                        modifier = Modifier.fillMaxWidth(),
+                        horizontalArrangement = Arrangement.End // Memberi jarak antar tombol
                     ) {
-                        Text("Simpan", color = Color.White)
-                    }
-                }
+                        // Tombol Update
+                        Button(
+                            onClick = {
+                                val schedule = ScheduleItem(
+                                    task = taskNameState,
+                                    startDate = startDateState,
+                                    endDate = endDateState,
+                                    description = descriptionState,
+                                    stage = completedStagesState.joinToString(", "),
+                                    progressPercentage = progressPercentageState
+                                )
+                                onSave(schedule) // Fungsi untuk menyimpan atau memperbarui jadwal
+                            },
+                            modifier = Modifier
+                                .width(120.dp)
+                                .padding(end = 10.dp)
+                                .shadow(4.dp, RoundedCornerShape(16.dp)),
+                            colors = ButtonDefaults.buttonColors(containerColor = Maroon),
+                            shape = RoundedCornerShape(16.dp)
+                        ) {
+                            Text("Update", color = Color.White) // Mengubah teks tombol menjadi "Update"
+                        }
 
-                Spacer(modifier = Modifier.height(16.dp))
-
-                // Close Button
-                Row(
-                    modifier = Modifier.fillMaxWidth(),
-                    horizontalArrangement = Arrangement.End
-                ) {
-                    Button(
-                        onClick = onDismiss,
-                        modifier = Modifier
-                            .width(100.dp)
-                            .shadow(4.dp, RoundedCornerShape(16.dp)),
-                        colors = ButtonDefaults.buttonColors(containerColor = Color.Gray),
-                        shape = RoundedCornerShape(16.dp)
-                    ) {
-                        Text("Tutup", color = Color.White)
+                        // Tombol Close
+                        Button(
+                            onClick = onDismiss,
+                            modifier = Modifier
+                                .width(100.dp)
+                                .shadow(4.dp, RoundedCornerShape(16.dp)),
+                            colors = ButtonDefaults.buttonColors(containerColor = Color.Gray),
+                            shape = RoundedCornerShape(16.dp)
+                        ) {
+                            Text("Tutup", color = Color.White)
+                        }
                     }
                 }
             }
         }
     }
 }
-
 
 @Composable
 fun HeaderComposablePengembangan(title: String, navController: NavController) {

@@ -36,7 +36,7 @@ fun BackButton(navController: NavController, colorVersion: String = "default", m
         modifier = Modifier
             .size(40.dp) // Set the button size
             .background(backgroundColor, CircleShape) // Set circle background color
-            .padding(10.dp) // Padding inside the button
+            .padding(10.dp),
     ) {
         Icon(
             imageVector = Icons.Filled.ArrowBack,

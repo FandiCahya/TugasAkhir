@@ -78,69 +78,69 @@ fun HomeAdminScreen(navController: NavController) {
 @RequiresApi(Build.VERSION_CODES.O)
 @Composable
 fun HeaderComposable(navController: NavController) {
-    // Ambil waktu saat ini
-    val currentTime = LocalTime.now()
-    val greeting = when {
-        currentTime.isBefore(LocalTime.of(11, 0)) -> "Selamat Pagi"
-        currentTime.isBefore(LocalTime.of(16, 0)) -> "Selamat Siang"
-        currentTime.isBefore(LocalTime.of(19, 0)) -> "Selamat Sore"
-        else -> "Selamat Malam"  // Mulai jam 19
-    }
-
-    Box(
-        modifier = Modifier
-            .fillMaxWidth()
-            .background(
-                brush = Brush.verticalGradient(
-                    colors = listOf(Maroon, Color.Transparent), // Gradasi dari Maroon ke Transparan
-                    startY = 0f,
-                    endY = Float.POSITIVE_INFINITY
-                )
-            )
-            .padding(20.dp)
-    ) {
-        Row(
-            modifier = Modifier.fillMaxWidth(),
-            horizontalArrangement = Arrangement.SpaceBetween, // Membuat teks dan ikon berada di ujung kiri dan kanan
-            verticalAlignment = Alignment.CenterVertically // Agar teks dan ikon sejajar secara vertikal
-        ) {
-            // Menampilkan ucapan sesuai waktu
-            Column(
-                verticalArrangement = Arrangement.Center
-            ) {
-                Text(
-                    text = greeting, // Menampilkan ucapan berdasarkan waktu
-                    fontSize = 16.sp,
-                    fontWeight = FontWeight.Normal,
-                    color = Putih
-                )
-                Text(
-                    text = "Hi, Admin",
-                    fontSize = 24.sp,
-                    fontWeight = FontWeight.Bold,
-                    color = Putih
-                )
-            }
-
-            // Ikon profil di sebelah kanan
-            IconButton(onClick = {
-                // Arahkan ke menu profil ketika ikon diklik
-                navController.navigate("profile") // Anda perlu menambahkan rute "profile" di AppNavigation
-            }) {
-                Icon(
-                    imageVector = Icons.Filled.Person, // Menggunakan ikon "Person" dari Material Icons
-                    contentDescription = "Profile",
-                    modifier = Modifier
-                        .size(40.dp)
-                        .clip(CircleShape)
-                        .border(2.dp, Color.White, CircleShape) // Membuat border lingkaran putih
-                )
-            }
+        // Ambil waktu saat ini
+        val currentTime = LocalTime.now()
+        val greeting = when {
+            currentTime.isBefore(LocalTime.of(11, 0)) -> "Selamat Pagi"
+            currentTime.isBefore(LocalTime.of(16, 0)) -> "Selamat Siang"
+            currentTime.isBefore(LocalTime.of(19, 0)) -> "Selamat Sore"
+            else -> "Selamat Malam"  // Mulai jam 19
         }
 
-        // Search Bar (tetap berada di bawah teks dan ikon)
-        Spacer(modifier = Modifier.height(10.dp))
-    }
+        Box(
+            modifier = Modifier
+                .fillMaxWidth()
+                .background(
+                    brush = Brush.verticalGradient(
+                        colors = listOf(Maroon, Color.Transparent), // Gradasi dari Maroon ke Transparan
+                        startY = 0f,
+                        endY = Float.POSITIVE_INFINITY
+                    )
+                )
+                .padding(20.dp)
+        ) {
+            Row(
+                modifier = Modifier.fillMaxWidth(),
+                horizontalArrangement = Arrangement.SpaceBetween, // Membuat teks dan ikon berada di ujung kiri dan kanan
+                verticalAlignment = Alignment.CenterVertically // Agar teks dan ikon sejajar secara vertikal
+            ) {
+                // Menampilkan ucapan sesuai waktu
+                Column(
+                    verticalArrangement = Arrangement.Center
+                ) {
+                    Text(
+                        text = greeting, // Menampilkan ucapan berdasarkan waktu
+                        fontSize = 16.sp,
+                        fontWeight = FontWeight.Normal,
+                        color = Putih
+                    )
+                    Text(
+                        text = "Hi, Admin",
+                        fontSize = 24.sp,
+                        fontWeight = FontWeight.Bold,
+                        color = Putih
+                    )
+                }
+
+                // Ikon profil di sebelah kanan
+                IconButton(onClick = {
+                    // Arahkan ke menu profil ketika ikon diklik
+                    navController.navigate("profile") // Anda perlu menambahkan rute "profile" di AppNavigation
+                }) {
+                    Icon(
+                        imageVector = Icons.Filled.Person, // Menggunakan ikon "Person" dari Material Icons
+                        contentDescription = "Profile",
+                        modifier = Modifier
+                            .size(40.dp)
+                            .clip(CircleShape)
+                            .border(2.dp, Color.White, CircleShape) // Membuat border lingkaran putih
+                    )
+                }
+            }
+
+            // Search Bar (tetap berada di bawah teks dan ikon)
+            Spacer(modifier = Modifier.height(10.dp))
+        }
 }
 
 
