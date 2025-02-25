@@ -62,10 +62,13 @@ fun ScheduleForm(navController: NavController, onSave: (ScheduleItem) -> Unit) {
                 .padding(16.dp),
             verticalArrangement = Arrangement.spacedBy(16.dp)
         ) {
-            // Form fields
-            FormField(label = "Perangkat yang dikembangkan", placeholder = "Isi perangkat yang dikembangkan") {
-                taskName = it
-            }
+            Text(
+                text = "Perangkat yang dikembangkan: $taskName",
+                modifier = Modifier.fillMaxWidth(),
+                color = Maroon,
+                fontSize = 16.sp,
+                fontWeight = FontWeight.Bold
+            )
 
             DatePickerField(label = "Tanggal Mulai") {
                 startDate = it
@@ -87,7 +90,7 @@ fun ScheduleForm(navController: NavController, onSave: (ScheduleItem) -> Unit) {
             "Pilih Tahap Pengerjaan:",
             fontWeight = FontWeight.Bold,
             color = Maroon,
-            modifier = Modifier.padding(start = 16.dp) // Added padding to the left
+            modifier = Modifier.padding(start = 20.dp) // Added padding to the left
         )
 
         // Create two columns for the checkboxes
@@ -173,11 +176,11 @@ fun ScheduleForm(navController: NavController, onSave: (ScheduleItem) -> Unit) {
                         progressPercentage = progressPercentage
                     )
                     onSave(schedule)
-                    navController.popBackStack() // Kembali ke layar sebelumnya
+                    navController.popBackStack() 
                 },
                 modifier = Modifier
-                    .size(120.dp, 40.dp) // Resize button to make it smaller
-                    .shadow(4.dp, RoundedCornerShape(16.dp)), // Adding shadow to the button
+                    .size(120.dp, 40.dp)
+                    .shadow(4.dp, RoundedCornerShape(16.dp)),
                 colors = ButtonDefaults.buttonColors(containerColor = Maroon),
                 shape = RoundedCornerShape(16.dp)
             ) {

@@ -34,81 +34,11 @@ import androidx.media3.common.util.UnstableApi
 import androidx.navigation.NavController
 import com.example.applicationsop.data.DetailInfo
 import com.example.applicationsop.presentation.component.BackButton
+import com.example.applicationsop.presentation.component.HeaderWithSearch
 import com.example.applicationsop.ui.theme.Maroon
 import com.example.applicationsop.ui.theme.abang
 import com.example.applicationsop.ui.theme.ijo
 import com.example.applicationsop.ui.theme.kuning
-
-@OptIn(ExperimentalMaterial3Api::class)
-@Composable
-fun Rectangle1217Pengujian(navController: NavController) {
-    Box(
-        modifier = Modifier
-            .fillMaxWidth()
-            .height(160.dp)
-            .background(
-                brush = Brush.verticalGradient(
-                    colors = listOf(Maroon, Color.Transparent), // Gradasi dari Maroon ke Transparan
-                    startY = 0f,
-                    endY = Float.POSITIVE_INFINITY
-                )
-            )
-            .zIndex(1f)
-    ) {
-        BackButton(
-            navController = navController,
-            colorVersion = "w"
-        )
-
-        Text(
-            text = "Pengujian",
-            fontSize = 24.sp,
-            fontWeight = FontWeight.Bold,
-            color = Color.White,
-            modifier = Modifier
-                .align(Alignment.Center)
-                .padding(bottom = 90.dp)
-        )
-
-        Column(
-            modifier = Modifier
-                .fillMaxWidth()
-                .align(Alignment.BottomCenter) // Align the search bar at the bottom and center horizontally
-                .padding(horizontal = 50.dp)
-                .padding(bottom = 30.dp)
-        ) {
-            TextField(
-                value = "",
-                onValueChange = { /* Handle text input here */ },
-                placeholder = {
-                    Text(
-                        text = "Cari",
-                        color = Color.Gray, // Adjust color as needed
-                        style = androidx.compose.ui.text.TextStyle(fontSize = 12.sp)
-                    )
-                },
-                leadingIcon = {
-                    Icon(
-                        imageVector = Icons.Filled.Search,
-                        contentDescription = "Search",
-                        tint = Maroon,
-                        modifier = Modifier.padding(start = 20.dp)
-                    )
-                },
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .height(45.dp),
-                shape = RoundedCornerShape(50.dp),
-                colors = TextFieldDefaults.textFieldColors(
-                    containerColor = Color.White,
-                    focusedIndicatorColor = Color.Transparent,
-                    unfocusedIndicatorColor = Color.Transparent
-                )
-            )
-
-        }
-    }
-}
 
 @Composable
 fun ListPengujianItem(
@@ -192,7 +122,7 @@ fun ListPengujianScreenAdmin(navController: NavController) {
             .fillMaxSize()
             .background(Color.White)
     ) {
-        Rectangle1217Pengujian(navController = navController)
+        HeaderWithSearch(navController = navController, title = "Pengujian")
         Spacer(modifier = Modifier.height(20.dp))
 
         // List of submissions
@@ -201,7 +131,6 @@ fun ListPengujianScreenAdmin(navController: NavController) {
                 val status = if (index % 2 == 0) "Pengembangan" else "Pengembangan belum selesai"
 
                 ListPengujianItem(
-//                    id = index,
                     namaSistem = "Nama Sistem ${index + 1}",
                     tanggal = "25/10/2025",
                     jenisSistem = "Sistem Baru",

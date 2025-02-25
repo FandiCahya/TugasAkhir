@@ -264,7 +264,7 @@ fun LoginButtonComposable(
             containerColor = Maroon
         )
     ) {
-        Text("Login", color = Putih)
+        Text("Sign In", color = Putih)
     }
 }
 

@@ -14,6 +14,8 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.unit.dp
 import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.Description
+import androidx.compose.material.icons.filled.Edit
 import androidx.compose.material.icons.filled.Person
 import androidx.compose.material.icons.filled.Search
 import androidx.compose.material.icons.filled.Timer
@@ -30,85 +32,11 @@ import androidx.compose.ui.zIndex
 import androidx.navigation.NavController
 import com.example.applicationsop.data.DetailInfo
 import com.example.applicationsop.presentation.component.BackButton
+import com.example.applicationsop.presentation.component.HeaderWithSearch
 import com.example.applicationsop.ui.theme.Maroon
 import com.example.applicationsop.ui.theme.abang
 import com.example.applicationsop.ui.theme.ijo
 import com.example.applicationsop.ui.theme.kuning
-
-@OptIn(ExperimentalMaterial3Api::class)
-@Composable
-fun Rectangle1217(navController: NavController) {
-    Box(
-        modifier = Modifier
-            .fillMaxWidth()
-            .height(160.dp)
-//            .clip(shape = RoundedCornerShape(bottomStart = 80.dp, bottomEnd = 80.dp))
-            .background(
-                brush = Brush.verticalGradient(
-                    colors = listOf(Maroon, Color.Transparent), // Gradasi dari Maroon ke Transparan
-                    startY = 0f,
-                    endY = Float.POSITIVE_INFINITY
-                )
-            )
-            .zIndex(1f)
-    ) {
-        // Back Button on the left
-        BackButton(
-            navController = navController,
-            colorVersion = "w"
-        )
-
-        // Title Text "Pengajuan" aligned in the center
-        Text(
-            text = "Pengajuan",
-            fontSize = 24.sp,
-            fontWeight = FontWeight.Bold,
-            color = Color.White,
-            modifier = Modifier
-                .align(Alignment.Center)
-                .padding(bottom = 90.dp)
-        )
-
-        // Search bar positioned below "Pengajuan" text and center it vertically
-        Column(
-            modifier = Modifier
-                .fillMaxWidth()
-                .align(Alignment.BottomCenter) // Align the search bar at the bottom and center horizontally
-                .padding(horizontal = 50.dp)
-                .padding(bottom = 30.dp)
-        ) {
-            TextField(
-                value = "",
-                onValueChange = { /* Handle text input here */ },
-                placeholder = {
-                    Text(
-                        text = "Cari",
-                        color = Color.Gray, // Adjust color as needed
-                        style = androidx.compose.ui.text.TextStyle(fontSize = 12.sp)
-                    )
-                },
-                leadingIcon = {
-                    Icon(
-                        imageVector = Icons.Filled.Search,
-                        contentDescription = "Search",
-                        tint = Maroon,
-                        modifier = Modifier.padding(start = 20.dp)
-                    )
-                },
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .height(45.dp),
-                shape = RoundedCornerShape(50.dp),
-                colors = TextFieldDefaults.textFieldColors(
-                    containerColor = Color.White,
-                    focusedIndicatorColor = Color.Transparent,  // Remove the focus indicator line
-                    unfocusedIndicatorColor = Color.Transparent // Remove the unfocused indicator line
-                )
-            )
-
-        }
-    }
-}
 
 @Composable
 fun ListPengajuanItem(
@@ -194,7 +122,7 @@ fun ListPengajuanScreenAdmin(navController: NavController) {
             .background(Color.White)
     ) {
         // Header with back button and search icon
-        Rectangle1217(navController = navController)
+        HeaderWithSearch(navController = navController, title = "Pengajuan")
         Spacer(modifier = Modifier.height(20.dp))
 
         // List of submissions
@@ -301,10 +229,10 @@ fun DetailPopup(
                     horizontalArrangement = Arrangement.Center
                 ) {
                     Icon(
-                        imageVector = Icons.Filled.Timer,
-                        contentDescription = "Timer Icon",
-                        modifier = Modifier.size(24.dp),
-                        tint = Maroon
+                            imageVector = Icons.Filled.Description,
+                    contentDescription = "Des Icon",
+                    modifier = Modifier.size(24.dp),
+                    tint = Maroon
                     )
                 }
                 Text(

@@ -8,7 +8,7 @@ import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
 import com.example.applicationsop.loginScreen.LoginScreen
 import com.example.applicationsop.presentation.screen.pengguna.ListPengajuanScreen
-import com.example.applicationsop.presentation.screen.ProfileScreen
+import com.example.applicationsop.presentation.screen.ProfileScreen1
 import com.example.applicationsop.presentation.screen.admin.form.FormPengujianAdmin
 import com.example.applicationsop.presentation.screen.admin.HomeAdminScreen
 import com.example.applicationsop.presentation.screen.admin.ListPengajuanScreenAdmin
@@ -45,7 +45,7 @@ fun MainApp() {
 
         // Profile
         composable("profile") {
-            ProfileScreen(navController = navController)
+            ProfileScreen1(navController = navController)
         }
 
         // List Pengajuan
