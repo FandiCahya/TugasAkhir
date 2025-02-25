@@ -38,7 +38,15 @@ import java.time.LocalTime
 
 @RequiresApi(Build.VERSION_CODES.O)
 @Composable
-fun HomeUserScreen(navController: NavController) {
+fun HomeUserScreen(
+    navController: NavController,
+    token: String?,
+    userId: String?,
+    role: String?,
+    name: String?,
+    email: String?,
+    devisi: String?
+) {
     Box(
         modifier = Modifier
             .fillMaxSize()
@@ -51,7 +59,7 @@ fun HomeUserScreen(navController: NavController) {
                 .padding(bottom = 80.dp) // Memberikan ruang bawah agar FAB tidak tertutup
         ) {
             // Header
-            HeaderComposable(navController = navController)
+            HeaderComposable(navController = navController, nameUser = name)
 
             // Pengajuan Section
             SectionTitle("Pengajuan")
@@ -94,7 +102,7 @@ fun HomeUserScreen(navController: NavController) {
 
 @RequiresApi(Build.VERSION_CODES.O)
 @Composable
-fun HeaderComposable(navController: NavController) {
+fun HeaderComposable(navController: NavController, nameUser: String?) {
     // Ambil waktu saat ini
     val currentTime = LocalTime.now()
     val greeting = when {
@@ -132,7 +140,7 @@ fun HeaderComposable(navController: NavController) {
                     color = Putih
                 )
                 Text(
-                    text = "Hi, Mutant",
+                    text = "Hi, ${nameUser ?: "Mutant"}",  // Menampilkan nama user atau "Mutant" jika tidak ada nama
                     fontSize = 24.sp,
                     fontWeight = FontWeight.Bold,
                     color = Putih

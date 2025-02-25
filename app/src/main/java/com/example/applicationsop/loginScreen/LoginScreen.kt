@@ -13,9 +13,7 @@ import androidx.compose.material3.TextButton
 import androidx.compose.material3.ButtonDefaults
 import androidx.compose.ui.res.painterResource
 import androidx.compose.foundation.Image
-import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.RoundedCornerShape
-import androidx.compose.foundation.verticalScroll
 import androidx.compose.material3.Icon
 import androidx.compose.material3.OutlinedTextFieldDefaults
 import androidx.compose.ui.Alignment
@@ -49,7 +47,6 @@ fun LoginScreen(navController: NavController) {
     val email = remember { mutableStateOf("") }
     val password = remember { mutableStateOf("") }
     val passwordVisible = remember { mutableStateOf(false) }
-    val scrollState = rememberScrollState()
 
 
     Surface(
@@ -59,7 +56,6 @@ fun LoginScreen(navController: NavController) {
         Column(
             modifier = Modifier
                 .fillMaxSize()
-                .verticalScroll(scrollState)
         ) {
             // Logo
             LogoComposable()
@@ -79,6 +75,8 @@ fun LoginScreen(navController: NavController) {
                 isPassword = false // Untuk email, tidak perlu hide/show password
             )
 
+            Spacer(modifier = Modifier.height(16.dp))
+
             // Password TextField
             TextInputComposable(
                 label = "Password",
@@ -87,7 +85,9 @@ fun LoginScreen(navController: NavController) {
                 iconId = R.drawable.ic_key, // Ganti dengan ikon yang sesuai untuk password
                 isPassword = true,
                 isPasswordVisible = passwordVisible.value,
-                onPasswordVisibilityChange = { passwordVisible.value = it } // Fungsi untuk toggle password visibility
+                onPasswordVisibilityChange = {
+                    passwordVisible.value = it
+                } // Fungsi untuk toggle password visibility
             )
 
             Spacer(modifier = Modifier.height(16.dp))
@@ -118,7 +118,10 @@ fun LogoComposable() {
     Box(
         modifier = Modifier
             .fillMaxWidth()
-            .padding(bottom = 40.dp, start = 25.dp) // Beri sedikit padding agar tidak terlalu ke tepi layar
+            .padding(
+                bottom = 40.dp,
+                start = 25.dp
+            ) // Beri sedikit padding agar tidak terlalu ke tepi layar
     ) {
         Image(
             painter = painterResource(id = R.drawable.lifemedia_logo),
@@ -142,7 +145,7 @@ fun TitleTextComposable() {
             fontWeight = FontWeight.Bold,
             color = Maroon,
 
-        )
+            )
     }
 }
 
@@ -152,7 +155,7 @@ fun SubtitleTextComposable() {
     Column(
         modifier = Modifier.fillMaxWidth(),
         horizontalAlignment = Alignment.CenterHorizontally
-    ){
+    ) {
         Text(
             text = "DIGITAL SOP MANAGEMENT APPLICATION",
             fontSize = 13.sp,
@@ -235,24 +238,29 @@ fun LoginButtonComposable(
                     // Menentukan navigasi berdasarkan role
                     when (response.user.role) {
                         "admin" -> {
-                            navController.navigate("homeAdmin")
+                            navController.navigate("homeAdmin/${response.token}/${response.user.id}/${response.user.role}/${response.user.name}/${response.user.email}/${response.user.devisi}")
                         }
+
                         "user" -> {
-                            navController.navigate("homeUser")
+                            navController.navigate("homeUser/${response.token}/${response.user.id}/${response.user.role}/${response.user.name}/${response.user.email}/${response.user.devisi}")
                         }
+
                         "mqr", "kepalacabang" -> {
                             navController.navigate("homeAdmin")
                         }
+
                         else -> {
-                            Toast.makeText(context, "Role tidak dikenal.", Toast.LENGTH_SHORT).show()
+                            Toast.makeText(context, "Role tidak dikenal.", Toast.LENGTH_SHORT)
+                                .show()
                         }
                     }
                     // Anda bisa menyimpan token di SharedPreferences atau sesi lainnya jika diperlukan
-                    Toast.makeText(context, "Login berhasil!", Toast.LENGTH_SHORT).show()
+                    Toast.makeText(context, "Login successful!", Toast.LENGTH_SHORT).show()
 
                 } else {
                     // Jika login gagal, tampilkan pesan error
-                    Toast.makeText(context, "Login gagal, silahkan coba lagi.", Toast.LENGTH_SHORT).show()
+                    Toast.makeText(context, "Login failed, please try again.", Toast.LENGTH_SHORT)
+                        .show()
                 }
             }
         },
