@@ -39,9 +39,25 @@ fun MainApp() {
         }
 
         // Profile
-        composable("profile") {
-            ProfileScreen1(navController = navController)
+        composable("profile?token={token}&userId={userId}&role={role}&name={name}&email={email}&devisi={devisi}") { backStackEntry ->
+            val token = backStackEntry.arguments?.getString("token")
+            val userId = backStackEntry.arguments?.getString("userId")
+            val role = backStackEntry.arguments?.getString("role")
+            val name = backStackEntry.arguments?.getString("name")
+            val email = backStackEntry.arguments?.getString("email")
+            val devisi = backStackEntry.arguments?.getString("devisi")
+
+            ProfileScreen1(
+                navController = navController,
+                token = token,
+                userId = userId,
+                role = role,
+                name = name,
+                email = email,
+                devisi = devisi
+            )
         }
+
 
         // List Pengajuan
         composable("list_pengajuanUser") {
@@ -79,7 +95,7 @@ fun MainApp() {
 
         // List Pengajuan
         composable("list_pengajuanAdmin") {
-            ListPengajuanScreenAdmin(navController = navController)
+            ListPengajuanScreenAdmin(navController = navController )
         }
 
         // Pengembangaan user

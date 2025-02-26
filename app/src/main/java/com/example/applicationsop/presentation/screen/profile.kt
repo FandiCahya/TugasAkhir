@@ -30,7 +30,15 @@ import androidx.compose.ui.zIndex
 import com.example.applicationsop.presentation.component.BackButton
 
 @Composable
-fun ProfileScreen1(navController: NavController) {
+fun ProfileScreen1(
+    navController: NavController,
+    token: String?,
+    userId: String?,
+    role: String?,
+    name: String?,
+    email: String?,
+    devisi: String?
+) {
     var signaturePath by remember { mutableStateOf(androidx.compose.ui.graphics.Path()) }
     var showSignaturePad by remember { mutableStateOf(false) }
     var showSignatureValidDialog by remember { mutableStateOf(false) }
@@ -107,20 +115,20 @@ fun ProfileScreen1(navController: NavController) {
                     verticalArrangement = Arrangement.Center // Vertically center content
                 ) {
                     Text(
-                        text = "Admin", // User's name
+                        text = "${name ?: "mutant"}", // User's name
                         fontSize = 20.sp,
                         color = Color.Black,
                         fontWeight = FontWeight.Bold
                     )
                     Spacer(modifier = Modifier.height(4.dp)) // Space between name and email
                     Text(
-                        text = "admin@gmail.com", // User's email
+                        text = "${email ?: "admin@gmail.com"}", // User's email
                         fontSize = 16.sp,
                         color = Color.Gray
                     )
                     Spacer(modifier = Modifier.height(4.dp)) // Space between email and phone number
                     Text(
-                        text = "VAS", // User's phone number
+                        text = "${devisi ?: "VAS"}", // User's phone number
                         fontSize = 16.sp,
                         color = Color.Gray
                     )
@@ -190,9 +198,11 @@ fun ProfileScreen1(navController: NavController) {
                 }
 
                 // Divider after Sign Out button (No extra padding)
-                Divider(modifier = Modifier
-                    .padding(horizontal = 15.dp)
-                    .padding(bottom = 30.dp))
+                Divider(
+                    modifier = Modifier
+                        .padding(horizontal = 15.dp)
+                        .padding(bottom = 30.dp)
+                )
 
             }
         }

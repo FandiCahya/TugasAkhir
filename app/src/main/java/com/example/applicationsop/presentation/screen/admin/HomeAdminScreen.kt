@@ -1,6 +1,7 @@
 package com.example.applicationsop.presentation.screen.admin
 
 import android.os.Build
+import android.util.Log
 import androidx.annotation.RequiresApi
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
@@ -61,7 +62,16 @@ fun HomeAdminScreen(
                 .padding(bottom = 80.dp) // Memberikan ruang bawah agar FAB tidak tertutup
         ) {
             // Header
-            HeaderComposable(navController = navController, adminName = name)
+            HeaderComposable(
+                navController = navController,
+                adminName = name,
+                adminToken = token,
+                adminuserId  = userId,
+                adminrole = role,
+                adminemail = email ,
+                admindevisi = devisi
+            )
+
 
             // Pengajuan Section
             SectionTitle("Pengajuan")
@@ -85,7 +95,22 @@ fun HomeAdminScreen(
 
 @RequiresApi(Build.VERSION_CODES.O)
 @Composable
-fun HeaderComposable(navController: NavController, adminName: String?) {
+fun HeaderComposable(
+    navController: NavController,
+    adminName: String?,
+    adminToken: String?,
+    adminuserId: String?,
+    adminrole: String?,
+    adminemail: String?,
+    admindevisi: String?
+) {
+    // Cek data yang diterima dengan log
+    Log.d("HeaderComposable", "adminName: $adminName")
+    Log.d("HeaderComposable", "adminToken: $adminToken")
+    Log.d("HeaderComposable", "adminuserId: $adminuserId")
+    Log.d("HeaderComposable", "adminrole: $adminrole")
+    Log.d("HeaderComposable", "adminemail: $adminemail")
+    Log.d("HeaderComposable", "admindevisi: $admindevisi")
     // Ambil waktu saat ini
     val currentTime = LocalTime.now()
     val greeting = when {
@@ -133,7 +158,10 @@ fun HeaderComposable(navController: NavController, adminName: String?) {
             // Ikon profil di sebelah kanan
             IconButton(onClick = {
                 // Arahkan ke menu profil ketika ikon diklik
-                navController.navigate("profile") // Anda perlu menambahkan rute "profile" di AppNavigation
+//                navController.navigate("profile")
+                navController.navigate("profile?token=$adminToken&userId=$adminuserId&role=$adminrole&name=$adminName&email=$adminemail&devisi=$admindevisi")
+
+
             }) {
                 Icon(
                     imageVector = Icons.Filled.Person, // Menggunakan ikon "Person" dari Material Icons
