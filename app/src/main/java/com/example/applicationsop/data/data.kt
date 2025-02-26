@@ -2,7 +2,7 @@ package com.example.applicationsop.data
 
 // Data class untuk menyimpan informasi detail usulan
 data class DetailInfo(
-    val id: Int, // Tambahkan ID untuk identifikasi yang unik
+    val id: String, // Tambahkan ID untuk identifikasi yang unik
     val namaSistem: String = "",
     val tanggal: String = "",
     val jenisSistem: String = "",
