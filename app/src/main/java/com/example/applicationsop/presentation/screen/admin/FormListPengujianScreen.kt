@@ -19,6 +19,7 @@ import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Person
 import androidx.compose.material.icons.filled.Search
 import androidx.compose.material.icons.filled.Timer
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
@@ -30,7 +31,11 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.sp
 import androidx.compose.ui.zIndex
 import androidx.navigation.NavController
+import com.example.applicationsop.Api.fetchPengajuanList
+import com.example.applicationsop.Api.fetchPengujianList
 import com.example.applicationsop.data.DetailInfo
+import com.example.applicationsop.models.Pengajuan
+import com.example.applicationsop.models.Pengujian
 import com.example.applicationsop.presentation.component.BackButton
 import com.example.applicationsop.presentation.component.HeaderWithSearch
 import com.example.applicationsop.ui.theme.Maroon
@@ -114,6 +119,14 @@ fun ListPengujianItem(
 fun ListPengujianScreenAdmin(navController: NavController) {
     var showPopup by remember { mutableStateOf(false) }
     var selectedDetail by remember { mutableStateOf(DetailInfo(id = "")) }
+    var pengujianList by remember { mutableStateOf<List<Pengujian>>(emptyList()) }
+
+    LaunchedEffect(Unit) {
+        // Fetching the data when the Composable is first launched
+        val fetchedPengujianList = fetchPengujianList() // Fetch the data
+        pengujianList = fetchedPengujianList // Updating the state
+        println("Pengujian List View :${pengujianList}")
+    }
 
     Column(
         modifier = Modifier
@@ -123,28 +136,31 @@ fun ListPengujianScreenAdmin(navController: NavController) {
         HeaderWithSearch(navController = navController, title = "Pengujian")
         Spacer(modifier = Modifier.height(20.dp))
 
-        // List of submissions
+        // List of pengujian items from fetched data
         LazyColumn(modifier = Modifier.fillMaxSize()) {
-            items(2) { index ->
-                val status = if (index % 2 == 0) "Pengembangan" else "Pengembangan belum selesai"
+            items(pengujianList) { pengujian ->
+                val status = when (pengujian.pengembangan.status) {
+                    "finished" -> "Pengembangan Selesai"
+                    else -> "Pengembangan Belum Selesai"
+                }
 
                 ListPengujianItem(
-                    namaSistem = "Nama Sistem ${index + 1}",
-                    tanggal = "25/10/2025",
-                    jenisSistem = "Sistem Baru",
-                    rencanaAnggaran = "Termasuk dalam perencanaan",
-                    masalahSistem = "Bug tampilan...",
-                    outputHasil = "Hasil yang diinginkan...",
+                    namaSistem = pengujian.perangkat_lunak, // System name from the API
+                    tanggal = pengujian.tanggal, // Date of testing
+                    jenisSistem = pengujian.metode.toString(), // System type (converted to string from Int if needed)
+                    rencanaAnggaran = pengujian.pengujian_detail.firstOrNull()?.hasil_diharapkan ?: "Data Tidak Tersedia", // Example of another field
+                    masalahSistem = pengujian.pengujian_detail.firstOrNull()?.kasus_uji ?: "Data Tidak Tersedia", // Example of another field
+                    outputHasil = pengujian.pengujian_detail.firstOrNull()?.hasil_pengujian ?: "Data Tidak Tersedia", // Example of another field
                     status = status,
                     onClick = {
                         selectedDetail = DetailInfo(
-                            id = "asdd", // Berikan nilai ID yang unik
-                            namaSistem = "Nama Sistem ",
-                            tanggal = "25/10/2025",
-                            jenisSistem = "Sistem Baru",
-                            rencanaAnggaran = "Termasuk dalam perencanaan",
-                            masalahSistem = "Bug tampilan beranda",
-                            outputHasil = "Tampilan bug clear",
+                            id = pengujian.id,
+                            namaSistem = pengujian.perangkat_lunak,
+                            tanggal = pengujian.tanggal,
+                            jenisSistem = pengujian.metode.toString(),
+                            rencanaAnggaran = pengujian.pengujian_detail.firstOrNull()?.hasil_diharapkan ?: "Data Tidak Tersedia",
+                            masalahSistem = pengujian.pengujian_detail.firstOrNull()?.kasus_uji ?: "Data Tidak Tersedia",
+                            outputHasil = pengujian.pengujian_detail.firstOrNull()?.hasil_pengujian ?: "Data Tidak Tersedia",
                             status = status
                         )
                         showPopup = true
@@ -154,6 +170,7 @@ fun ListPengujianScreenAdmin(navController: NavController) {
         }
     }
 
+    // Show popup when selectedDetail is not null
     if (showPopup) {
         DetailPopupPengujian(
             onDismiss = { showPopup = false },
@@ -168,6 +185,7 @@ fun ListPengujianScreenAdmin(navController: NavController) {
         )
     }
 }
+
 
 
 

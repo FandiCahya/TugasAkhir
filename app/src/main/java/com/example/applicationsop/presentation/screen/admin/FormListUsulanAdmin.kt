@@ -117,9 +117,9 @@ fun ListPengajuanItem(
                 text = status,
                 fontSize = 14.sp,
                 color = when (status) {
-                    "draft" -> kuning
-                    "" -> abang
-                    "Pengajuan diterima" -> ijo
+                    "pending" -> kuning
+                    "rejected" -> abang
+                    "accepted" -> ijo
                     else -> Color.Black
                 }
             )
