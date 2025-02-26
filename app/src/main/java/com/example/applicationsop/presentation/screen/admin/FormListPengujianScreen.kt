@@ -113,7 +113,7 @@ fun ListPengujianItem(
 @Composable
 fun ListPengujianScreenAdmin(navController: NavController) {
     var showPopup by remember { mutableStateOf(false) }
-    var selectedDetail by remember { mutableStateOf(DetailInfo(id = 0)) }
+    var selectedDetail by remember { mutableStateOf(DetailInfo(id = "")) }
 
     Column(
         modifier = Modifier
@@ -138,8 +138,8 @@ fun ListPengujianScreenAdmin(navController: NavController) {
                     status = status,
                     onClick = {
                         selectedDetail = DetailInfo(
-                            id = index, // Berikan nilai ID yang unik
-                            namaSistem = "Nama Sistem ${index + 1}",
+                            id = "asdd", // Berikan nilai ID yang unik
+                            namaSistem = "Nama Sistem ",
                             tanggal = "25/10/2025",
                             jenisSistem = "Sistem Baru",
                             rencanaAnggaran = "Termasuk dalam perencanaan",

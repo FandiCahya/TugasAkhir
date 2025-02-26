@@ -42,6 +42,17 @@ import androidx.compose.runtime.collectAsState
 import com.example.applicationsop.Api.fetchPengajuanList
 import com.example.applicationsop.models.Pengajuan
 import kotlinx.coroutines.launch
+import androidx.compose.foundation.lazy.items
+import java.text.SimpleDateFormat
+import java.util.Date
+
+fun formatTanggal(tanggal: String): String {
+    val inputFormat = SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss.SSSSSSZ")
+    val outputFormat = SimpleDateFormat("yyyy-MM-dd") // Format yang hanya menampilkan tanggal
+    val date: Date = inputFormat.parse(tanggal)
+    return outputFormat.format(date) // Mengembalikan tanggal yang diformat
+}
+
 
 @Composable
 fun ListPengajuanItem(
@@ -106,8 +117,8 @@ fun ListPengajuanItem(
                 text = status,
                 fontSize = 14.sp,
                 color = when (status) {
-                    "Menunggu konfirmasi" -> kuning
-                    "Pengujian ditolak" -> abang
+                    "draft" -> kuning
+                    "" -> abang
                     "Pengajuan diterima" -> ijo
                     else -> Color.Black
                 }
@@ -119,14 +130,15 @@ fun ListPengajuanItem(
 @Composable
 fun ListPengajuanScreenAdmin(navController: NavController) {
     var showPopup by remember { mutableStateOf(false) }
-    var selectedDetail by remember { mutableStateOf(DetailInfo(id = 0)) }
+    var selectedDetail by remember { mutableStateOf(DetailInfo(id="")) }
     var pengajuanList by remember { mutableStateOf<List<Pengajuan>>(emptyList()) }
+
 
     LaunchedEffect(Unit) {
         // Fetching the data when the Composable is first launched
         val fetchedPengajuanList = fetchPengajuanList() // Fetch the data
         pengajuanList = fetchedPengajuanList // Updating the state
-        println("Pengajuan List View :${pengajuanList}")
+//        println("Pengajuan List View :${pengajuanList}")
     }
 
     Column(
@@ -140,28 +152,26 @@ fun ListPengajuanScreenAdmin(navController: NavController) {
 
         // List of submissions
         LazyColumn(modifier = Modifier.fillMaxSize()) {
-            items(2) { index ->
-                // Assign the status dynamically based on the index (or data)
-                val status = if (index % 2 == 0) "Menunggu konfirmasi" else "Pengujian ditolak"
-
+            items(pengajuanList) { pengajuan ->
+                // Using data from the API response dynamically
                 ListPengajuanItem(
-                    namaSistem = "Nama Sistem ${index + 1}",
-                    tanggal = "25/10/2025",
-                    jenisSistem = "Sistem Baru",
-                    rencanaAnggaran = "Termasuk dalam perencanaan",
-                    masalahSistem = "Bug tampilan...",
-                    outputHasil = "Hasil yang diinginkan...",
-                    status = status,
+                    namaSistem = pengajuan.nama_sistem,
+                    tanggal = pengajuan.tgl,
+                    jenisSistem = pengajuan.jenis,
+                    rencanaAnggaran = pengajuan.rencana_anggaran,
+                    masalahSistem = pengajuan.masalah,
+                    outputHasil = pengajuan.output,
+                    status = pengajuan.status,
                     onClick = {
                         selectedDetail = DetailInfo(
-                            id = index,
-                            namaSistem = "Nama Sistem ${index + 1}",
-                            tanggal = "25/10/2025",
-                            jenisSistem = "Sistem Baru",
-                            rencanaAnggaran = "Termasuk dalam perencanaan",
-                            masalahSistem = "Bug tampilan beranda",
-                            outputHasil = "Tampilan bug clear",
-                            status = status // Assign the correct status here
+                            id = pengajuan.id,
+                            namaSistem = pengajuan.nama_sistem,
+                            tanggal = pengajuan.tgl.toString(),
+                            jenisSistem = pengajuan.jenis,
+                            rencanaAnggaran = pengajuan.rencana_anggaran,
+                            masalahSistem = pengajuan.masalah,
+                            outputHasil = pengajuan.output,
+                            status = pengajuan.status
                         )
                         showPopup = true
                     }
@@ -279,7 +289,7 @@ fun DetailPopup(
                                 modifier = Modifier.weight(1f)
                             ) {
                                 Text(
-                                    "Hari/Tanggal",
+                                    "Tanggal",
                                     fontWeight = FontWeight.Bold,
                                     color = Color.Black
                                 )
@@ -528,5 +538,4 @@ fun DetailPopup(
         }
     }
 }
-
 

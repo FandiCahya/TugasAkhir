@@ -182,7 +182,7 @@ fun SubmissionSection(navController: NavController) {
                 icon = Icons.Filled.Timer,
                 modifier = Modifier.height(180.dp),
                 onClick = {
-                    navController.navigate("list_pengajuanAdmin?status=Menunggu konfirmasi")
+                    navController.navigate("list_pengajuanAdmin?status=draft")
                 }
             )
         }
@@ -198,7 +198,7 @@ fun SubmissionSection(navController: NavController) {
                 color = abang,
                 icon = Icons.Filled.Close,
                 onClick = {
-                    navController.navigate("list_pengajuanAdmin?status=Pengujian ditolak")
+                    navController.navigate("list_pengajuanAdmin?status=rejected")
                 }
             )
 
@@ -210,7 +210,7 @@ fun SubmissionSection(navController: NavController) {
                 color = ijo,
                 icon = Icons.Filled.Verified,
                 onClick = {
-                    navController.navigate("list_pengajuanAdmin?status=Pengajuan diterima")
+                    navController.navigate("list_pengajuanAdmin?status=accepted")
                 }
             )
         }
