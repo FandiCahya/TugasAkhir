@@ -12,6 +12,7 @@ import androidx.compose.material.icons.filled.Person
 import androidx.compose.material.icons.filled.Timer
 import androidx.compose.material3.*
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
@@ -25,6 +26,10 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.navigation.NavController
+import com.example.applicationsop.Api.fetchPengajuanList
+import com.example.applicationsop.Api.fetchPengembanganList
+import com.example.applicationsop.models.Pengajuan
+import com.example.applicationsop.models.Pengembangan
 import com.example.applicationsop.presentation.component.BackButton
 import com.example.applicationsop.presentation.component.HeaderWithSearch
 import com.example.applicationsop.presentation.screen.pengguna.ScheduleItem
@@ -32,6 +37,7 @@ import com.example.applicationsop.ui.theme.Maroon
 import com.example.applicationsop.ui.theme.abang
 import com.example.applicationsop.ui.theme.ijo
 import com.example.applicationsop.ui.theme.kuning
+import androidx.compose.foundation.lazy.items
 
 @Composable
 fun ListPengembangan(
@@ -93,10 +99,10 @@ fun ListPengembangan(
                 text = status,
                 fontSize = 14.sp,
                 color = when (status) {
-                    "Menunggu konfirmasi" -> kuning // Ganti dengan warna Maroon dari tema Anda
+                    "developed" -> kuning // Ganti dengan warna Maroon dari tema Anda
                     "Pengujian ditolak" -> abang // Ganti dengan warna abang
                     "Pengajuan Diterima" -> ijo // Ganti dengan warna hijau dari tema Anda
-                    "Pengembangan" -> ijo
+                    "finished" -> ijo
                     else -> Color.Black // Default jika status tidak dikenali
                 }
             )
@@ -109,7 +115,14 @@ fun ListPengembangan(
 fun ListPengembanganAdminScreen(navController: NavController) {
     var showPopup by remember { mutableStateOf(false) }
     var selectedScheduleItem by remember { mutableStateOf<ScheduleItem?>(null) }
+    var pengembanganList by remember { mutableStateOf<List<Pengembangan>>(emptyList()) }
 
+    LaunchedEffect(Unit) {
+        // Fetching the data when the Composable is first launched
+        val fetchedPengembanganList = fetchPengembanganList() // Fetch the data
+        pengembanganList = fetchedPengembanganList // Updating the state
+        println("Pengembangan List View :${pengembanganList}")
+    }
     Column(
         modifier = Modifier
             .fillMaxSize()
@@ -121,21 +134,22 @@ fun ListPengembanganAdminScreen(navController: NavController) {
 
         // List of submissions
         LazyColumn(modifier = Modifier.fillMaxSize()) {
-            items(2) { index ->
-                // Sample schedule data
+            // Use `items` to iterate over the list of `pengembanganList`
+            items(pengembanganList) { pengembangan ->
+                // Create a ScheduleItem from Pengembangan data
                 val scheduleItem = ScheduleItem(
-                    task = "Nama Sistem ${index + 1}",
-                    startDate = "25/10/2025",
-                    endDate = "30/10/2025",
-                    description = "Deskripsi singkat",
-                    stage = "Desain UI/Ux",
-                    progressPercentage = 79
+                    task = pengembangan.pengajuan.nama_sistem, // Nama sistem from Pengajuan
+                    startDate = pengembangan.tanggal_mulai, // Start date
+                    endDate = pengembangan.tanggal_selesai, // End date
+                    description = pengembangan.keterangan, // Description from Pengembangan
+                    stage = pengembangan.tahap, // Stage from Pengembangan
+                    progressPercentage = pengembangan.persentase // Progress from Pengembangan
                 )
 
                 // Pass actual schedule data to the ListPengembangan composable
                 ListPengembangan(
                     namaSistem = scheduleItem.task,
-                    status = "Pengembangan",
+                    status = pengembangan.status, // Status from Pengembangan
                     scheduleItem = scheduleItem,
                     onClick = { clickedSchedule ->
                         selectedScheduleItem = clickedSchedule // Set the selected schedule

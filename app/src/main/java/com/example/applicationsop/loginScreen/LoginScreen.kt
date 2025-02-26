@@ -39,6 +39,7 @@ import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import com.example.applicationsop.Api.loginUser
+import androidx.compose.ui.text.TextStyle
 
 
 @Composable
@@ -213,9 +214,11 @@ fun TextInputComposable(
             unfocusedLabelColor = Color.Gray,
             unfocusedLeadingIconColor = Putih,
             unfocusedTrailingIconColor = Color.Gray
-        )
+        ),
+        textStyle = TextStyle(color = Color.Black) // Set the text color to black
     )
 }
+
 
 @Composable
 fun LoginButtonComposable(

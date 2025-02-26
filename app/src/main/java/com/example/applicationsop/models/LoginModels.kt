@@ -18,6 +18,6 @@ data class User(
     val id: String,
     val name: String,
     val email: String,
-    val devisi: String,
-    val role: String
+    val devisi: String? = null,  // Mengubah menjadi nullable
+    val role: String? = null
 )
