@@ -1,54 +1,107 @@
-<x-guest-layout>
-    <!-- Session Status -->
-    <x-auth-session-status class="mb-4" :status="session('status')" />
+<!DOCTYPE html>
+<html lang="en">
 
-    <form method="POST" action="{{ route('login') }}">
-        @csrf
+<head>
+    <!-- Required meta tags -->
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+    <title>Spica Admin</title>
+    <!-- base:css -->
+    <link rel="stylesheet" href="{{ asset('assets/vendors/mdi/css/materialdesignicons.min.css') }}">
+    <link rel="stylesheet" href="{{ asset('assets/vendors/css/vendor.bundle.base.css') }}">
+    <!-- endinject -->
+    <!-- inject:css -->
+    <link rel="stylesheet" href="{{ asset('assets/css/style.css') }}">
+    <!-- endinject -->
+    <link rel="shortcut icon" href="{{ asset('assets/images/favicon.png') }}" />
+</head>
 
-        <!-- Email Address -->
-        <div>
-            <x-input-label for="email" :value="__('Email')" />
-            <x-text-input id="email" class="block mt-1 w-full" type="email" name="email" :value="old('email')" required autofocus autocomplete="username" />
-            <x-input-error :messages="$errors->get('email')" class="mt-2" />
-        </div>
+<body>
+    <div class="container mt-5">
 
-        <!-- Password -->
-        <div class="mt-4">
-            <x-input-label for="password" :value="__('Password')" />
+        <h2 class="text-center">Login</h2>
 
-            <x-text-input id="password" class="block mt-1 w-full"
-                            type="password"
-                            name="password"
-                            required autocomplete="current-password" />
+        <!-- Error Message -->
+        <div id="error-message" class="alert alert-danger d-none"></div>
 
-            <x-input-error :messages="$errors->get('password')" class="mt-2" />
-        </div>
+        <form id="loginForm" >
+            <!-- Email -->
+            @csrf
+            <div class="mb-3">
+                <label for="email" class="form-label">Email</label>
+                <input type="email" class="form-control" id="email" name="email" autocomplete="username"
+                    required>
+                <div class="invalid-feedback" id="emailError"></div>
+            </div>
 
-        <!-- Remember Me -->
-        <div class="block mt-4">
-            <label for="remember_me" class="inline-flex items-center">
-                <input id="remember_me" type="checkbox" class="rounded border-gray-300 text-indigo-600 shadow-sm focus:ring-indigo-500" name="remember">
-                <span class="ms-2 text-sm text-gray-600">{{ __('Remember me') }}</span>
-            </label>
-        </div>
+            <!-- Password -->
+            <div class="mb-3">
+                <label for="password" class="form-label">Password</label>
+                <input type="password" class="form-control" id="password" name="password"
+                    autocomplete="current-password" required>
+                <div class="invalid-feedback" id="passwordError"></div>
+            </div>
 
-        <div class="flex items-center justify-end mt-4">
-            @if (Route::has('password.request'))
-                <a class="underline text-sm text-gray-600 hover:text-gray-900 rounded-md focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500" href="{{ route('password.request') }}">
-                    {{ __('Forgot your password?') }}
-                </a>
-            @endif
+            <!-- Login Button -->
+            <button type="submit" class="btn btn-primary w-100">Login</button>
+        </form>
 
-            <x-primary-button class="ms-3">
-                {{ __('Log in') }}
-            </x-primary-button>
-        </div>
+        {{-- <div class="text-center mt-3">
+            <p>Don't have an account? <a href="{{ route('register') }}">Register here</a></p>
+        </div> --}}
+    </div>
 
-        <!-- Register Button -->
-        <div class="flex items-center justify-center mt-4">
-            <a href="{{ route('register') }}" class="text-sm text-indigo-600 hover:text-indigo-900 font-semibold">
-                {{ __('Don\'t have an account? Register here') }}
-            </a>
-        </div>
-    </form>
-</x-guest-layout>
+    <!-- JS and Fetch API for login -->
+    <script>
+        document.getElementById('loginForm').addEventListener('submit', async function(e) {
+            e.preventDefault();
+
+            // Clear previous errors
+            document.getElementById('emailError').textContent = '';
+            document.getElementById('passwordError').textContent = '';
+            document.getElementById('error-message').classList.add('d-none');
+
+            const formData = new FormData(this);
+
+            try {
+                const response = await fetch('/api/login', {
+                    method: 'POST',
+                    body: formData,
+                    headers: {
+                        'Accept': 'application/json',
+                        'X-XSRF-TOKEN': getCookie('XSRF-TOKEN') // Include CSRF token
+                    },
+                    credentials: 'include' // Ensure cookies are sent
+                });
+
+                const data = await response.json();
+
+                if (response.ok) {
+                    // Jika login berhasil, simpan token ke localStorage
+                    localStorage.setItem('token', data.token);
+                    console.log('Token saved:', data.token);
+
+                    // Redirect ke dashboard setelah login berhasil
+                    window.location.href = '/dashboard';
+                } else {
+                    // Menampilkan pesan error jika login gagal
+                    document.getElementById('error-message').textContent = data.message || 'Login failed.';
+                    document.getElementById('error-message').classList.remove('d-none');
+                }
+            } catch (error) {
+                console.error(error);
+                document.getElementById('error-message').textContent = 'An error occurred during login.';
+                document.getElementById('error-message').classList.remove('d-none');
+            }
+        });
+
+        // Fungsi untuk mengambil CSRF token dari cookie
+        function getCookie(name) {
+            let value = "; " + document.cookie;
+            let parts = value.split("; " + name + "=");
+            if (parts.length === 2) return parts.pop().split(";").shift();
+        }
+    </script>
+</body>
+
+</html>

@@ -8,6 +8,7 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Validator;
 use Exception;
+use Carbon\Carbon;
 
 class AuthController extends Controller
 {
@@ -35,21 +36,27 @@ class AuthController extends Controller
             ]);
 
             // Response sukses dengan data pengguna
-            return response()->json([
-                'message' => 'User created successfully.',
-                'user' => $user
-            ], 201);
-
+            return response()->json(
+                [
+                    'message' => 'User created successfully.',
+                    'user' => $user,
+                ],
+                201,
+            );
         } catch (Exception $e) {
             // Tangani exception dan kirimkan pesan error
-            return response()->json([
-                'message' => 'Something went wrong during registration.',
-                'error' => $e->getMessage()
-            ], 500);
+            return response()->json(
+                [
+                    'message' => 'Something went wrong during registration.',
+                    'error' => $e->getMessage(),
+                ],
+                500,
+            );
         }
     }
 
     // Login user
+
     public function login(Request $request)
     {
         try {
@@ -75,19 +82,25 @@ class AuthController extends Controller
             // Buat token untuk user
             $token = $user->createToken('YourAppName')->plainTextToken;
 
+            // Menambahkan waktu kadaluarsa pada token (Jika diinginkan)
+            $expiresAt = Carbon::now()->addMinutes(60); // Token kedaluwarsa dalam 1 jam
+
             // Response dengan token dan data pengguna
             return response()->json([
                 'message' => 'Login successful',
                 'token' => $token,
-                'user' => $user
+                'expires_at' => $expiresAt, // Sertakan waktu kadaluarsa dalam respons
+                'user' => $user,
             ]);
-
         } catch (Exception $e) {
             // Tangani exception dan kirimkan pesan error
-            return response()->json([
-                'message' => 'Something went wrong during login.',
-                'error' => $e->getMessage()
-            ], 500);
+            return response()->json(
+                [
+                    'message' => 'Something went wrong during login.',
+                    'error' => $e->getMessage(),
+                ],
+                500,
+            );
         }
     }
 
@@ -103,10 +116,13 @@ class AuthController extends Controller
             return response()->json(['message' => 'Logged out successfully.']);
         } catch (Exception $e) {
             // Tangani exception dan kirimkan pesan error
-            return response()->json([
-                'message' => 'Something went wrong during logout.',
-                'error' => $e->getMessage()
-            ], 500);
+            return response()->json(
+                [
+                    'message' => 'Something went wrong during logout.',
+                    'error' => $e->getMessage(),
+                ],
+                500,
+            );
         }
     }
 }

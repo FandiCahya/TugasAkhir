@@ -51,6 +51,10 @@
                             <label for="catatan" class="form-label">Catatan</label>
                             <textarea class="form-control" id="catatan" name="catatan" rows="3"></textarea>
                         </div>
+                        <!-- Add this in the modal body where the signature is shown -->
+                        <div class="mb-3" id="signature-preview">
+                        </div>
+
                         <div class="mb-3">
                             <label for="signature" class="form-label">Signature</label>
                             <input class="form-control" type="file" id="signature" name="signature">
@@ -100,7 +104,7 @@
 
         function groupByApprovalId(data) {
             return data.reduce((acc, item) => {
-                const approvalId = item.pengujian.id;
+                const approvalId = item.persetujuan_pengujian.id;
                 if (!acc[approvalId]) {
                     acc[approvalId] = [];
                 }
@@ -123,7 +127,7 @@
                 groupHeaderRow.innerHTML = `
                     <td colspan="7" class="group-header">
                         <strong>Pengujian ID: ${approvalId}</strong><br>
-                        <span>Status Pengujian: <strong>${group[0].pengujian.status}</strong></span>
+                        <span>Status Pengujian: <strong>${group[0].persetujuan_pengujian.status}</strong></span>
                     </td>
                 `;
                 tableBody.appendChild(groupHeaderRow);
@@ -137,10 +141,11 @@
                         <td>${approval.user.name || 'N/A'}</td>
                         <td>${approval.status}</td>
                         <td>${approval.catatan || 'N/A'}</td>
-                        <td><img src="${approval.signature}" alt="Signature" style="width: 50px; height: auto;"></td>
+                        <td><img src="/storage/${approval.signature}" alt="Signature" style="width: 50px; height: auto;"></td>
+                            <td>${approval.role || 'N/A'}</td>
                         <td>${approval.role || 'N/A'}</td>
                         <td class="action-buttons">
-                            <button class="btn btn-warning btn-sm" onclick="openApprovalModal('${approval.id}', '${approval.pengujian.id}')" style="margin: 5px;" data-bs-toggle="modal" data-bs-target="#approvalModal">Approve</button>
+                            <button class="btn btn-warning btn-sm" onclick="openApprovalModal('${approval.id}', '${approval.persetujuan_pengujian.id}')" style="margin: 5px;" data-bs-toggle="modal" data-bs-target="#approvalModal">Approve</button>
                         </td>
                     `;
                     tableBody.appendChild(row);
@@ -159,10 +164,31 @@
             currentApprovalId = approvalId;
             currentPengujianId = pengujianId;
 
-            // Bisa menambahkan data lainnya yang diperlukan ke dalam modal jika perlu
-            console.log("Approval ID:", approvalId);
-            console.log("Pengujian ID:", pengujianId);
+            // Menambahkan data approval ke dalam modal
+            const approval = DetailApproval.find(item => item.id === approvalId);
+            if (approval) {
+                // Set status
+                document.getElementById('status').value = approval.status;
+
+                // Set catatan
+                document.getElementById('catatan').value = approval.catatan || ''; // Jika tidak ada catatan, set kosong
+
+                // Set signature (tetap menampilkan signature jika sudah ada)
+                if (approval.signature) {
+                    // Tampilkan gambar signature jika ada
+                    const signaturePreview = document.createElement('img');
+                    signaturePreview.src = '/storage/' + approval
+                    .signature; // Path yang benar untuk file signature
+                    signaturePreview.alt = 'Signature';
+                    signaturePreview.style = 'width: 100px; height: auto;';
+                    document.getElementById('signature-preview').innerHTML = ''; // Clear existing preview
+                    document.getElementById('signature-preview').appendChild(signaturePreview);
+                } else {
+                    document.getElementById('signature-preview').innerHTML = ''; // Clear if no signature
+                }
+            }
         }
+
 
         document.getElementById('approveButton').addEventListener('click', function() {
             const status = document.getElementById('status').value;
@@ -172,22 +198,27 @@
             const formData = new FormData();
             formData.append('status', status);
             formData.append('catatan', catatan);
-            formData.append('user_id', 'user_id_value'); // Ganti dengan ID user yang valid
+            // formData.append('user_id', 'user_id_value'); // Ganti dengan ID user yang valid
 
             if (signature) {
                 formData.append('signature', signature); // Jika ada signature, tambahkan ke formData
             }
 
             // Kirim ke API
-            fetch(`/persetujuan-pengujian/${currentPengujianId}/approve`, {
-                    method: 'PUT',
+            fetch(`api/persetujuan-pengujian-detail/${currentApprovalId}/approval`, {
+                    method: 'POST',
                     body: formData,
                 })
                 .then(response => response.json())
                 .then(data => {
                     if (data.success) {
-                        alert(data.message);
-                        $('#approvalModal').modal('hide'); // Menutup modal
+                        // alert(data.message);
+                        // $('#approvalModal').modal('hide'); // Menutup modal
+                        let editModal = bootstrap.Modal.getInstance(document.getElementById(
+                            'approvalModal'));
+                        if (editModal) {
+                            editModal.hide();
+                        }
                         fetchapprovalDetail(); // Reload data approval
                     } else {
                         alert(data.message);

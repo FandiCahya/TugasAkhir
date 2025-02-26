@@ -20,6 +20,11 @@ class PersetujuanPengujian extends Model
         return $this->hasMany(PersetujuanPengujianDetail::class, 'persetujuan_pengujian_id');
     }
 
+    public function pengujian()
+    {
+        return $this->belongsTo(Pengujian::class, 'pengujian_id', 'id'); // Ensure correct foreign key is being used
+    }
+
     // Check if all approvers have approved
     public function isApproved()
     {

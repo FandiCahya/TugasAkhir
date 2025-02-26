@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers\Api;
 
+use App\Models\Pengembangan;
 use Illuminate\Http\Request;
 use App\Models\Pengujian;
 use Illuminate\Support\Str;
@@ -10,13 +11,30 @@ use App\Http\Controllers\Controller;
 use Illuminate\Database\Eloquent\ModelNotFoundException;
 use Illuminate\Validation\ValidationException;
 use Illuminate\Database\QueryException;
+use App\Models\Pengajuan;
 
 class PengujianController extends Controller
 {
-    public function index()
+    public function index(Request $request)
     {
         try {
-            $pengujians = Pengujian::with(['details'])->get();
+            $keyword = $request->query->get('keyword');
+
+            $pengujians = Pengujian::with(['details']);
+
+            // Jika ada keyword, filter berdasarkan keyword
+        if ($keyword) {
+            $pengujians = $pengujians->where(function($query) use ($keyword) {
+                $query->where('perangkat_lunak', 'like', '%' . $keyword . '%')
+                    ->orWhere('tujuan', 'like', '%' . $keyword . '%')
+                    ->orWhere('metode', 'like', '%' . $keyword . '%')
+                      ->orWhereHas('pengembangan', function($query) use ($keyword) {
+                          $query->where('status', 'like', '%' . $keyword . '%');
+                      });
+            });
+        }
+
+        $pengujians = $pengujians->get();
 
             return response()->json(
                 [
@@ -35,14 +53,33 @@ class PengujianController extends Controller
                                 'id' => $item->pengembangan->pengajuan->user->id ?? null,
                                 'name' => $item->pengembangan->pengajuan->user->name ?? null,
                                 'email' => $item->pengembangan->pengajuan->user->email ?? null,
+                                'devisi' => $item->pengembangan->pengajuan->user->devisi ?? null,
+                                'role' => $item->pengembangan->pengajuan->user->role ?? null,
                             ],
                             'pengembangan' => [
                                 'id' => $item->pengembangan->id ?? null,
+                                'tanggal_mulai' => $item->pengembangan->tanggal_mulai ?? null,
+                                'tanggal_selesai' => $item->pengembangan->tanggal_selesai?? null,
                                 'tahap' => $item->pengembangan->tahap ?? null,
                                 'persentase' => $item->pengembangan->persentase ?? null,
+                                'keterangan' => $item->pengembangan->keterangan ?? null,
                                 'status' => $item->pengembangan->status ?? null,
                                 'pengajuan' => [
+                                    'id'=> $item->pengembangan->pengajuan->id ?? null,
+                                    'tgl'=> $item->pengembangan->pengajuan->tgl ?? null,
                                     'nama_sistem' => $item->pengembangan->pengajuan->nama_sistem ?? null,
+                                    'jenis' => $item->pengembangan->pengajuan->jenis ?? null,
+                                    'rencana_anggaran' => $item->pengembangan->pengajuan->rencana_anggaran ?? null,
+                                    'masalah' => $item->pengembangan->pengajuan->masalah ?? null,
+                                    'output' => $item->pengembangan->pengajuan->output ?? null,
+                                    'status' => $item->pengembangan->pengajuan->status ?? null,
+                                    'user' => [
+                                        'id' => $item->pengembangan->pengajuan->user->id ?? null,
+                                        'name' => $item->pengembangan->pengajuan->user->name ?? null,
+                                        'email' => $item->pengembangan->pengajuan->user->email ?? null,
+                                        'devisi' => $item->pengembangan->pengajuan->user->devisi ?? null,
+                                        'role' => $item->pengembangan->pengajuan->user->role ?? null,
+                                    ],
                                 ],
                             ],
                             'pengujian_detail' => $item->details->map(function ($detail) {
@@ -108,6 +145,8 @@ class PengujianController extends Controller
                             'id' => $pengujian->user->id ?? null,
                             'name' => $pengujian->user->name ?? null,
                             'email' => $pengujian->user->email ?? null,
+                            'devisi' => $pengujian->user->devisi ?? null,
+                            'role' => $pengujian->user->role ?? null,
                         ],
                         'pengembangan' => [
                             'id' => $item->pengembangan->id ?? null,
@@ -171,6 +210,15 @@ class PengujianController extends Controller
                 'tanggal' => Carbon::createFromFormat('Y-m-d', $validated['tanggal']),
                 'pelaksana_id' => $validated['pelaksana_id'],
             ]);
+
+            // Cari pengajuan yang terhubung dengan pengembangan ini dan update statusnya
+            $pengembangan = Pengembangan::with('pengajuan')->find($validated['pengembangan_id']); 
+
+            if ($pengembangan && $pengembangan->pengajuan) {
+                // Update status pengajuan menjadi "testing"
+                $pengembangan->pengajuan->status = 'testing';
+                $pengembangan->pengajuan->save(); // Simpan perubahan status
+            }
 
             // Kembalikan response sukses
             return response()->json(

@@ -15,6 +15,7 @@ use App\Http\Controllers\Api\AuthController;
 //     return $request->user();
 // })->middleware('auth:sanctum');
 
+
 Route::post('login', [AuthController::class, 'login']);
 Route::post('register', [AuthController::class, 'register']);
 // Logout route - pastikan user terautentikasi
@@ -27,9 +28,9 @@ Route::resource('pengujian',PengujianController::class);
 Route::resource('pengujian-detail',PengujianDetailController::class);
 Route::resource('catatan-pengujian',CatatanPengujianController::class);
 
+Route::get( 'approval', [PersetujuanPengujianController::class, 'showall']);
+
 Route::post('persetujuan-pengujian/create', [PersetujuanPengujianController::class, 'createApproval']);
 
-Route::put('persetujuan-pengujian/{id}/approve', [PersetujuanPengujianController::class, 'approve']);
-Route::put('persetujuan-pengujian-detail/{id}/approval', [PersetujuanPengujianController::class, 'approval']);
+Route::post('persetujuan-pengujian-detail/{id}/approval', [PersetujuanPengujianController::class, 'approval']);
 
-Route::get('approval', [PersetujuanPengujianController::class, 'showall']);

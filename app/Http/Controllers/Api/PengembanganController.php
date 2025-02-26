@@ -4,6 +4,7 @@ namespace App\Http\Controllers\Api;
 
 use App\Models\Pengembangan;
 use App\Models\Pengajuan;
+use App\Models\Pengujian;
 use Illuminate\Http\Request;
 use App\Http\Controllers\Controller;
 use Illuminate\Validation\ValidationException;
@@ -18,12 +19,21 @@ class PengembanganController extends Controller
     public function index(Request $request)
     {
         try {
-            $query = $request->input('search');
-            $pengembangan = Pengembangan::with('pengajuan', 'user') // Load relasi pengajuan dan user
-                ->when($query, function ($queryBuilder) use ($query) {
-                    return $queryBuilder->where('tahap', 'like', '%' . $query . '%'); // Pastikan menggunakan kolom yang benar
-                })
-                ->get();
+            $keyword = $request->query->get('keyword');
+            $status = $request->query->get('status');
+            $pengembanganQuery = Pengembangan::with('pengajuan');
+            if ($keyword) {
+                $pengembanganQuery->where(function ($query) use ($keyword) {
+                    $query->where('tahap', 'like', '%' . $keyword . '%')
+                        ->orWhere('keterangan',  'like', '%' . $keyword . '%');
+                });
+            }
+            if ($status) {
+                $pengembanganQuery->where('status', 'like', '%' . $status . '%');
+            }
+
+            // Ambil data pengajuan setelah diterapkan filter jika ada
+            $pengembangan = $pengembanganQuery->get();
 
             // $users = pengembangan::all();
             return response()->json(
@@ -115,6 +125,9 @@ class PengembanganController extends Controller
                 'status' => $request->status ?? 'developed',
                 'user_id' => $user_id, // Menyimpan user_id yang diambil dari pengajuan
             ]);
+
+            $pengajuan->status = 'developing';
+            $pengajuan->save();
 
             return response()->json(
                 [

@@ -188,8 +188,13 @@
             <td>
                 <button class="btn btn-warning btn-sm" onclick="editPengembangan('${p.id}')" style="margin: 5px;">Edit</button>
                 <button class="btn btn-danger btn-sm" onclick="deletePengembangan('${p.id}')" style="margin: 5px;">Delete</button>
-                <button class="btn btn-success btn-sm" onclick="showPengujian('${p.id}')" style="margin: 5px;">Pengujian</button>
+                <!-- Show "Pengujian" button only when status is "finished" -->
+                ${p.status === 'finished' ? 
+                    `<button class="btn btn-success btn-sm" onclick="showPengujian('${p.id}')" style="margin: 5px;">Pengujian</button>`
+                : ''
+                }
             </td>
+
         `;
                 tableBody.appendChild(row);
             });

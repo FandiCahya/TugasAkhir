@@ -18,12 +18,25 @@ class PengajuanController extends Controller
     public function index(Request $request)
     {
         try {
-            $query = $request->input('search');
-            $pengajuan = Pengajuan::with('user') // Load relasi user
-                ->when($query, function ($queryBuilder) use ($query) {
-                    return $queryBuilder->where('nama_sistem', 'like', '%' . $query . '%');
-                })
-                ->get();
+            $keyword = $request->query->get('keyword');
+            $status = $request->query->get('status');
+            $pengajuanQuery = Pengajuan::with('user'); // Relasi dengan user
+
+            if ($keyword) {
+                $pengajuanQuery->where(function ($query) use ($keyword) {
+                    $query->where('nama_sistem', 'like', '%' . $keyword . '%')
+                        ->orWhere('jenis', 'like', '%' . $keyword . '%')
+                        ->orWhere('output', 'like', '%' . $keyword . '%');
+                });
+            }
+    
+            // Jika ada status, filter berdasarkan status
+            if ($status) {
+                $pengajuanQuery->where('status', 'like', '%' . $status . '%');
+            }
+
+        // Ambil data pengajuan setelah diterapkan filter jika ada
+        $pengajuan = $pengajuanQuery->get();
 
             // $users = Pengajuan::all();
             return response()->json(
@@ -100,7 +113,7 @@ class PengajuanController extends Controller
                 'rencana_anggaran' => 'required|in:termasuk_dalam_perencanaan,tidak_termasuk_perencanaan',
                 'masalah' => 'required|string',
                 'output' => 'required|string',
-                'status' => 'in:draft,accepted,rejected',
+                'status' => 'in:pending,accepted,rejected',
             ]);
 
             $usulan = Pengajuan::create([
@@ -112,7 +125,7 @@ class PengajuanController extends Controller
                 'rencana_anggaran' => $request->rencana_anggaran,
                 'masalah' => $request->masalah,
                 'output' => $request->output,
-                'status' => $request->status ?? 'draft',
+                'status' => $request->status ?? 'pending',
             ]);
             return response()->json(
                 [
@@ -195,7 +208,7 @@ class PengajuanController extends Controller
                 'output' => 'string',
                 'tanda_tangan' => 'string|max:255',
                 'alasan_penolakan' => 'string|max:255',
-                'status' => 'in:draft,submitted,accepted',
+                'status' => 'in:pending,submitted,accepted',
             ]);
 
             $usulan->update($request->all());

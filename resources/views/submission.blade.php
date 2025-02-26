@@ -82,7 +82,7 @@
                         <div class="mb-3">
                             <label for="status" class="form-label">Status Pengajuan</label>
                             <select class="form-control" id="status" required>
-                                <option value="draft">Draft</option>
+                                <option value="pending">pending</option>
                                 <option value="accepted">Accepted</option>
                                 <option value="rejected">Rejected</option>
                             </select>
@@ -136,7 +136,7 @@
                         <div class="mb-3">
                             <label for="status" class="form-label">Status Pengajuan</label>
                             <select class="form-control" id="edit-status" required>
-                                <option value="draft">Draft</option>
+                                <option value="pending">pending</option>
                                 <option value="rejected">Rejected</option>
                                 <option value="accepted">Accepted</option>
                             </select>

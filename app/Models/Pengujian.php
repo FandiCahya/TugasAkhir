@@ -19,7 +19,7 @@ class Pengujian extends Model
 
     public function persetujuan()
     {
-        return $this->hasOne(PersetujuanPengujian::class, 'pengujian_id');
+        return $this->hasOne(PersetujuanPengujian::class, 'pengujian_id', 'id'); // Correct foreign key logic
     }
 
     public function pengembangan()

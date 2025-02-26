@@ -58,12 +58,6 @@
                 <span class="menu-title">Approval</span>
             </a>
         </li>
-        <li class="nav-item">
-            <a class="nav-link" href="{{ route('history') }}">
-                <i class="mdi mdi mdi-timer menu-icon"></i>
-                <span class="menu-title">Riwayat Pengajuan</span>
-            </a>
-        </li>
         <li class="nav-item sidebar-category">
             <p>Logout</p>
             <span></span>

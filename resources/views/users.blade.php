@@ -13,25 +13,6 @@
                 <!-- Search Input -->
                 <input type="text" id="search" class="form-control mb-3" placeholder="Search by name..." />
 
-                <!-- Sorting Buttons -->
-                {{-- <div class="mb-3">
-                    <button class="btn btn-primary btn-sm" onclick="sortBy('devisi')">Sort by Division</button>
-                    <button class="btn btn-primary btn-sm" onclick="sortBy('role')">Sort by Role</button>
-                </div>
-
-                <div class="mb-3">
-                    <label for="sort-devisi" class="form-label">Sort by Division</label>
-                    <select class="form-control" id="sort-devisi" onchange="sortByDevisi()">
-                        <option value="">Select Division</option>
-                        <option value="IT">IT</option>
-                        <option value="HR">HR</option>
-                        <option value="Finance">Finance</option>
-                        <option value="Marketing">Marketing</option>
-                        <option value="Operations">Operations</option>
-                    </select>
-                </div> --}}
-
-
                 <div class="table-responsive">
                     <table class="table table-striped" id="users-table">
                         <thead>
@@ -264,8 +245,9 @@
                     if (data.success) {
                         alert('User updated successfully');
                         fetchUsers();
-                        const modal = new bootstrap.Modal(document.getElementById('editUserModal'));
-                        modal.hide();
+                        const modal = document.querySelector('#editUserModal');
+                        const modalInstance = bootstrap.Modal.getInstance(modal);
+                        modalInstance.hide();
                     } else {
                         alert('Failed to update user');
                     }

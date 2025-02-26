@@ -18,6 +18,7 @@
                                 <th>Versi</th>
                                 <th>Tujuan</th>
                                 <th>Metode</th>
+                                <th>Detail</th>
                                 <th>Actions</th>
                             </tr>
                         </thead>
@@ -228,52 +229,61 @@
 
     <style>
         .modal-body {
-            max-height: 70vh; /* Set max height for modal body */
-            overflow-y: auto; /* Enable scrolling if content exceeds height */
+            max-height: 70vh;
+            /* Set max height for modal body */
+            overflow-y: auto;
+            /* Enable scrolling if content exceeds height */
         }
-    
+
         .form-check {
-            margin-bottom: 10px; 
-            margin-left:10px;
+            margin-bottom: 10px;
+            margin-left: 10px;
             display: flex;
             align-items: center;
-            flex-wrap: wrap; 
-            justify-content: space-between; 
+            flex-wrap: wrap;
+            justify-content: space-between;
         }
-    
+
         .form-check-label {
             white-space: nowrap;
             overflow: hidden;
             text-overflow: ellipsis;
-            flex: 1; /* Allow the label to grow and take available space */
+            flex: 1;
+            /* Allow the label to grow and take available space */
         }
-    
+
         .form-check-input {
-            margin-right: 10px; /* Space between checkbox and label */
-            transform: scale(1.2); /* Optional: Increase checkbox size */
+            margin-right: 10px;
+            /* Space between checkbox and label */
+            transform: scale(1.2);
+            /* Optional: Increase checkbox size */
         }
-    
+
         .modal-content {
-            width: 100%; /* Ensure modal content stretches fully */
+            width: 100%;
+            /* Ensure modal content stretches fully */
             padding: 20px;
         }
-    
-        .modal-header, .modal-footer {
+
+        .modal-header,
+        .modal-footer {
             display: flex;
             justify-content: space-between;
             align-items: center;
         }
-    
+
         .form-select {
-            width: 100%; /* Ensure the select box stretches full width */
+            width: 100%;
+            /* Ensure the select box stretches full width */
         }
-    
+
         /* Optional: Style the modal buttons for better spacing */
         .modal-footer button {
-            padding: 10px 20px; /* Increase padding for better usability */
+            padding: 10px 20px;
+            /* Increase padding for better usability */
         }
     </style>
-    
+
     <script>
         let pengujian = []
         let editPengujianId = null;
@@ -481,12 +491,14 @@
             <td>${p.versi}</td>
             <td>${p.tujuan}</td>
             <td>${p.metode}</td>
+            <td>                
+                <button class="btn btn-secondary btn-sm" onclick="showCatatanPengujian('${p.id}')" style="margin: 5px;">Tambah Catatan</button>
+                <button class="btn btn-info btn-sm" onclick="showPengujianDetail('${p.id}')" style="margin: 5px;">Tambah Detail</button>
+            </td>
             <td>
                 <button class="btn btn-warning btn-sm" onclick="editPengujian('${p.id}')" style="margin: 5px;">Edit</button>
                 <button class="btn btn-danger btn-sm" onclick="deletePengujian('${p.id}')" style="margin: 5px;">Delete</button>
                 <button class="btn btn-primary btn-sm" onclick="showApprovalModal('${p.id}')" style="margin: 5px;">Approval</button>
-                <button class="btn btn-secondary btn-sm" onclick="showCatatanPengujian('${p.id}')" style="margin: 5px;">Tambah Catatan</button>
-                <button class="btn btn-info btn-sm" onclick="showPengujianDetail('${p.id}')" style="margin: 5px;">Tambah Detail</button>
             </td>
         `;
                 tableBody.appendChild(row);

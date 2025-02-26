@@ -32,7 +32,37 @@ class PengajuanSeeder extends Seeder
                 'rencana_anggaran' => 'termasuk_dalam_perencanaan',
                 'masalah' => 'Diperlukan sistem monitoring berbasis IoT untuk efisiensi energi.',
                 'output' => 'Sistem berbasis cloud yang menampilkan data secara real-time.',
-                'status' => 'draft',
+                'status' => 'pending',
+                'created_at' => Carbon::now()->subDays(5),
+                'updated_at' => Carbon::now(),
+            ]
+        ]);
+        Pengajuan::insert([
+            [
+                'id' => Str::uuid(),
+                'user_id' => $user->id,
+                'tgl' => Carbon::now()->subDays(5),
+                'nama_sistem' => 'Sistem Monitoring IoT',
+                'jenis' => 'sistem_baru',
+                'rencana_anggaran' => 'termasuk_dalam_perencanaan',
+                'masalah' => 'Diperlukan sistem monitoring berbasis IoT untuk efisiensi energi.',
+                'output' => 'Sistem berbasis cloud yang menampilkan data secara real-time.',
+                'status' => 'rejected',
+                'created_at' => Carbon::now()->subDays(5),
+                'updated_at' => Carbon::now(),
+            ]
+        ]);
+        Pengajuan::insert([
+            [
+                'id' => Str::uuid(),
+                'user_id' => $user->id,
+                'tgl' => Carbon::now()->subDays(5),
+                'nama_sistem' => 'Sistem Monitoring IoT',
+                'jenis' => 'sistem_baru',
+                'rencana_anggaran' => 'termasuk_dalam_perencanaan',
+                'masalah' => 'Diperlukan sistem monitoring berbasis IoT untuk efisiensi energi.',
+                'output' => 'Sistem berbasis cloud yang menampilkan data secara real-time.',
+                'status' => 'accepted',
                 'created_at' => Carbon::now()->subDays(5),
                 'updated_at' => Carbon::now(),
             ]

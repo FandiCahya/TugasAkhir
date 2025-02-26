@@ -1,4 +1,5 @@
 import './bootstrap';
+import './logout.js';
 
 import Alpine from 'alpinejs';
 

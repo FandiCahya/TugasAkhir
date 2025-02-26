@@ -64,7 +64,8 @@
     <!-- Custom js for this page-->
     <script src="{{ asset('assets/js/dashboard.js') }}"></script>
     <!-- End custom js for this page-->
-
+    
+    
     <script>
         document.getElementById('logout-btn').addEventListener('click', function(e) {
             e.preventDefault();

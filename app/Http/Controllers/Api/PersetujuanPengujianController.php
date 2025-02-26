@@ -26,11 +26,28 @@ class PersetujuanPengujianController extends Controller
                         'catatan' => $item->catatan,
                         'signature' => $item->signature,
                         'role' => $item->role,
-                        'pengujian' => [
+                        'persetujuan_pengujian' => [
                             'id' => $item->persetujuanPengujian->id ?? null, // Check if pengujian is not null
                             'status' => $item->status ?? null,
                             'created_at' => $item->persetujuanPengujian->created_at ?? null,
                             'updated_at' => $item->persetujuanPengujian->updated_at ?? null,
+                            'pengujian' => [
+                                'versi' => $item->persetujuanPengujian->pengujian->versi ?? null,
+                                'pengembangan' => [
+                                    'pengajuan' => [
+                                        'nama_sistem' => $item->persetujuanPengujian->pengujian->pengembangan->pengajuan->nama_sistem ?? null,
+                                        'jenis' => $item->persetujuanPengujian->pengujian->pengembangan->pengajuan->jenis ?? null,
+                                        'status' => $item->persetujuanPengujian->pengujian->pengembangan->pengajuan->status ?? null,
+                                        'created_at' => $item->persetujuanPengujian->pengujian->pengembangan->pengajuan->created_at ?? null,
+                                        'user' => [
+                                            'id' => $item->persetujuanPengujian->pengujian->pengembangan->pengajuan->user->id ?? null,
+                                            'name' => $item->persetujuanPengujian->pengujian->pengembangan->pengajuan->user->name ?? null,
+                                            'email' => $item->persetujuanPengujian->pengujian->pengembangan->pengajuan->user->email ?? null,
+                                            'created_at' => $item->persetujuanPengujian->pengujian->pengembangan->pengajuan->user->created_at ?? null,
+                                        ],
+                                    ],
+                                ],
+                            ],
                         ],
                         'user' => [
                             'id' => $item->user->id ?? null, // Check if user is not null
@@ -90,78 +107,78 @@ class PersetujuanPengujianController extends Controller
         }
     }
 
-    public function approve(Request $request, $id)
-    {
-        try {
-            // Validate incoming data
-            $request->validate([
-                'user_id' => 'nullable|exists:users,id',
-                'status' => 'required|in:setuju,tidak_setuju',
-                'catatan' => 'nullable|string',
-                'signature' => 'nullable|image|mimes:jpeg,png,jpg,gif|max:2048', // Signature as image
-            ]);
+    // public function approve(Request $request, $id)
+    // {
+    //     try {
+    //         // Validate incoming data
+    //         $request->validate([
+    //             'user_id' => 'nullable|exists:users,id',
+    //             'status' => 'required|in:setuju,tidak_setuju',
+    //             'catatan' => 'nullable|string',
+    //             'signature' => 'nullable|image|mimes:jpeg,png,jpg,gif|max:2048', // Signature as image
+    //         ]);
 
-            // Find the approval record
-            $persetujuan = PersetujuanPengujianModel::findOrFail($id);
+    //         // Find the approval record
+    //         $persetujuan = PersetujuanPengujianModel::findOrFail($id);
 
-            // Find or create the PersetujuanPengujianDetail record for this user
-            $detail = PersetujuanPengujianDetail::updateOrCreate(
-                ['persetujuan_pengujian_id' => $persetujuan->id, 'user_id' => $request->user_id],
-                [
-                    'status' => $request->status,
-                    'catatan' => $request->catatan,
-                    'signature' => $this->handleSignatureUpload($request), // Upload signature
-                ],
-            );
+    //         // Find or create the PersetujuanPengujianDetail record for this user
+    //         $detail = PersetujuanPengujianDetail::updateOrCreate(
+    //             ['persetujuan_pengujian_id' => $persetujuan->id, 'user_id' => $request->user_id],
+    //             [
+    //                 'status' => $request->status,
+    //                 'catatan' => $request->catatan,
+    //                 'signature' => $this->handleSignatureUpload($request), // Upload signature
+    //             ],
+    //         );
 
-            // After each approval, check if all 4 users have approved
-            if ($this->checkIfAllApproved($persetujuan)) {
-                // If all users approved, set the status of PersetujuanPengujian to 'approved'
-                $persetujuan->update(['status' => 'approved']);
-            }
+    //         // After each approval, check if all 4 users have approved
+    //         if ($this->checkIfAllApproved($persetujuan)) {
+    //             // If all users approved, set the status of PersetujuanPengujian to 'approved'
+    //             $persetujuan->update(['status' => 'approved']);
+    //         }
 
-            // Check if there is any rejection
-            if ($this->checkIfRejected($persetujuan)) {
-                return response()->json(
-                    [
-                        'success' => false,
-                        'message' => 'Approval failed due to rejection from one or more users',
-                        'data' => $persetujuan,
-                    ],
-                    400,
-                );
-            }
+    //         // Check if there is any rejection
+    //         if ($this->checkIfRejected($persetujuan)) {
+    //             return response()->json(
+    //                 [
+    //                     'success' => false,
+    //                     'message' => 'Approval failed due to rejection from one or more users',
+    //                     'data' => $persetujuan,
+    //                 ],
+    //                 400,
+    //             );
+    //         }
 
-            // Check if all approvals are completed (all 4 approved)
-            if ($this->checkIfAllApproved($persetujuan)) {
-                return response()->json(
-                    [
-                        'success' => true,
-                        'message' => 'Approval completed successfully',
-                        'data' => $persetujuan,
-                    ],
-                    200,
-                );
-            }
+    //         // Check if all approvals are completed (all 4 approved)
+    //         if ($this->checkIfAllApproved($persetujuan)) {
+    //             return response()->json(
+    //                 [
+    //                     'success' => true,
+    //                     'message' => 'Approval completed successfully',
+    //                     'data' => $persetujuan,
+    //                 ],
+    //                 200,
+    //             );
+    //         }
 
-            return response()->json(
-                [
-                    'success' => true,
-                    'message' => 'Approval submitted successfully, waiting for other users',
-                    'data' => $persetujuan,
-                ],
-                200,
-            );
-        } catch (\Exception $e) {
-            return response()->json(
-                [
-                    'success' => false,
-                    'error' => $e->getMessage(),
-                ],
-                500,
-            );
-        }
-    }
+    //         return response()->json(
+    //             [
+    //                 'success' => true,
+    //                 'message' => 'Approval submitted successfully, waiting for other users',
+    //                 'data' => $persetujuan,
+    //             ],
+    //             200,
+    //         );
+    //     } catch (\Exception $e) {
+    //         return response()->json(
+    //             [
+    //                 'success' => false,
+    //                 'error' => $e->getMessage(),
+    //             ],
+    //             500,
+    //         );
+    //     }
+    // }
 
     public function approval(Request $request, $id)
     {
@@ -170,10 +187,9 @@ class PersetujuanPengujianController extends Controller
             $request->validate([
                 'status' => 'required|in:setuju,tidak_setuju',
                 'catatan' => 'nullable|string',
-                'signature' => 'nullable|image|mimes:jpeg,png,jpg,gif|max:2048', // Signature as image
+                'signature' => 'nullable|image|mimes:jpeg,png,jpg,gif|max:8048', // Signature as image
             ]);
             Log::info('Request data:', $request->all());
-
 
             // Find the PersetujuanPengujianDetail record by its ID
             $persetujuanDetail = PersetujuanPengujianModel::findOrFail($id); // We now search by PersetujuanPengujianDetail ID
@@ -192,6 +208,15 @@ class PersetujuanPengujianController extends Controller
             if ($this->checkIfAllApproved($persetujuan)) {
                 // If all users approved, set the status of PersetujuanPengujian to 'approved'
                 $persetujuan->update(['status' => 'approved']);
+
+                // Now update the Pengajuan status to 'finished'
+                $pengajuan = $persetujuan->pengujian->pengembangan->pengajuan; // Accessing Pengajuan through relationships
+
+                if ($pengajuan) {
+                    // Update the Pengajuan status to 'finished'
+                    $pengajuan->status = 'finished';
+                    $pengajuan->save(); // Save the changes to Pengajuan
+                }
             }
 
             // Check if there is any rejection
@@ -227,6 +252,7 @@ class PersetujuanPengujianController extends Controller
                 200,
             );
         } catch (\Exception $e) {
+            Log::error('Approval error: ' . $e->getMessage());
             return response()->json(
                 [
                     'success' => false,
