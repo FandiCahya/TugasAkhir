@@ -7,17 +7,21 @@ import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
 import com.example.applicationsop.loginScreen.LoginScreen
-import com.example.applicationsop.presentation.screen.pengguna.ListPengajuanScreen
 import com.example.applicationsop.presentation.screen.ProfileScreen1
 import com.example.applicationsop.presentation.screen.admin.form.FormPengujianAdmin
 import com.example.applicationsop.presentation.screen.admin.HomeAdminScreen
-import com.example.applicationsop.presentation.screen.admin.ListPengajuanScreenAdmin
+import com.example.applicationsop.presentation.screen.admin.list.ListPengajuanScreenAdmin1
+import com.example.applicationsop.presentation.screen.admin.list.ListPengajuanScreenAdmin2
+import com.example.applicationsop.presentation.screen.admin.list.ListPengajuanScreenAdmin3
 import com.example.applicationsop.presentation.screen.admin.ListPengembanganAdminScreen
 import com.example.applicationsop.presentation.screen.admin.ListPengujianScreenAdmin
 import com.example.applicationsop.presentation.screen.admin.form.ScheduleForm
-import com.example.applicationsop.presentation.screen.pengguna.FormUsulanScreen
-import com.example.applicationsop.presentation.screen.pengguna.HomeUserScreen
-import com.example.applicationsop.presentation.screen.pengguna.ListPengembanganScreen
+import com.example.applicationsop.presentation.screen.pemohon.form.FormUsulanScreen
+import com.example.applicationsop.presentation.screen.pemohon.HomeUserScreen
+import com.example.applicationsop.presentation.screen.pemohon.ListPengembanganScreen
+import com.example.applicationsop.presentation.screen.pemohon.list.ListPengajuanScreenButuhKonfirmasi
+import com.example.applicationsop.presentation.screen.pemohon.list.ListPengajuanScreenDiterima
+import com.example.applicationsop.presentation.screen.pemohon.list.ListPengajuanScreenDitolak
 
 @RequiresApi(Build.VERSION_CODES.O)
 @Composable
@@ -60,8 +64,18 @@ fun MainApp() {
 
 
         // List Pengajuan
-        composable("list_pengajuanUser") {
-            ListPengajuanScreen(navController = navController)
+        composable("listUsulan1") {
+            ListPengajuanScreenButuhKonfirmasi(navController = navController )
+        }
+
+        // List Pengajuan
+        composable("listUsulan2") {
+            ListPengajuanScreenDiterima(navController = navController )
+        }
+
+        // List Pengajuan
+        composable("listUsulan3") {
+            ListPengajuanScreenDitolak(navController = navController )
         }
 
         // Pengembangaan user
@@ -94,8 +108,18 @@ fun MainApp() {
         }
 
         // List Pengajuan
-        composable("list_pengajuanAdmin") {
-            ListPengajuanScreenAdmin(navController = navController )
+        composable("list_pengajuanAdmin1") {
+            ListPengajuanScreenAdmin1(navController = navController )
+        }
+
+        // List Pengajuan
+        composable("list_pengajuanAdmin2") {
+            ListPengajuanScreenAdmin2(navController = navController )
+        }
+
+        // List Pengajuan
+        composable("list_pengajuanAdmin3") {
+            ListPengajuanScreenAdmin3(navController = navController )
         }
 
         // Pengembangaan user

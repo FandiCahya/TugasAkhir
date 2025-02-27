@@ -1,4 +1,4 @@
-package com.example.applicationsop.presentation.screen.pengguna
+package com.example.applicationsop.presentation.screen.pemohon
 
 import android.os.Build
 import androidx.annotation.RequiresApi
@@ -190,16 +190,15 @@ fun SubmissionSection(navController: NavController) {
         // Kolom pertama - Card Butuh Konfirmasi (kuning) dengan ukuran lebih besar
         Column(
             modifier = Modifier
-//                .fillMaxHeight() // Membuat kolom pertama memanjang ke bawah
                 .weight(1f) // Membuat kolom pertama lebih besar
         ) {
-            SubmissionCard(
+            com.example.applicationsop.presentation.screen.admin.SubmissionCard(
                 "Butuh Konfirmasi",
                 color = kuning,
                 icon = Icons.Filled.Timer,
                 modifier = Modifier.height(180.dp),
                 onClick = {
-                    navController.navigate("list_pengajuanUser")
+                    navController.navigate("listUsulan1")
                 }
             )
         }
@@ -207,16 +206,29 @@ fun SubmissionSection(navController: NavController) {
         // Kolom kedua - Card Ditolak (merah) dan Card Dikembangkan (hijau)
         Column(
             modifier = Modifier
-//                .fillMaxHeight() // Membuat kolom kedua memanjang ke bawah
                 .weight(1f) // Membuat kolom kedua lebih besar dan seimbang
         ) {
             // Card "Ditolak" (merah)
-            SubmissionCard("Ditolak", color = abang, icon = Icons.Filled.Close)
+            com.example.applicationsop.presentation.screen.admin.SubmissionCard(
+                "Ditolak",
+                color = abang,
+                icon = Icons.Filled.Close,
+                onClick = {
+                    navController.navigate("listUsulan3")
+                }
+            )
 
             Spacer(modifier = Modifier.height(16.dp)) // Memberikan jarak antara card
 
             // Card "Dikembangkan" (hijau) di bawah
-            SubmissionCard("Dikembangkan", color = ijo, icon = Icons.Filled.Verified)
+            com.example.applicationsop.presentation.screen.admin.SubmissionCard(
+                "Dikembangkan",
+                color = ijo,
+                icon = Icons.Filled.Verified,
+                onClick = {
+                    navController.navigate("listUsulan2")
+                }
+            )
         }
     }
 }
