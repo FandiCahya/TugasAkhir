@@ -37,10 +37,13 @@ fun MainApp() {
         }
 
 
-        // Halaman FormUsulanScreen
-        composable("form_usulan") {
-            FormUsulanScreen(navController = navController) // Pastikan ini sesuai dengan nama layar
+        // Halaman FormUsulanScreen User
+        composable("form_usulan?userId={userId}") { backStackEntry ->
+            val userId = backStackEntry.arguments?.getString("userId")
+            FormUsulanScreen(navController = navController, userId = userId)
         }
+
+
 
         // Profile
         composable("profile?token={token}&userId={userId}&role={role}&name={name}&email={email}&devisi={devisi}") { backStackEntry ->
