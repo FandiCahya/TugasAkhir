@@ -55,7 +55,15 @@ fun HomeUserScreen(
                 .padding(bottom = 80.dp) // Memberikan ruang bawah agar FAB tidak tertutup
         ) {
             // Header
-            HeaderHomeUser(navController = navController, nameUser = name)
+            HeaderHomeUser(
+                navController = navController,
+                nameUser = name,
+                TokenUser = token,
+                userIdUser = userId,
+                roleUser = role,
+                emailUser = email,
+                devisiUser = devisi
+            )
 
             // Pengajuan Section
             SectionTitle("Pengajuan")
