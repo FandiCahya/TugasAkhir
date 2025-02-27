@@ -1,4 +1,4 @@
-package com.example.applicationsop.presentation.screen.admin
+package com.example.applicationsop.presentation.screen.admin.list
 
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
@@ -15,130 +15,47 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.unit.dp
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Description
-import androidx.compose.material.icons.filled.Edit
 import androidx.compose.material.icons.filled.Person
-import androidx.compose.material.icons.filled.Search
-import androidx.compose.material.icons.filled.Timer
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.draw.shadow
-import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.sp
-import androidx.compose.ui.zIndex
 import androidx.navigation.NavController
 import com.example.applicationsop.data.DetailInfo
-import com.example.applicationsop.presentation.component.BackButton
 import com.example.applicationsop.presentation.component.HeaderWithSearch
 import com.example.applicationsop.ui.theme.Maroon
 import com.example.applicationsop.ui.theme.abang
 import com.example.applicationsop.ui.theme.ijo
 import com.example.applicationsop.ui.theme.kuning
 import androidx.compose.runtime.LaunchedEffect
-import androidx.compose.runtime.collectAsState
 import com.example.applicationsop.Api.fetchPengajuanList
 import com.example.applicationsop.models.Pengajuan
-import kotlinx.coroutines.launch
 import androidx.compose.foundation.lazy.items
+import com.example.applicationsop.data.ListPengajuanItem
 import java.text.SimpleDateFormat
 import java.util.Date
 
-fun formatTanggal(tanggal: String): String {
+fun formatTanggal1(tanggal: String): String {
     val inputFormat = SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss.SSSSSSZ")
     val outputFormat = SimpleDateFormat("yyyy-MM-dd") // Format yang hanya menampilkan tanggal
     val date: Date = inputFormat.parse(tanggal)
     return outputFormat.format(date) // Mengembalikan tanggal yang diformat
 }
 
-
 @Composable
-fun ListPengajuanItem(
-    namaSistem: String,
-    tanggal: String,
-    jenisSistem: String,
-    rencanaAnggaran: String,
-    masalahSistem: String,
-    outputHasil: String,
-    status: String,
-    onClick: () -> Unit // Fungsi untuk menangani klik
-) {
-    Row(
-        modifier = Modifier
-            .fillMaxWidth()
-            .padding(horizontal = 30.dp, vertical = 10.dp)
-            .background(
-                Color(0xFFF6F6F6),
-                RoundedCornerShape(20.dp)
-            )
-            .padding(16.dp)
-            .clickable { onClick() }, // Menambahkan aksi klik pada seluruh item
-        verticalAlignment = Alignment.CenterVertically
-    ) {
-        // Circular icon (human icon) with border
-        Box(
-            modifier = Modifier
-                .size(40.dp)
-                .background(
-                    kuning,
-                    shape = CircleShape
-                )
-                .border(2.dp, Color.Black, shape = CircleShape)
-        ) {
-            Icon(
-                imageVector = Icons.Filled.Person,
-                contentDescription = "Profile Icon",
-                modifier = Modifier.fillMaxSize(),
-                tint = Color.Black
-            )
-        }
-
-        Spacer(modifier = Modifier.width(16.dp))
-
-        Column(
-            modifier = Modifier.weight(1f)
-        ) {
-            Text(
-                text = namaSistem,
-                fontSize = 16.sp,
-                fontWeight = FontWeight.Bold,
-                color = Color.Black
-            )
-            Spacer(modifier = Modifier.height(4.dp))
-
-            Divider(
-                color = Color.Gray,
-                modifier = Modifier.padding(vertical = 4.dp)
-            )
-
-            Text(
-                text = status,
-                fontSize = 14.sp,
-                color = when (status) {
-                    "pending" -> kuning
-                    "rejected" -> abang
-                    "accepted" -> ijo
-                    else -> Color.Black
-                }
-            )
-        }
-    }
-}
-
-@Composable
-fun ListPengajuanScreenAdmin(navController: NavController) {
+fun ListPengajuanScreenAdmin1(navController: NavController) {
     var showPopup by remember { mutableStateOf(false) }
     var selectedDetail by remember { mutableStateOf(DetailInfo(id="")) }
     var pengajuanList by remember { mutableStateOf<List<Pengajuan>>(emptyList()) }
 
 
     LaunchedEffect(Unit) {
-        // Fetching the data when the Composable is first launched
-        val fetchedPengajuanList = fetchPengajuanList() // Fetch the data
+        val fetchedPengajuanList = fetchPengajuanList("pending")
         pengajuanList = fetchedPengajuanList // Updating the state
-//        println("Pengajuan List View :${pengajuanList}")
     }
 
     Column(
@@ -146,14 +63,12 @@ fun ListPengajuanScreenAdmin(navController: NavController) {
             .fillMaxSize()
             .background(Color.White)
     ) {
-        // Header with back button and search icon
         HeaderWithSearch(navController = navController, title = "Pengajuan")
+
         Spacer(modifier = Modifier.height(20.dp))
 
-        // List of submissions
         LazyColumn(modifier = Modifier.fillMaxSize()) {
             items(pengajuanList) { pengajuan ->
-                // Using data from the API response dynamically
                 ListPengajuanItem(
                     namaSistem = pengajuan.nama_sistem,
                     tanggal = pengajuan.tgl,
@@ -181,7 +96,7 @@ fun ListPengajuanScreenAdmin(navController: NavController) {
     }
 
     if (showPopup) {
-        DetailPopup(
+        DetailPopup1(
             onDismiss = { showPopup = false },
             hariTanggal = selectedDetail.tanggal,
             namaSistem = selectedDetail.namaSistem,
@@ -204,7 +119,7 @@ fun ListPengajuanScreenAdmin(navController: NavController) {
 }
 
 @Composable
-fun DetailPopup(
+fun DetailPopup1(
     onDismiss: () -> Unit,
     hariTanggal: String,
     namaSistem: String,
@@ -493,20 +408,6 @@ fun DetailPopup(
                             }
                         }
                     }
-                }
-
-                // Tombol Add Schedule
-                Button(
-                    onClick = { navController.navigate("addSchedule") }, // Navigasi ke addSchedule
-                    modifier = Modifier
-                        .width(150.dp)
-                        .padding(top = 6.dp)
-                        .align(alignment = Alignment.End)
-                        .shadow(4.dp, RoundedCornerShape(16.dp)),
-                    colors = ButtonDefaults.buttonColors(containerColor = Maroon),
-                    shape = RoundedCornerShape(16.dp)
-                ) {
-                    Text("Add Schedule", color = Color.White)
                 }
             }
         }

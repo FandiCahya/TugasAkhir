@@ -1,5 +1,36 @@
 package com.example.applicationsop.data
 
+import androidx.compose.foundation.background
+import androidx.compose.foundation.border
+import androidx.compose.foundation.clickable
+import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.layout.width
+import androidx.compose.foundation.shape.CircleShape
+import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.Person
+import androidx.compose.material3.Divider
+import androidx.compose.material3.Icon
+import androidx.compose.material3.Text
+import androidx.compose.runtime.Composable
+import androidx.compose.ui.Alignment
+import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.unit.dp
+import androidx.compose.ui.unit.sp
+import com.example.applicationsop.ui.theme.abang
+import com.example.applicationsop.ui.theme.ijo
+import com.example.applicationsop.ui.theme.kuning
+
 // Data class untuk menyimpan informasi detail usulan
 data class DetailInfo(
     val id: String, // Tambahkan ID untuk identifikasi yang unik
@@ -22,39 +53,76 @@ data class ScheduleItem(
     val progressPercentage: Int // Ensure this is an Int
 )
 
+@Composable
+fun ListPengajuanItem(
+    namaSistem: String,
+    tanggal: String,
+    jenisSistem: String,
+    rencanaAnggaran: String,
+    masalahSistem: String,
+    outputHasil: String,
+    status: String,
+    onClick: () -> Unit // Fungsi untuk menangani klik
+) {
+    Row(
+        modifier = Modifier
+            .fillMaxWidth()
+            .padding(horizontal = 30.dp, vertical = 10.dp)
+            .background(
+                Color(0xFFF6F6F6),
+                RoundedCornerShape(20.dp)
+            )
+            .padding(16.dp)
+            .clickable { onClick() }, // Menambahkan aksi klik pada seluruh item
+        verticalAlignment = Alignment.CenterVertically
+    ) {
+        // Circular icon (human icon) with border
+        Box(
+            modifier = Modifier
+                .size(40.dp)
+                .background(
+                    kuning,
+                    shape = CircleShape
+                )
+                .border(2.dp, Color.Black, shape = CircleShape)
+        ) {
+            Icon(
+                imageVector = Icons.Filled.Person,
+                contentDescription = "Profile Icon",
+                modifier = Modifier.fillMaxSize(),
+                tint = Color.Black
+            )
+        }
 
-//fun getSampleSubmissions(): List<DetailInfo> {
-//    return listOf(
-//        DetailInfo(1, "Nama Sistem 1", "25/10/2025", "Sistem Baru", "Termasuk dalam perencanaan", "Bug tampilan", "Hasil yang diinginkan", "Menunggu konfirmasi"),
-//        DetailInfo(2, "Nama Sistem 2", "26/10/2025", "Sistem Baru", "Perencanaan sudah dilakukan", "Error server", "Hasil yang optimal", "Pengujian ditolak"),
-//        DetailInfo(3, "Nama Sistem 3", "27/10/2025", "Sistem Lama", "Perbaikan bug", "Tampilan tidak sesuai", "Tampilan diperbaiki", "Pengajuan Diterima")
-//    )
-//}
-//
-//package com.example.applicationsop.data
-//
-//// Data class untuk menyimpan informasi detail usulan
-//// Data class untuk menyimpan informasi detail usulan
-//data class DetailInfo(
-//    val id: Int, // Tambahkan ID untuk identifikasi yang unik
-//    val namaSistem: String = "",
-//    val tanggal: String = "",
-//    val jenisSistem: String = "",
-//    val rencanaAnggaran: String = "",
-//    val masalahSistem: String = "",
-//    val outputHasil: String = "",
-//    var status: String = ""
-//)
-//
-//
-//fun getSampleSubmissions(): List<DetailInfo> {
-//    return listOf(
-//        DetailInfo(1, "Nama Sistem 1", "25/10/2025", "Sistem Baru", "Termasuk dalam perencanaan", "Bug tampilan", "Hasil yang diinginkan", "Menunggu konfirmasi"),
-//        DetailInfo(2, "Nama Sistem 2", "26/10/2025", "Sistem Baru", "Perencanaan sudah dilakukan", "Error server", "Hasil yang optimal", "Pengujian ditolak"),
-//        DetailInfo(3, "Nama Sistem 3", "27/10/2025", "Sistem Lama", "Perbaikan bug", "Tampilan tidak sesuai", "Tampilan diperbaiki", "Pengajuan Diterima"),
-//        DetailInfo(4, "Nama Sistem 4", "28/10/2025", "Sistem Lama", "Perbaikan eror", "output tidak sesuai", "error selesai", "Pengembangan"),
-//        DetailInfo(5, "Nama Sistem 5", "29/10/2025", "Sistem Lama", "Perbaikan filter", "filter salah", "filter bisa sesuai", "Pengujian"),
-//        DetailInfo(6, "Nama Sistem 6", "30/10/2025", "Sistem Lama", "Perbaikan sistem", "sistem demokrasi indonesia", "sistem diperbaiki", "Selesai"),
-//    )
-//}
+        Spacer(modifier = Modifier.width(16.dp))
+
+        Column(
+            modifier = Modifier.weight(1f)
+        ) {
+            Text(
+                text = namaSistem,
+                fontSize = 16.sp,
+                fontWeight = FontWeight.Bold,
+                color = Color.Black
+            )
+            Spacer(modifier = Modifier.height(4.dp))
+
+            Divider(
+                color = Color.Gray,
+                modifier = Modifier.padding(vertical = 4.dp)
+            )
+
+            Text(
+                text = status,
+                fontSize = 14.sp,
+                color = when (status) {
+                    "pending" -> kuning
+                    "rejected" -> abang
+                    "accepted" -> ijo
+                    else -> Color.Black
+                }
+            )
+        }
+    }
+}
 

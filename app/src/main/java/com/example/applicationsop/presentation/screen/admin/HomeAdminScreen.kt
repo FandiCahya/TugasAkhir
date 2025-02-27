@@ -210,7 +210,7 @@ fun SubmissionSection(navController: NavController) {
                 icon = Icons.Filled.Timer,
                 modifier = Modifier.height(180.dp),
                 onClick = {
-                    navController.navigate("list_pengajuanAdmin?status=draft")
+                    navController.navigate("list_pengajuanAdmin1")
                 }
             )
         }
@@ -226,7 +226,7 @@ fun SubmissionSection(navController: NavController) {
                 color = abang,
                 icon = Icons.Filled.Close,
                 onClick = {
-                    navController.navigate("list_pengajuanAdmin?status=rejected")
+                    navController.navigate("list_pengajuanAdmin2")
                 }
             )
 
@@ -238,7 +238,7 @@ fun SubmissionSection(navController: NavController) {
                 color = ijo,
                 icon = Icons.Filled.Verified,
                 onClick = {
-                    navController.navigate("list_pengajuanAdmin?status=accepted")
+                    navController.navigate("list_pengajuanAdmin3")
                 }
             )
         }
@@ -256,14 +256,14 @@ fun SubmissionCard(
 ) {
     Card(
         modifier = modifier
-            .width(150.dp) // Menentukan lebar card, agar tidak terlalu besar
-            .padding(4.dp) // Padding antar card
+            .width(150.dp)
+            .padding(4.dp)
             .clickable(onClick = onClick),
-        shape = RoundedCornerShape(16.dp), // Sudut card bulat
+        shape = RoundedCornerShape(16.dp),
         colors = CardDefaults.cardColors(
             containerColor = color
         ),
-        elevation = CardDefaults.cardElevation(10.dp) // Bayangan pada card untuk efek 3D
+        elevation = CardDefaults.cardElevation(10.dp)
     ) {
         Column(
             modifier = Modifier

@@ -24,10 +24,17 @@ val GetPengajuan = HttpClient(OkHttp) {
     }
 }
 
-// Function to fetch Pengajuan list
-suspend fun fetchPengajuanList(): List<Pengajuan> {
+// Function to fetch Pengajuan list based on status
+suspend fun fetchPengajuanList(status: String? = null): List<Pengajuan> {
     return try {
-        val response: HttpResponse = GetPengajuan.get("${ApiConfig.BASE_URL}pengajuan") {
+        // Build the URL dynamically, adding the status as a query parameter if provided
+        val url = if (status != null) {
+            "${ApiConfig.BASE_URL}pengajuan?status=$status"
+        } else {
+            "${ApiConfig.BASE_URL}pengajuan"
+        }
+
+        val response: HttpResponse = GetPengajuan.get(url) {
             contentType(ContentType.Application.Json)
         }
 
@@ -45,4 +52,5 @@ suspend fun fetchPengajuanList(): List<Pengajuan> {
         emptyList()  // Return an empty list on error
     }
 }
+
 

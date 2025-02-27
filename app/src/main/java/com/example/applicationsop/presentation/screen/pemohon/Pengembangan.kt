@@ -1,4 +1,4 @@
-package com.example.applicationsop.presentation.screen.pengguna
+package com.example.applicationsop.presentation.screen.pemohon
 
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
@@ -26,6 +26,7 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.navigation.NavController
 import com.example.applicationsop.presentation.component.BackButton
+import com.example.applicationsop.presentation.component.HeaderWithSearch
 import com.example.applicationsop.ui.theme.Maroon
 import com.example.applicationsop.ui.theme.abang
 import com.example.applicationsop.ui.theme.ijo
@@ -124,7 +125,8 @@ fun ListPengembanganScreen(navController: NavController) {
             .background(Color.White)
     ) {
         // Header with back button and search icon
-        Rectangle1217(navController = navController)
+        HeaderWithSearch(navController = navController, title = "Pengembangan" )
+
         Spacer(modifier = Modifier.height(20.dp))
 
         // List of submissions

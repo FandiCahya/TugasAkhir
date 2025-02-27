@@ -26,13 +26,11 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.navigation.NavController
-import com.example.applicationsop.Api.fetchPengajuanList
 import com.example.applicationsop.Api.fetchPengembanganList
-import com.example.applicationsop.models.Pengajuan
 import com.example.applicationsop.models.Pengembangan
 import com.example.applicationsop.presentation.component.BackButton
 import com.example.applicationsop.presentation.component.HeaderWithSearch
-import com.example.applicationsop.presentation.screen.pengguna.ScheduleItem
+import com.example.applicationsop.presentation.screen.pemohon.ScheduleItem
 import com.example.applicationsop.ui.theme.Maroon
 import com.example.applicationsop.ui.theme.abang
 import com.example.applicationsop.ui.theme.ijo
