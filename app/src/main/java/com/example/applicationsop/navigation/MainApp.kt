@@ -67,18 +67,24 @@ fun MainApp() {
 
 
         // List Pengajuan
-        composable("listUsulan1") {
-            ListPengajuanScreenButuhKonfirmasi(navController = navController )
+        composable("listUsulan1?role={role}&devisi={devisi}") { backStackEntry ->
+            val role = backStackEntry.arguments?.getString("role")
+            val devisi = backStackEntry.arguments?.getString("devisi")
+            ListPengajuanScreenButuhKonfirmasi(navController = navController,role = role, devisi = devisi )
         }
 
         // List Pengajuan
-        composable("listUsulan2") {
-            ListPengajuanScreenDiterima(navController = navController )
+        composable("listUsulan2?role={role}&devisi={devisi}") {backStackEntry ->
+            val role = backStackEntry.arguments?.getString("role")
+            val devisi = backStackEntry.arguments?.getString("devisi")
+            ListPengajuanScreenDiterima(navController = navController,role = role, devisi = devisi )
         }
 
         // List Pengajuan
-        composable("listUsulan3") {
-            ListPengajuanScreenDitolak(navController = navController )
+        composable("listUsulan3?role={role}&devisi={devisi}") {backStackEntry ->
+            val role = backStackEntry.arguments?.getString("role")
+            val devisi = backStackEntry.arguments?.getString("devisi")
+            ListPengajuanScreenDitolak(navController = navController,role = role, devisi = devisi )
         }
 
         // Pengembangaan user
