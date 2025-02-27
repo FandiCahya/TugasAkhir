@@ -40,12 +40,6 @@ import com.example.applicationsop.presentation.component.DetailPopupUsulanAdmin
 import java.text.SimpleDateFormat
 import java.util.Date
 
-fun formatTanggal1(tanggal: String): String {
-    val inputFormat = SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss.SSSSSSZ")
-    val outputFormat = SimpleDateFormat("yyyy-MM-dd") // Format yang hanya menampilkan tanggal
-    val date: Date = inputFormat.parse(tanggal)
-    return outputFormat.format(date) // Mengembalikan tanggal yang diformat
-}
 
 @Composable
 fun ListPengajuanScreenAdmin1(navController: NavController) {

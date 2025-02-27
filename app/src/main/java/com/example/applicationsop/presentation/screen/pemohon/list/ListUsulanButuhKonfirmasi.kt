@@ -29,7 +29,7 @@ fun ListPengajuanScreenButuhKonfirmasi(navController: NavController) {
 
 
     LaunchedEffect(Unit) {
-        val fetchedPengajuanList = fetchPengajuanList("pending")
+        val fetchedPengajuanList = fetchPengajuanList("pending","user","IT")
         pengajuanList = fetchedPengajuanList // Updating the state
     }
 

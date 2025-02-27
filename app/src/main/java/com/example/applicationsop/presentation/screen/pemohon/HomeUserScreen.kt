@@ -87,7 +87,7 @@ fun HomeUserScreen(
         FloatingActionButton(
             onClick = {
                 // Navigate to FormUsulanScreen when FAB is clicked
-                navController.navigate("form_usulan")
+                navController.navigate("form_usulan?userId=$userId")
             },
             modifier = Modifier
                 .align(Alignment.BottomEnd) // Letakkan FAB di bawah kanan

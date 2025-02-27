@@ -125,7 +125,7 @@ fun ListPengujianScreenAdmin(navController: NavController) {
         // Fetching the data when the Composable is first launched
         val fetchedPengujianList = fetchPengujianList() // Fetch the data
         pengujianList = fetchedPengujianList // Updating the state
-        println("Pengujian List View :${pengujianList}")
+//        println("Pengujian List View :${pengujianList}")
     }
 
     Column(
