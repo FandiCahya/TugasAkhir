@@ -15,6 +15,7 @@ import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.Description
 import androidx.compose.material.icons.filled.Timer
 import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
@@ -23,7 +24,12 @@ import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.Divider
 import androidx.compose.material3.Icon
 import androidx.compose.material3.Text
+import androidx.compose.material3.TextField
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.shadow
@@ -32,7 +38,10 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.navigation.NavController
 import com.example.applicationsop.ui.theme.Maroon
+import com.example.applicationsop.ui.theme.abang
+import com.example.applicationsop.ui.theme.ijo
 
 @Composable
 fun DetailPopupUsulanUser(
@@ -113,7 +122,11 @@ fun DetailPopupUsulanUser(
                             Column(
                                 modifier = Modifier.weight(1f)
                             ) {
-                                Text("Hari/Tanggal", fontWeight = FontWeight.Bold, color = Color.Black)
+                                Text(
+                                    "Hari/Tanggal",
+                                    fontWeight = FontWeight.Bold,
+                                    color = Color.Black
+                                )
                             }
 
                             // Kolom 2 (Isi)
@@ -134,7 +147,11 @@ fun DetailPopupUsulanUser(
                             Column(
                                 modifier = Modifier.weight(1f)
                             ) {
-                                Text("Nama Sistem", fontWeight = FontWeight.Bold, color = Color.Black)
+                                Text(
+                                    "Nama Sistem",
+                                    fontWeight = FontWeight.Bold,
+                                    color = Color.Black
+                                )
                             }
 
                             // Kolom 2 (Isi)
@@ -176,7 +193,11 @@ fun DetailPopupUsulanUser(
                             Column(
                                 modifier = Modifier.weight(1f)
                             ) {
-                                Text("Rencana Anggaran", fontWeight = FontWeight.Bold, color = Color.Black)
+                                Text(
+                                    "Rencana Anggaran",
+                                    fontWeight = FontWeight.Bold,
+                                    color = Color.Black
+                                )
                             }
 
                             // Kolom 2 (Isi)
@@ -197,7 +218,11 @@ fun DetailPopupUsulanUser(
                             Column(
                                 modifier = Modifier.weight(1f)
                             ) {
-                                Text("Masalah pada sistem", fontWeight = FontWeight.Bold, color = Color.Black)
+                                Text(
+                                    "Masalah pada sistem",
+                                    fontWeight = FontWeight.Bold,
+                                    color = Color.Black
+                                )
                             }
 
                             // Kolom 2 (Isi)
@@ -218,7 +243,11 @@ fun DetailPopupUsulanUser(
                             Column(
                                 modifier = Modifier.weight(1f)
                             ) {
-                                Text("Output/Hasil yang diharapkan", fontWeight = FontWeight.Bold, color = Color.Black)
+                                Text(
+                                    "Output/Hasil yang diharapkan",
+                                    fontWeight = FontWeight.Bold,
+                                    color = Color.Black
+                                )
                             }
 
                             // Kolom 2 (Isi)
@@ -253,7 +282,7 @@ fun DetailPopupUsulanUser(
                 }
 
                 // Show reason if status is "Ditolak"
-                if (status == "Pengajuan ditolak" && alasan != null) {
+                if (status == "rejected" && alasan != null) {
                     Spacer(modifier = Modifier.height(16.dp))
                     Divider()
                     Text("Alasan: $alasan", color = Color.Black, fontWeight = FontWeight.Bold)
@@ -283,7 +312,7 @@ fun DetailPopupUsulanUser(
                 }
 
                 // Button for Edit (only shows when status is "Ditolak")
-                if (status == "Pengajuan ditolak") {
+                if (status == "rejected") {
                     Spacer(modifier = Modifier.height(16.dp))
                     Button(
                         onClick = onEditClick,
@@ -297,6 +326,309 @@ fun DetailPopupUsulanUser(
                             color = Color.White
                         )
                     }
+                }
+            }
+        }
+    }
+}
+
+@Composable
+fun DetailPopupUsulanAdmin(
+    onDismiss: () -> Unit,
+    hariTanggal: String,
+    namaSistem: String,
+    jenisSistem: String,
+    rencanaAnggaran: String,
+    masalahSistem: String,
+    outputHasil: String,
+    status: String,
+    alasan: String? = null, // Alasan hanya ada jika status ditolak
+    isAdmin: Boolean, // Menambahkan parameter untuk memeriksa peran
+    onAcceptClick: () -> Unit, // Fungsi untuk menerima usulan
+    onRejectClick: (String) -> Unit, // Fungsi untuk menolak usulan
+    navController: NavController
+) {
+    var inputAlasan by remember { mutableStateOf(alasan.orEmpty()) }
+    var showAlasanInput by remember { mutableStateOf(false) }
+
+    Box(modifier = Modifier.fillMaxSize()) {
+        Box(
+            modifier = Modifier
+                .fillMaxSize()
+                .background(Color.Black.copy(alpha = 0.4f)) // Gelapkan background
+                .clickable { onDismiss() } // Menutup popup jika area gelap di klik
+        )
+
+        // Card Popup
+        Card(
+            modifier = Modifier
+                .align(Alignment.Center)
+                .fillMaxWidth()
+                .padding(20.dp)
+                .shadow(8.dp, RoundedCornerShape(16.dp)),
+            shape = RoundedCornerShape(16.dp),
+            colors = CardDefaults.cardColors(containerColor = Color.White)
+        ) {
+            Column(
+                modifier = Modifier.padding(16.dp)
+            ) {
+                // Icon and Title
+                Row(
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .padding(bottom = 8.dp),
+                    horizontalArrangement = Arrangement.Center
+                ) {
+                    Icon(
+                        imageVector = Icons.Filled.Description,
+                        contentDescription = "Des Icon",
+                        modifier = Modifier.size(24.dp),
+                        tint = Maroon
+                    )
+                }
+                Text(
+                    text = "Detail Usulan",
+                    fontSize = 18.sp,
+                    fontWeight = FontWeight.Bold,
+                    color = Color.Black,
+                    textAlign = TextAlign.Center,
+                    modifier = Modifier.padding(start = 110.dp)
+                )
+
+                // Line separator
+                Divider(modifier = Modifier.padding(vertical = 8.dp))
+
+                // Content
+                Row(
+                    modifier = Modifier.fillMaxWidth(),
+                    horizontalArrangement = Arrangement.SpaceBetween
+                ) {
+                    // Content with two columns for title and content
+                    Column(
+                        modifier = Modifier.fillMaxWidth()
+                    ) {
+                        // Row for Hari/Tanggal
+                        Row(
+                            modifier = Modifier.fillMaxWidth(),
+                            horizontalArrangement = Arrangement.Start
+                        ) {
+                            // Kolom 1 (Judul)
+                            Column(
+                                modifier = Modifier.weight(1f)
+                            ) {
+                                Text(
+                                    "Tanggal",
+                                    fontWeight = FontWeight.Bold,
+                                    color = Color.Black
+                                )
+                            }
+
+                            // Kolom 2 (Isi)
+                            Column(
+                                modifier = Modifier.weight(2f)
+                            ) {
+                                Text(": $hariTanggal", color = Color.Black)
+                            }
+                        }
+                        Spacer(modifier = Modifier.height(8.dp))
+
+                        // Row for Nama Sistem
+                        Row(
+                            modifier = Modifier.fillMaxWidth(),
+                            horizontalArrangement = Arrangement.Start
+                        ) {
+                            // Kolom 1 (Judul)
+                            Column(
+                                modifier = Modifier.weight(1f)
+                            ) {
+                                Text(
+                                    "Nama Sistem",
+                                    fontWeight = FontWeight.Bold,
+                                    color = Color.Black
+                                )
+                            }
+
+                            // Kolom 2 (Isi)
+                            Column(
+                                modifier = Modifier.weight(2f)
+                            ) {
+                                Text(": $namaSistem", color = Color.Black)
+                            }
+                        }
+                        Spacer(modifier = Modifier.height(8.dp))
+
+                        // Row for Jenis Sistem
+                        Row(
+                            modifier = Modifier.fillMaxWidth(),
+                            horizontalArrangement = Arrangement.Start
+                        ) {
+                            // Kolom 1 (Judul)
+                            Column(
+                                modifier = Modifier.weight(1f)
+                            ) {
+                                Text("Jenis", fontWeight = FontWeight.Bold, color = Color.Black)
+                            }
+
+                            // Kolom 2 (Isi)
+                            Column(
+                                modifier = Modifier.weight(2f)
+                            ) {
+                                Text(": $jenisSistem", color = Color.Black)
+                            }
+                        }
+                        Spacer(modifier = Modifier.height(8.dp))
+
+                        // Row for Rencana Anggaran
+                        Row(
+                            modifier = Modifier.fillMaxWidth(),
+                            horizontalArrangement = Arrangement.Start
+                        ) {
+                            // Kolom 1 (Judul)
+                            Column(
+                                modifier = Modifier.weight(1f)
+                            ) {
+                                Text(
+                                    "Rencana Anggaran",
+                                    fontWeight = FontWeight.Bold,
+                                    color = Color.Black
+                                )
+                            }
+
+                            // Kolom 2 (Isi)
+                            Column(
+                                modifier = Modifier.weight(2f)
+                            ) {
+                                Text(": $rencanaAnggaran", color = Color.Black)
+                            }
+                        }
+                        Spacer(modifier = Modifier.height(8.dp))
+
+                        // Row for Masalah pada Sistem
+                        Row(
+                            modifier = Modifier.fillMaxWidth(),
+                            horizontalArrangement = Arrangement.Start
+                        ) {
+                            // Kolom 1 (Judul)
+                            Column(
+                                modifier = Modifier.weight(1f)
+                            ) {
+                                Text(
+                                    "Masalah pada sistem",
+                                    fontWeight = FontWeight.Bold,
+                                    color = Color.Black
+                                )
+                            }
+
+                            // Kolom 2 (Isi)
+                            Column(
+                                modifier = Modifier.weight(2f)
+                            ) {
+                                Text(": $masalahSistem", color = Color.Black)
+                            }
+                        }
+                        Spacer(modifier = Modifier.height(8.dp))
+
+                        // Row for Output/Hasil yang Diharapkan
+                        Row(
+                            modifier = Modifier.fillMaxWidth(),
+                            horizontalArrangement = Arrangement.Start
+                        ) {
+                            // Kolom 1 (Judul)
+                            Column(
+                                modifier = Modifier.weight(1f)
+                            ) {
+                                Text(
+                                    "Output/Hasil yang diharapkan",
+                                    fontWeight = FontWeight.Bold,
+                                    color = Color.Black
+                                )
+                            }
+
+                            // Kolom 2 (Isi)
+                            Column(
+                                modifier = Modifier.weight(2f)
+                            ) {
+                                Text(": $outputHasil", color = Color.Black)
+                            }
+                        }
+                        Spacer(modifier = Modifier.height(8.dp))
+
+                        // Row for Status
+                        Row(
+                            modifier = Modifier.fillMaxWidth(),
+                            horizontalArrangement = Arrangement.Start
+                        ) {
+                            // Kolom 1 (Judul)
+                            Column(
+                                modifier = Modifier.weight(1f)
+                            ) {
+                                Text("Status", fontWeight = FontWeight.Bold, color = Color.Black)
+                            }
+
+                            // Kolom 2 (Isi)
+                            Column(
+                                modifier = Modifier.weight(2f)
+                            ) {
+                                Text(": $status", color = Color.Black)
+                            }
+                        }
+                    }
+                }
+
+                // Line separator
+                Divider(modifier = Modifier.padding(vertical = 8.dp))
+
+                // Menampilkan tombol "Terima" dan "Tolak" hanya jika statusnya "pending" atau "rejected"
+                if (status == "pending" || status == "rejected") {
+                    Row(
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .padding(top = 15.dp),
+                        horizontalArrangement = Arrangement.Center
+                    ) {
+                        Button(
+                            onClick = onAcceptClick,
+                            modifier = Modifier
+                                .width(120.dp)
+                                .shadow(4.dp, RoundedCornerShape(16.dp)),
+                            colors = ButtonDefaults.buttonColors(containerColor = ijo),
+                            shape = RoundedCornerShape(16.dp)
+                        ) {
+                            Text("Terima", color = Color.White)
+                        }
+
+                        Spacer(modifier = Modifier.weight(1f))
+
+                        Button(
+                            onClick = {
+                                showAlasanInput = true
+                            }, // Menampilkan input alasan jika Tolak ditekan
+                            modifier = Modifier
+                                .width(120.dp)
+                                .shadow(4.dp, RoundedCornerShape(16.dp)),
+                            colors = ButtonDefaults.buttonColors(containerColor = abang),
+                            shape = RoundedCornerShape(16.dp)
+                        ) {
+                            Text("Tolak", color = Color.White)
+                        }
+                    }
+                }
+            }
+
+            // Add Schedule button visibility based on status
+            if (status == "accepted") {
+                Button(
+                    onClick = { navController.navigate("addSchedule") },
+                    modifier = Modifier
+                        .width(150.dp)
+                        .padding(bottom = 15.dp)
+                        .padding(end = 15.dp)
+                        .align(Alignment.End)
+                        .shadow(4.dp, RoundedCornerShape(16.dp)),
+                    colors = ButtonDefaults.buttonColors(containerColor = Maroon),
+                    shape = RoundedCornerShape(16.dp)
+                ) {
+                    Text("Add Schedule", color = Color.White)
                 }
             }
         }
