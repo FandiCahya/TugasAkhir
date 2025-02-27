@@ -28,6 +28,10 @@ import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.zIndex
 import com.example.applicationsop.presentation.component.BackButton
+import com.example.applicationsop.Api.logoutUser
+import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.ui.platform.LocalContext
+import android.widget.Toast
 
 @Composable
 fun ProfileScreen1(
@@ -42,6 +46,39 @@ fun ProfileScreen1(
     var signaturePath by remember { mutableStateOf(androidx.compose.ui.graphics.Path()) }
     var showSignaturePad by remember { mutableStateOf(false) }
     var showSignatureValidDialog by remember { mutableStateOf(false) }
+
+    var isLoggingOut by remember { mutableStateOf(false) }
+
+    // Ambil context untuk menampilkan Toast
+    val context = LocalContext.current
+
+    // LaunchedEffect to trigger logout when token is non-null
+    LaunchedEffect(isLoggingOut) {
+        if (isLoggingOut && token != null) {
+            try {
+                val success = logoutUser(token) // Perform logout
+                if (success) {
+                    // Menampilkan Toast ketika logout berhasil
+                    Toast.makeText(context, "Logout Berhasil", Toast.LENGTH_SHORT).show()
+
+                    // Navigate to login after successful logout
+                    navController.navigate("login") {
+                        // Clear the back stack
+                        popUpTo("profile") { inclusive = true }
+                    }
+                    println("Logout Successfully")
+                } else {
+                    // Handle logout failure
+                    println("Logout failed")
+                    Toast.makeText(context, "Logout Gagal", Toast.LENGTH_SHORT).show()
+                }
+            } catch (e: Exception) {
+                // Tangani error jika logoutUser gagal
+                println("Error during logout: ${e.message}")
+                Toast.makeText(context, "Terjadi Kesalahan", Toast.LENGTH_SHORT).show()
+            }
+        }
+    }
 
     Box(
         modifier = Modifier
@@ -171,8 +208,8 @@ fun ProfileScreen1(
                 // Sign Out Button
                 TextButton(
                     onClick = {
-                        // Logout logic (Clear user data or session here)
-                        logout(navController)
+                        // Set flag to start logging out
+                        isLoggingOut = true
                     },
                     modifier = Modifier
                         .fillMaxWidth()
@@ -206,20 +243,6 @@ fun ProfileScreen1(
 
             }
         }
-    }
-}
-
-// Logout Function
-fun logout(navController: NavController) {
-    // Add your logout logic here, for example:
-    // Clear user session, remove stored data, etc.
-    // For example:
-    // sharedPreferences.edit().clear().apply()
-
-    // Navigate to the login screen after logout
-    navController.navigate("login") {
-        // Clear the back stack to prevent user from navigating back to profile screen
-        popUpTo("profile") { inclusive = true }
     }
 }
 
