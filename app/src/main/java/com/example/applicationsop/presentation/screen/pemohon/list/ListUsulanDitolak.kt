@@ -22,15 +22,18 @@ import com.example.applicationsop.presentation.component.DetailPopupUsulanUser
 import com.example.applicationsop.presentation.component.HeaderWithSearch
 
 @Composable
-fun ListPengajuanScreenDitolak(navController: NavController) {
+fun ListPengajuanScreenDitolak(navController: NavController, role: String?, devisi: String?) {
     var showPopup by remember { mutableStateOf(false) }
     var selectedDetail by remember { mutableStateOf(DetailInfo(id="")) }
     var pengajuanList by remember { mutableStateOf<List<Pengajuan>>(emptyList()) }
 
 
-    LaunchedEffect(Unit) {
-        val fetchedPengajuanList = fetchPengajuanList("rejected")
-        pengajuanList = fetchedPengajuanList // Updating the state
+    LaunchedEffect(role,devisi) {
+        if (role != null && devisi != null) {
+            val fetchedPengajuanList = fetchPengajuanList("rejected", role, devisi)
+//            println("Role: $role, Devisi: $devisi")
+            pengajuanList = fetchedPengajuanList // Updating the state with fetched data
+        }
     }
 
     Column(

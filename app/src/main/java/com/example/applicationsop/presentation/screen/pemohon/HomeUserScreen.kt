@@ -67,7 +67,7 @@ fun HomeUserScreen(
 
             // Pengajuan Section
             SectionTitle("Pengajuan")
-            SubmissionSection(navController = navController)
+            SubmissionSection(navController = navController,roleUS = role,devisiUS = devisi)
 
             Spacer(modifier = Modifier.height(16.dp))
 
@@ -116,7 +116,7 @@ fun SectionTitle(title: String) {
 }
 
 @Composable
-fun SubmissionSection(navController: NavController) {
+fun SubmissionSection(navController: NavController,roleUS: String?,devisiUS: String?) {
     Row(
         modifier = Modifier
             .fillMaxWidth()
@@ -134,7 +134,7 @@ fun SubmissionSection(navController: NavController) {
                 icon = Icons.Filled.Timer,
                 modifier = Modifier.height(180.dp),
                 onClick = {
-                    navController.navigate("listUsulan1")
+                    navController.navigate("listUsulan1?role=$roleUS&devisi=$devisiUS")
                 }
             )
         }
@@ -150,7 +150,7 @@ fun SubmissionSection(navController: NavController) {
                 color = abang,
                 icon = Icons.Filled.Close,
                 onClick = {
-                    navController.navigate("listUsulan3")
+                    navController.navigate("listUsulan3?role=$roleUS&devisi=$devisiUS")
                 }
             )
 
@@ -162,7 +162,7 @@ fun SubmissionSection(navController: NavController) {
                 color = ijo,
                 icon = Icons.Filled.Verified,
                 onClick = {
-                    navController.navigate("listUsulan2")
+                    navController.navigate("listUsulan2?role=$roleUS&devisi=$devisiUS")
                 }
             )
         }
