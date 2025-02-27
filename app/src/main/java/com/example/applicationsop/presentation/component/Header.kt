@@ -203,7 +203,7 @@ fun HeaderHomeAdmin(
 
 @RequiresApi(Build.VERSION_CODES.O)
 @Composable
-fun HeaderHomeUser(navController: NavController, nameUser: String?) {
+fun HeaderHomeUser(navController: NavController, nameUser: String?, TokenUser: String?, userIdUser: String?, roleUser: String?, emailUser: String?, devisiUser: String?) {
 
     // Ambil waktu saat ini
     val currentTime = LocalTime.now()
@@ -252,7 +252,7 @@ fun HeaderHomeUser(navController: NavController, nameUser: String?) {
             // Ikon profil di sebelah kanan
             IconButton(onClick = {
                 // Arahkan ke menu profil ketika ikon diklik
-                navController.navigate("profile") // Anda perlu menambahkan rute "profile" di AppNavigation
+                navController.navigate("profile?token=$TokenUser&userId=$userIdUser&role=$roleUser&name=$nameUser&email=$emailUser&devisi=$devisiUser") // Anda perlu menambahkan rute "profile" di AppNavigation
             }) {
                 Icon(
                     imageVector = Icons.Filled.Person, // Menggunakan ikon "Person" dari Material Icons
