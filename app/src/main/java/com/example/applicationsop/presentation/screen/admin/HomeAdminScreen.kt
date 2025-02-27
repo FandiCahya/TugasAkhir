@@ -1,43 +1,30 @@
 package com.example.applicationsop.presentation.screen.admin
 
 import android.os.Build
-import android.util.Log
 import androidx.annotation.RequiresApi
 import androidx.compose.foundation.background
-import androidx.compose.foundation.border
-import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
-import androidx.compose.foundation.shape.CircleShape
-//import androidx.compose.foundation.layout.ColumnScopeInstance.weight
-import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.*
 import androidx.compose.runtime.Composable
-import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
-import androidx.compose.ui.unit.sp
 import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.Add
 import androidx.compose.material.icons.filled.Close
 import androidx.compose.material.icons.filled.History
-import androidx.compose.material.icons.filled.Person
 import androidx.compose.material.icons.filled.Timer
 import androidx.compose.material.icons.filled.Verified
-import androidx.compose.ui.draw.clip
-import androidx.compose.ui.graphics.Brush
-import androidx.compose.ui.zIndex
 import com.example.applicationsop.ui.theme.Maroon
-import com.example.applicationsop.ui.theme.PinkPudar
 import com.example.applicationsop.ui.theme.Putih
 import com.example.applicationsop.ui.theme.ijo
 import com.example.applicationsop.ui.theme.abang
 import com.example.applicationsop.ui.theme.kuning
 import androidx.navigation.NavController
-import androidx.compose.ui.text.TextStyle
-import androidx.compose.ui.tooling.preview.Preview
-import java.time.LocalTime
+import com.example.applicationsop.presentation.component.HeaderHomeAdmin
+import com.example.applicationsop.presentation.component.ProgressCard
+import com.example.applicationsop.presentation.component.ProgressCardRiwayat
+import com.example.applicationsop.presentation.component.SectionTitle
+import com.example.applicationsop.presentation.component.SubmissionCard
 
 @RequiresApi(Build.VERSION_CODES.O)
 @Composable
@@ -62,7 +49,7 @@ fun HomeAdminScreen(
                 .padding(bottom = 80.dp) // Memberikan ruang bawah agar FAB tidak tertutup
         ) {
             // Header
-            HeaderComposable(
+            HeaderHomeAdmin(
                 navController = navController,
                 adminName = name,
                 adminToken = token,
@@ -91,104 +78,6 @@ fun HomeAdminScreen(
             ProgressSection(navController = navController)
         }
     }
-}
-
-@RequiresApi(Build.VERSION_CODES.O)
-@Composable
-fun HeaderComposable(
-    navController: NavController,
-    adminName: String?,
-    adminToken: String?,
-    adminuserId: String?,
-    adminrole: String?,
-    adminemail: String?,
-    admindevisi: String?
-) {
-    // Cek data yang diterima dengan log
-    Log.d("HeaderComposable", "adminName: $adminName")
-    Log.d("HeaderComposable", "adminToken: $adminToken")
-    Log.d("HeaderComposable", "adminuserId: $adminuserId")
-    Log.d("HeaderComposable", "adminrole: $adminrole")
-    Log.d("HeaderComposable", "adminemail: $adminemail")
-    Log.d("HeaderComposable", "admindevisi: $admindevisi")
-    // Ambil waktu saat ini
-    val currentTime = LocalTime.now()
-    val greeting = when {
-        currentTime.isBefore(LocalTime.of(11, 0)) -> "Selamat Pagi"
-        currentTime.isBefore(LocalTime.of(16, 0)) -> "Selamat Siang"
-        currentTime.isBefore(LocalTime.of(19, 0)) -> "Selamat Sore"
-        else -> "Selamat Malam"  // Mulai jam 19
-    }
-
-    Box(
-        modifier = Modifier
-            .fillMaxWidth()
-            .background(
-                brush = Brush.verticalGradient(
-                    colors = listOf(Maroon, Color.Transparent), // Gradasi dari Maroon ke Transparan
-                    startY = 0f,
-                    endY = Float.POSITIVE_INFINITY
-                )
-            )
-            .padding(20.dp)
-    ) {
-        Row(
-            modifier = Modifier.fillMaxWidth(),
-            horizontalArrangement = Arrangement.SpaceBetween, // Membuat teks dan ikon berada di ujung kiri dan kanan
-            verticalAlignment = Alignment.CenterVertically // Agar teks dan ikon sejajar secara vertikal
-        ) {
-            // Menampilkan ucapan sesuai waktu
-            Column(
-                verticalArrangement = Arrangement.Center
-            ) {
-                Text(
-                    text = greeting, // Menampilkan ucapan berdasarkan waktu
-                    fontSize = 16.sp,
-                    fontWeight = FontWeight.Normal,
-                    color = Putih
-                )
-                Text(
-                    text = "Hi, ${adminName ?: "Admin"}",
-                    fontSize = 24.sp,
-                    fontWeight = FontWeight.Bold,
-                    color = Putih
-                )
-            }
-
-            // Ikon profil di sebelah kanan
-            IconButton(onClick = {
-                // Arahkan ke menu profil ketika ikon diklik
-//                navController.navigate("profile")
-                navController.navigate("profile?token=$adminToken&userId=$adminuserId&role=$adminrole&name=$adminName&email=$adminemail&devisi=$admindevisi")
-
-
-            }) {
-                Icon(
-                    imageVector = Icons.Filled.Person, // Menggunakan ikon "Person" dari Material Icons
-                    contentDescription = "Profile",
-                    modifier = Modifier
-                        .size(40.dp)
-                        .clip(CircleShape)
-                        .border(2.dp, Color.White, CircleShape) // Membuat border lingkaran putih
-                )
-            }
-        }
-
-        // Search Bar (tetap berada di bawah teks dan ikon)
-        Spacer(modifier = Modifier.height(10.dp))
-    }
-}
-
-
-@Composable
-fun SectionTitle(title: String) {
-    Text(
-        text = title,
-        fontSize = 18.sp,
-        fontWeight = FontWeight.Bold,
-        modifier = Modifier.padding(horizontal = 25.dp, vertical = 8.dp),
-        color = Color.Black
-    )
 }
 
 @Composable
@@ -245,51 +134,6 @@ fun SubmissionSection(navController: NavController) {
     }
 }
 
-
-@Composable
-fun SubmissionCard(
-    text: String,
-    color: Color,
-    icon: androidx.compose.ui.graphics.vector.ImageVector,
-    modifier: Modifier = Modifier,
-    onClick: () -> Unit = {}
-) {
-    Card(
-        modifier = modifier
-            .width(150.dp)
-            .padding(4.dp)
-            .clickable(onClick = onClick),
-        shape = RoundedCornerShape(16.dp),
-        colors = CardDefaults.cardColors(
-            containerColor = color
-        ),
-        elevation = CardDefaults.cardElevation(10.dp)
-    ) {
-        Column(
-            modifier = Modifier
-                .fillMaxWidth()
-                .wrapContentHeight()
-                .padding(8.dp),
-            horizontalAlignment = Alignment.CenterHorizontally,
-            verticalArrangement = Arrangement.Center
-        ) {
-            Icon(
-                imageVector = icon,
-                contentDescription = text,
-                modifier = Modifier.size(30.dp),
-                tint = Color.White
-            )
-            Spacer(modifier = Modifier.height(4.dp))
-            Text(
-                text = text,
-                fontSize = 14.sp,
-                color = Color.White,
-                fontWeight = FontWeight.Bold
-            )
-        }
-    }
-}
-
 @Composable
 fun ProgressSection(navController: NavController) {
     Column(
@@ -313,95 +157,5 @@ fun ProgressSection(navController: NavController) {
 
         // Card Riwayat dengan Icon di bawah
         ProgressCardRiwayat("Riwayat", Icons.Filled.History, Maroon)
-    }
-}
-
-@Composable
-fun ProgressCard(
-    title: String,
-    icon: androidx.compose.ui.graphics.vector.ImageVector,
-    color: Color,
-    navController: NavController
-) {
-    Card(
-        modifier = Modifier
-            .fillMaxWidth()
-            .padding(vertical = 10.dp)
-            .clickable { // Menambahkan aksi klik untuk navigasi
-                if (title == "Pengembangan") {
-                    navController.navigate("pengembanganAdmin") // Arahkan ke halaman pengembangan
-                } else if (title == "Pengujian") {
-                    navController.navigate("pengujianAdmin") // Arahkan ke halaman pengujian
-                }
-            },
-        colors = CardDefaults.cardColors(
-            containerColor = color
-        ),
-        elevation = CardDefaults.cardElevation(10.dp) // Bayangan pada card
-    ) {
-        Row(
-            modifier = Modifier
-                .fillMaxWidth()
-                .height(100.dp)
-                .padding(25.dp), // Padding di dalam card
-            verticalAlignment = Alignment.CenterVertically
-        ) {
-            Icon(
-                imageVector = icon,
-                contentDescription = title,
-                modifier = Modifier.size(40.dp),
-                tint = Color.White // Mengatur warna ikon menjadi putih
-            )
-            Spacer(modifier = Modifier.width(16.dp)) // Memberikan jarak antara ikon dan teks
-            Text(
-                text = title,
-                fontSize = 16.sp,
-                fontWeight = FontWeight.Bold,
-                color = Color.White // Mengatur warna teks menjadi putih
-            )
-        }
-    }
-}
-
-@Composable
-fun ProgressCardRiwayat(
-    title: String,
-    icon: androidx.compose.ui.graphics.vector.ImageVector,
-    color: Color
-) {
-    Card(
-        modifier = Modifier
-            .fillMaxWidth()
-            .padding(vertical = 10.dp), // Padding vertikal antar card
-        colors = CardDefaults.cardColors(
-            containerColor = color
-        ),
-        elevation = CardDefaults.cardElevation(10.dp) // Bayangan pada card
-    ) {
-        Row(
-            modifier = Modifier
-                .fillMaxWidth()
-                .padding(30.dp), // Padding di dalam card
-            verticalAlignment = Alignment.CenterVertically,
-            horizontalArrangement = Arrangement.Center
-        ) {
-            // Teks di tengah
-            Text(
-                text = title,
-                fontSize = 16.sp,
-                fontWeight = FontWeight.Bold,
-                color = Color.White // Mengatur warna teks menjadi putih
-            )
-
-            // Ikon diletakkan di sebelah kanan teks
-            Icon(
-                imageVector = icon,
-                contentDescription = title,
-                modifier = Modifier
-                    .size(40.dp)
-                    .padding(start = 5.dp),
-                tint = Color.White // Mengatur warna ikon menjadi putih
-            )
-        }
     }
 }
