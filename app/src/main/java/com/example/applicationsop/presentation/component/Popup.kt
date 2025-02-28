@@ -29,6 +29,7 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -39,9 +40,13 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.navigation.NavController
+import com.example.applicationsop.Api.updatePengajuan
+import com.example.applicationsop.models.PengajuanRequest
+import com.example.applicationsop.models.UpdateStatusPengajuan
 import com.example.applicationsop.ui.theme.Maroon
 import com.example.applicationsop.ui.theme.abang
 import com.example.applicationsop.ui.theme.ijo
+import kotlinx.coroutines.launch
 
 @Composable
 fun DetailPopupUsulanUser(
@@ -57,6 +62,7 @@ fun DetailPopupUsulanUser(
     alasan: String? = null, // Alasan hanya ada jika status ditolak
     onEditClick: () -> Unit // Fungsi untuk navigasi ke form edit
 ) {
+
 //    println("Idnya Adalah: $id")
     Box(modifier = Modifier.fillMaxSize()) {
         // Gelap di latar belakang
@@ -337,7 +343,7 @@ fun DetailPopupUsulanUser(
 @Composable
 fun DetailPopupUsulanAdmin(
     onDismiss: () -> Unit,
-    id:String,
+    id: String,
     hariTanggal: String,
     namaSistem: String,
     jenisSistem: String,
@@ -354,6 +360,8 @@ fun DetailPopupUsulanAdmin(
 //    println("Idnya Adalah: $id")
     var inputAlasan by remember { mutableStateOf(alasan.orEmpty()) }
     var showAlasanInput by remember { mutableStateOf(false) }
+    // Coroutine scope for launching suspend functions
+    val coroutineScope = rememberCoroutineScope()
 
     Box(modifier = Modifier.fillMaxSize()) {
         Box(
@@ -591,7 +599,27 @@ fun DetailPopupUsulanAdmin(
                         horizontalArrangement = Arrangement.Center
                     ) {
                         Button(
-                            onClick = onAcceptClick,
+                            onClick = {
+                                // Call the updatePengajuan API when "Terima" button is clicked
+                                val pengajuanRequest = PengajuanRequest(
+                                    status = "accepted" // Only update the status field
+                                )
+
+                                // Call updatePengajuan API to update the status to accepted
+                                coroutineScope.launch {
+                                    try {
+                                        val response = updatePengajuan(id, pengajuanRequest)
+                                        if (response.status.value in 200..299) {
+                                            onAcceptClick() // Execute the callback after success
+                                            onDismiss()
+                                        } else {
+                                            println("Failed to update status")
+                                        }
+                                    } catch (e: Exception) {
+                                        println("Error: ${e.message}")
+                                    }
+                                }
+                            },
                             modifier = Modifier
                                 .width(120.dp)
                                 .shadow(4.dp, RoundedCornerShape(16.dp)),
