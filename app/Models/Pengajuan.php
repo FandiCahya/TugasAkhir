@@ -28,6 +28,7 @@ class Pengajuan extends Model
         'tanda_tangan',
         'alasan_penolakan',
         'status',
+        'signature'
     ];
 
     protected $casts = [

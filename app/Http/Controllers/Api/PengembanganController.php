@@ -21,15 +21,22 @@ class PengembanganController extends Controller
         try {
             $keyword = $request->query->get('keyword');
             $status = $request->query->get('status');
-            $pengembanganQuery = Pengembangan::with('pengajuan');
+            $userId = $request->query->get('user_id');
+            $pengembanganQuery = Pengembangan::with('pengajuan', 'pengajuan.user');
             if ($keyword) {
                 $pengembanganQuery->where(function ($query) use ($keyword) {
-                    $query->where('tahap', 'like', '%' . $keyword . '%')
-                        ->orWhere('keterangan',  'like', '%' . $keyword . '%');
+                    $query->where('tahap', 'like', '%' . $keyword . '%')->orWhere('keterangan', 'like', '%' . $keyword . '%');
                 });
             }
             if ($status) {
                 $pengembanganQuery->where('status', 'like', '%' . $status . '%');
+            }
+
+            // Filter berdasarkan user_id
+            if ($userId) {
+                $pengembanganQuery->whereHas('pengajuan.user', function ($query) use ($userId) {
+                    $query->where('id', '=', $userId); // Memfilter berdasarkan id user
+                });
             }
 
             // Ambil data pengajuan setelah diterapkan filter jika ada
@@ -182,7 +189,7 @@ class PengembanganController extends Controller
      */
     public function show($id)
     {
-        $usulan = Pengembangan::where('id',  $id);
+        $usulan = Pengembangan::where('id', $id);
         return response()->json($usulan);
     }
 
@@ -197,28 +204,22 @@ class PengembanganController extends Controller
     /**
      * Update the specified resource in storage.
      */
-    public function update(Request $request, Pengembangan $pengembangan)
+    public function update(Request $request, $id)
     {
         try {
+            $pengembangan = Pengembangan::findOrFail($id);
             // Validasi inputan
             $request->validate([
-                'tanggal_mulai' => 'required|date',
-                'tanggal_selesai' => 'required|date',
-                'tahap' => 'required|string',
-                'persentase' => 'required|integer|min:0|max:100',
-                'keterangan' => 'nullable|string',
-                'status' => 'nullable|in:developed,finished',
+                'tanggal_mulai' => 'date',
+                'tanggal_selesai' => 'date',
+                'tahap' => 'string',
+                'persentase' => 'integer|min:0|max:100',
+                'keterangan' => 'string',
+                'status' => 'in:developed,finished',
             ]);
 
             // Memperbarui data pengembangan
-            $pengembangan->update([
-                'tanggal_mulai' => $request->tanggal_mulai,
-                'tanggal_selesai' => $request->tanggal_selesai,
-                'tahap' => $request->tahap,
-                'persentase' => $request->persentase,
-                'keterangan' => $request->keterangan,
-                'status' => $request->status ?? 'developed',
-            ]);
+            $pengembangan->update($request->all());
 
             return response()->json(
                 [

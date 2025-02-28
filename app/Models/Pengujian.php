@@ -10,7 +10,7 @@ class Pengujian extends Model
 {
     use HasFactory, HasUuids;
     protected $table = 'pengujian_perangkat_lunak';
-    protected $fillable = ['id','pengembangan_id','perangkat_lunak', 'versi', 'tujuan', 'metode', 'tanggal', 'pelaksana_id'];
+    protected $fillable = ['id', 'pengembangan_id', 'perangkat_lunak', 'versi', 'tujuan', 'metode', 'tanggal', 'pelaksana_id'];
 
     public function details()
     {
@@ -24,13 +24,15 @@ class Pengujian extends Model
 
     public function pengembangan()
     {
-        return $this->belongsTo(Pengembangan::class, 'pengembangan_id');
-    }
+        return $this->belongsTo(Pengembangan::class);
+    }    
 
     public function user()
     {
-        return $this->belongsTo(User::class, 'penanggung_jawab_id');
+        return $this->belongsTo(User::class);
+    }
+    public function pengajuan()
+    {
+        return $this->belongsTo(Pengajuan::class);
     }
 }
-
-

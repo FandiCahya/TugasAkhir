@@ -20,6 +20,9 @@ class PengajuanController extends Controller
         try {
             $keyword = $request->query->get('keyword');
             $status = $request->query->get('status');
+            $role = $request->query->get('role');
+            $devisi = $request->query->get('devisi');
+
             $pengajuanQuery = Pengajuan::with('user'); // Relasi dengan user
 
             if ($keyword) {
@@ -33,6 +36,19 @@ class PengajuanController extends Controller
             // Jika ada status, filter berdasarkan status
             if ($status) {
                 $pengajuanQuery->where('status', 'like', '%' . $status . '%');
+            }
+             // Filter berdasarkan role pengguna
+            if ($role) {
+            $pengajuanQuery->whereHas('user', function ($query) use ($role) {
+                $query->where('role', 'like', '%' . $role . '%');
+            });
+            }
+
+        // Filter berdasarkan devisi pengguna
+            if ($devisi) {
+            $pengajuanQuery->whereHas('user', function ($query) use ($devisi) {
+                $query->where('devisi', 'like', '%' . $devisi . '%');
+            });
             }
 
         // Ambil data pengajuan setelah diterapkan filter jika ada
@@ -92,19 +108,6 @@ class PengajuanController extends Controller
     public function store(Request $request)
     {
         try {
-            $user_id = Auth::id() ?? '9e2d47a4-c50f-4675-b26e-5b4008658da9'; // Cek apakah user_id terdeteksi
-            if (!$user_id) {
-                return response()->json(
-                    [
-                        'success' => false,
-                        'error' => [
-                            'code' => 401,
-                            'message' => 'Unauthorized: User is not authenticated',
-                        ],
-                    ],
-                    401,
-                );
-            }
 
             $request->validate([
                 'tgl' => 'required|date',
@@ -114,11 +117,13 @@ class PengajuanController extends Controller
                 'masalah' => 'required|string',
                 'output' => 'required|string',
                 'status' => 'in:pending,accepted,rejected',
+                'signature' => 'required|image|mimes:jpeg,png,jpg,gif|max:5048',
+                'user_id' => 'required|uuid',
             ]);
 
             $usulan = Pengajuan::create([
                 'id' => Str::uuid(),
-                'user_id' => $user_id,
+                'user_id' => $request->user_id,
                 'tgl' => $request->tgl,
                 'nama_sistem' => $request->nama_sistem,
                 'jenis' => $request->jenis,
@@ -126,6 +131,7 @@ class PengajuanController extends Controller
                 'masalah' => $request->masalah,
                 'output' => $request->output,
                 'status' => $request->status ?? 'pending',
+                'signature' => $this->handleSignatureUpload($request),
             ]);
             return response()->json(
                 [
@@ -295,5 +301,15 @@ class PengajuanController extends Controller
                 $e->getCode() ?: 500,
             );
         }
+    }
+
+    protected function handleSignatureUpload(Request $request)
+    {
+        if ($request->hasFile('signature')) {
+            $signature = $request->file('signature');
+            $signaturePath = $signature->storeAs('signatures', $signature->getClientOriginalName(), 'public');
+            return $signaturePath;
+        }
+        return null;
     }
 }

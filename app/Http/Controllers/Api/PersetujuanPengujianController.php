@@ -11,10 +11,11 @@ use Illuminate\Support\Facades\Log;
 
 class PersetujuanPengujianController extends Controller
 {
-    public function showall()
+    public function showall(Request $request)
     {
         try {
             $data = PersetujuanPengujianModel::all();
+            $userId = $request->get('user_id');
 
             // Return the data as a JSON response
             return response()->json([
@@ -32,17 +33,35 @@ class PersetujuanPengujianController extends Controller
                             'created_at' => $item->persetujuanPengujian->created_at ?? null,
                             'updated_at' => $item->persetujuanPengujian->updated_at ?? null,
                             'pengujian' => [
+                                'perangkat_lunak' => $item->persetujuanPengujian->pengujian->perangkat_lunak ?? null,
                                 'versi' => $item->persetujuanPengujian->pengujian->versi ?? null,
+                                'tujuan' => $item->persetujuanPengujian->pengujian->tujuan ?? null,
+                                'metode' => $item->persetujuanPengujian->pengujian->metode ?? null,
+                                'tanggal' => $item->persetujuanPengujian->pengujian->tanggal ?? null,
                                 'pengembangan' => [
+                                    'id' => $item->persetujuanPengujian->pengujian->pengembangan->id ?? null,
+                                    'tanggal_mulai' => $item->persetujuanPengujian->pengujian->pengembangan->tanggal_mulai ?? null,
+                                    'tanggal_selesai' => $item->persetujuanPengujian->pengujian->pengembangan->tanggal_selesai ?? null,
+                                    'tahap' => $item->persetujuanPengujian->pengujian->pengembangan->tahap ?? null,
+                                    'persentase' => $item->persetujuanPengujian->pengujian->pengembangan->persentase ?? null,
+                                    'keterangan' => $item->persetujuanPengujian->pengujian->pengembangan->keterangan ?? null,
+                                    'status' => $item->persetujuanPengujian->pengujian->pengembangan->status ?? null,
                                     'pengajuan' => [
+                                        'id' => $item->persetujuanPengujian->pengujian->pengembangan->pengajuan->id ?? null,
+                                        'tgl' => $item->persetujuanPengujian->pengujian->pengembangan->pengajuan->tgl ?? null,
                                         'nama_sistem' => $item->persetujuanPengujian->pengujian->pengembangan->pengajuan->nama_sistem ?? null,
                                         'jenis' => $item->persetujuanPengujian->pengujian->pengembangan->pengajuan->jenis ?? null,
+                                        'rencana_anggaran' => $item->persetujuanPengujian->pengujian->pengembangan->pengajuan->rencana_anggaran ?? null,
+                                        'masalah' => $item->persetujuanPengujian->pengujian->pengembangan->pengajuan->masalah ?? null,
+                                        'output' => $item->persetujuanPengujian->pengujian->pengembangan->pengajuan->output ?? null,
                                         'status' => $item->persetujuanPengujian->pengujian->pengembangan->pengajuan->status ?? null,
                                         'created_at' => $item->persetujuanPengujian->pengujian->pengembangan->pengajuan->created_at ?? null,
                                         'user' => [
                                             'id' => $item->persetujuanPengujian->pengujian->pengembangan->pengajuan->user->id ?? null,
                                             'name' => $item->persetujuanPengujian->pengujian->pengembangan->pengajuan->user->name ?? null,
                                             'email' => $item->persetujuanPengujian->pengujian->pengembangan->pengajuan->user->email ?? null,
+                                            'devisi' => $item->persetujuanPengujian->pengujian->pengembangan->pengajuan->user->devisi ?? null,
+                                            'role' => $item->persetujuanPengujian->pengujian->pengembangan->pengajuan->user->role ?? null,
                                             'created_at' => $item->persetujuanPengujian->pengujian->pengembangan->pengajuan->user->created_at ?? null,
                                         ],
                                     ],
@@ -187,7 +206,7 @@ class PersetujuanPengujianController extends Controller
             $request->validate([
                 'status' => 'required|in:setuju,tidak_setuju',
                 'catatan' => 'nullable|string',
-                'signature' => 'nullable|image|mimes:jpeg,png,jpg,gif|max:8048', // Signature as image
+                'signature' => 'nullable|image|mimes:jpeg,png,jpg,gif|max:2048', // Signature as image
             ]);
             Log::info('Request data:', $request->all());
 
@@ -281,6 +300,10 @@ class PersetujuanPengujianController extends Controller
     {
         if ($request->hasFile('signature')) {
             $signature = $request->file('signature');
+
+            // Add logging to check the file upload
+            Log::info('Signature file uploaded: ' . $signature->getClientOriginalName());
+
             $signaturePath = $signature->storeAs('signatures', $signature->getClientOriginalName(), 'public');
             return $signaturePath;
         }

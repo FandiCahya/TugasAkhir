@@ -10,11 +10,11 @@ use Illuminate\Database\QueryException;
 
 class PengujianDetailController extends Controller
 {
-    public function index()
+    public function index(Request $request)
     {
         try {
             $data = PengujianDetail::all(); // Retrieve all pengujian details
-
+            $keyword = $request->query->get('keyword');
             return response()->json(
                 [
                     'success' => true,
@@ -150,16 +150,16 @@ class PengujianDetailController extends Controller
             $pengujianDetail = PengujianDetail::findOrFail($id);
 
             // Validate incoming data
-            $validated = $request->validate([
-                'nama_uji' => 'required|string|max:255',
-                'kasus_uji' => 'required|string|max:255',
-                'hasil_diharapkan' => 'required|string',
-                'hasil_pengujian' => 'nullable|string',
-                'status' => 'required|string|max:50',
+            $request->validate([
+                'nama_uji' => 'string',
+                'kasus_uji' => 'string',
+                'hasil_diharapkan' => 'string',
+                'hasil_pengujian' => 'string',
+                'status' => 'string',
             ]);
 
             // Update the pengujian detail
-            $pengujianDetail->update($validated);
+            $pengujianDetail->update($request->all());
 
             return response()->json(
                 [

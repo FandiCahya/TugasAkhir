@@ -19,8 +19,9 @@ class PengujianController extends Controller
     {
         try {
             $keyword = $request->query->get('keyword');
+            $userId = $request->query->get('user_id');
 
-            $pengujians = Pengujian::with(['details']);
+            $pengujians = Pengujian::with(['details','pengembangan.pengajuan.user']);
 
             // Jika ada keyword, filter berdasarkan keyword
         if ($keyword) {
@@ -31,6 +32,13 @@ class PengujianController extends Controller
                       ->orWhereHas('pengembangan', function($query) use ($keyword) {
                           $query->where('status', 'like', '%' . $keyword . '%');
                       });
+            });
+        }
+
+        // Filter berdasarkan user_id
+        if ($userId) {
+            $pengujians->whereHas('pengembangan.pengajuan.user', function ($query) use ($userId) {
+                $query->where('id', '=', $userId); // Memfilter berdasarkan id user
             });
         }
 
@@ -275,27 +283,20 @@ class PengujianController extends Controller
     {
         try {
             // Validasi input
-            $validated = $request->validate([
-                'perangkat_lunak' => 'required|string',
-                'versi' => 'required|string',
-                'tujuan' => 'required|string',
-                'metode' => 'required|string',
-                'tanggal' => 'required|date',
-                'pelaksana_id' => 'nullable|uuid|exists:users,id',
+            $request->validate([
+                'perangkat_lunak' => 'string',
+                'versi' => 'string',
+                'tujuan' => 'string',
+                'metode' => 'string',
+                'tanggal' => 'date',
+                'pelaksana_id' => 'uuid|exists:users,id',
             ]);
 
             // Cari pengujian berdasarkan ID
             $pengujian = Pengujian::findOrFail($id);
 
             // Update pengujian
-            $pengujian->update([
-                'perangkat_lunak' => $validated['perangkat_lunak'],
-                'versi' => $validated['versi'],
-                'tujuan' => $validated['tujuan'],
-                'metode' => $validated['metode'],
-                'tanggal' => Carbon::createFromFormat('Y-m-d', $validated['tanggal']),
-                'pelaksana_id' => $validated['pelaksana_id'] ?? $pengujian->pelaksana_id,
-            ]);
+            $pengujian->update($request->all());
 
             // Kembalikan response sukses
             return response()->json(
