@@ -77,6 +77,7 @@ fun ListPengajuanScreenDiterima(navController: NavController, role: String?, dev
     if (showPopup) {
         DetailPopupUsulanUser(
             onDismiss = { showPopup = false },
+            id = selectedDetail.id,
             hariTanggal = selectedDetail.tanggal,
             namaSistem = selectedDetail.namaSistem,
             jenisSistem = selectedDetail.jenisSistem,

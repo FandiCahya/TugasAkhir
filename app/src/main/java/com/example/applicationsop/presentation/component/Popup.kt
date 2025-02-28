@@ -46,6 +46,7 @@ import com.example.applicationsop.ui.theme.ijo
 @Composable
 fun DetailPopupUsulanUser(
     onDismiss: () -> Unit,
+    id: String,
     hariTanggal: String,
     namaSistem: String,
     jenisSistem: String,
@@ -56,6 +57,7 @@ fun DetailPopupUsulanUser(
     alasan: String? = null, // Alasan hanya ada jika status ditolak
     onEditClick: () -> Unit // Fungsi untuk navigasi ke form edit
 ) {
+//    println("Idnya Adalah: $id")
     Box(modifier = Modifier.fillMaxSize()) {
         // Gelap di latar belakang
         Box(
@@ -335,6 +337,7 @@ fun DetailPopupUsulanUser(
 @Composable
 fun DetailPopupUsulanAdmin(
     onDismiss: () -> Unit,
+    id:String,
     hariTanggal: String,
     namaSistem: String,
     jenisSistem: String,
@@ -348,6 +351,7 @@ fun DetailPopupUsulanAdmin(
     onRejectClick: (String) -> Unit, // Fungsi untuk menolak usulan
     navController: NavController
 ) {
+//    println("Idnya Adalah: $id")
     var inputAlasan by remember { mutableStateOf(alasan.orEmpty()) }
     var showAlasanInput by remember { mutableStateOf(false) }
 
@@ -618,7 +622,7 @@ fun DetailPopupUsulanAdmin(
             // Add Schedule button visibility based on status
             if (status == "accepted") {
                 Button(
-                    onClick = { navController.navigate("addSchedule") },
+                    onClick = { navController.navigate("addSchedule?id=$id&namaSistem=$namaSistem") },
                     modifier = Modifier
                         .width(150.dp)
                         .padding(bottom = 15.dp)

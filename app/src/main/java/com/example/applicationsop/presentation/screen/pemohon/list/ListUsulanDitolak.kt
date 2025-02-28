@@ -77,6 +77,7 @@ fun ListPengajuanScreenDitolak(navController: NavController, role: String?, devi
     if (showPopup) {
         DetailPopupUsulanUser(
             onDismiss = { showPopup = false },
+            id = selectedDetail.id,  // Use the dynamically selected id
             hariTanggal = selectedDetail.tanggal,
             namaSistem = selectedDetail.namaSistem,
             jenisSistem = selectedDetail.jenisSistem,

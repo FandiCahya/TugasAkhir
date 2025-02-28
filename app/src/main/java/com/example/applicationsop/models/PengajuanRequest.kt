@@ -10,6 +10,6 @@ data class PengajuanRequest(
     val rencana_anggaran: String,
     val masalah: String,
     val output: String,
-    val status: String? = null,  // Status bisa null, default-nya adalah 'pending'
+    val status: String? = null,
     val user_id: String
 )

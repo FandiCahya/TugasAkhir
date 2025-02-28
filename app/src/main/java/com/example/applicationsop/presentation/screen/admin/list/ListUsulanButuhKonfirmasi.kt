@@ -93,6 +93,7 @@ fun ListPengajuanScreenAdmin1(navController: NavController) {
     if (showPopup) {
         DetailPopupUsulanAdmin(
             onDismiss = { showPopup = false },
+            id = selectedDetail.id,
             hariTanggal = selectedDetail.tanggal,
             namaSistem = selectedDetail.namaSistem,
             jenisSistem = selectedDetail.jenisSistem,
