@@ -78,6 +78,7 @@ fun convertDateToApiFormat(date: String): String {
         ""  // Return empty string if date format is not valid
     }
 }
+
 @Composable
 fun FormUsulanScreen(navController: NavController, userId: String?) {
     // Menyimpan tanda tangan
@@ -106,13 +107,13 @@ fun FormUsulanScreen(navController: NavController, userId: String?) {
             isLoading = true
             try {
 //              Log the form data before submitting it
-                Log.d("FormUsulanScreen", "Submitting form data:")
-                Log.d("FormUsulanScreen", "Tanggal: $selectedDate")
-                Log.d("FormUsulanScreen", "Nama Sistem: $namaSistem")
-                Log.d("FormUsulanScreen", "Jenis Sistem: $jenisSistem")
-                Log.d("FormUsulanScreen", "Rencana Anggaran: $rencanaAnggaran")
-                Log.d("FormUsulanScreen", "Masalah: $masalahSistem")
-                Log.d("FormUsulanScreen", "Output: $outputSistem")
+//                Log.d("FormUsulanScreen", "Submitting form data:")
+//                Log.d("FormUsulanScreen", "Tanggal: $selectedDate")
+//                Log.d("FormUsulanScreen", "Nama Sistem: $namaSistem")
+//                Log.d("FormUsulanScreen", "Jenis Sistem: $jenisSistem")
+//                Log.d("FormUsulanScreen", "Rencana Anggaran: $rencanaAnggaran")
+//                Log.d("FormUsulanScreen", "Masalah: $masalahSistem")
+//                Log.d("FormUsulanScreen", "Output: $outputSistem")
 
                 // Format tanggal sesuai dengan yang diinginkan API
                 val formattedDate = convertDateToApiFormat(selectedDate)

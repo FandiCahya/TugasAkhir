@@ -25,15 +25,37 @@ import androidx.compose.ui.draw.shadow
 import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.platform.LocalContext
 import androidx.navigation.NavController
+import com.example.applicationsop.Api.postPengembangan
 import com.example.applicationsop.data.ScheduleItem
+import com.example.applicationsop.models.PengembanganRequest
 import com.example.applicationsop.presentation.component.BackButton
 import com.example.applicationsop.ui.theme.Maroon
 import com.example.applicationsop.ui.theme.Putih
 import java.util.Calendar
+import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.Composable
+
+fun convertDateToApiFormat(date: String): String {
+    // Format tanggal yang diterima dalam format dd/MM/yyyy menjadi yyyy-MM-dd
+    val parts = date.split("/")
+    return if (parts.size == 3) {
+        val day = parts[0].padStart(2, '0')
+        val month = parts[1].padStart(2, '0')
+        val year = parts[2]
+        "$year-$month-$day"
+    } else {
+        ""  // Return empty string if date format is not valid
+    }
+}
 
 
 @Composable
-fun ScheduleForm(navController: NavController, onSave: (ScheduleItem) -> Unit) {
+fun ScheduleForm(
+    navController: NavController,
+    id: String?,
+    namaSistem: String?,
+    onSave: (ScheduleItem) -> Unit
+) {
     var taskName by remember { mutableStateOf("") }
     var startDate by remember { mutableStateOf("") }
     var endDate by remember { mutableStateOf("") }
@@ -43,9 +65,14 @@ fun ScheduleForm(navController: NavController, onSave: (ScheduleItem) -> Unit) {
 
     val availableStages = listOf("Analisis", "Desain UI/UX", "Pengerjaan", "Penyelesaian", "Testing")
 
-    // Membuat scrollable column
     val scrollState = rememberScrollState()
+    var isLoading by remember { mutableStateOf(false) }
+    var responseMessage by remember { mutableStateOf("") }
 
+    // Create a trigger state to launch the effect
+    val triggerApiCall = remember { mutableStateOf(false) }
+
+    // Form fields and layout
     Column(
         modifier = Modifier
             .fillMaxSize()
@@ -55,7 +82,6 @@ fun ScheduleForm(navController: NavController, onSave: (ScheduleItem) -> Unit) {
         // Header Section
         HeaderComposableFormPengujian("Tambah Jadwal Pengembangan", navController)
 
-        // Form Fields Section
         Column(
             modifier = Modifier
                 .fillMaxWidth()
@@ -63,37 +89,28 @@ fun ScheduleForm(navController: NavController, onSave: (ScheduleItem) -> Unit) {
             verticalArrangement = Arrangement.spacedBy(16.dp)
         ) {
             Text(
-                text = "Perangkat yang dikembangkan: $taskName",
+                text = "Perangkat yang dikembangkan: $namaSistem",
                 modifier = Modifier.fillMaxWidth(),
                 color = Maroon,
                 fontSize = 16.sp,
                 fontWeight = FontWeight.Bold
             )
 
-            DatePickerField(label = "Tanggal Mulai") {
-                startDate = it
-            }
-
-            DatePickerField(label = "Tanggal Selesai") {
-                endDate = it
-            }
-
-            FormField(label = "Keterangan", placeholder = "Isi keterangan") {
-                description = it
-            }
+            DatePickerField(label = "Tanggal Mulai") { startDate = it }
+            DatePickerField(label = "Tanggal Selesai") { endDate = it }
+            FormField(label = "Keterangan", placeholder = "Isi keterangan") { description = it }
         }
 
         Spacer(modifier = Modifier.height(16.dp))
 
-        // Stages Selection with two columns
+        // Stages Selection
         Text(
             "Pilih Tahap Pengerjaan:",
             fontWeight = FontWeight.Bold,
             color = Maroon,
-            modifier = Modifier.padding(start = 20.dp) // Added padding to the left
+            modifier = Modifier.padding(start = 20.dp)
         )
 
-        // Create two columns for the checkboxes
         Row(
             modifier = Modifier
                 .fillMaxWidth()
@@ -103,10 +120,8 @@ fun ScheduleForm(navController: NavController, onSave: (ScheduleItem) -> Unit) {
             Column(
                 modifier = Modifier.weight(1f)
             ) {
-                availableStages.take(3).forEach { stage ->  // First three stages
-                    Row(
-                        verticalAlignment = Alignment.CenterVertically
-                    ) {
+                availableStages.take(3).forEach { stage ->
+                    Row(verticalAlignment = Alignment.CenterVertically) {
                         Checkbox(
                             checked = selectedStages.contains(stage),
                             onCheckedChange = { isChecked ->
@@ -117,11 +132,7 @@ fun ScheduleForm(navController: NavController, onSave: (ScheduleItem) -> Unit) {
                                 }
                             }
                         )
-                        Text(
-                            stage,
-                            modifier = Modifier.padding(start = 8.dp),
-                            color = Maroon // Set the text color to Maroon
-                        )
+                        Text(stage, modifier = Modifier.padding(start = 8.dp), color = Maroon)
                     }
                 }
             }
@@ -132,10 +143,8 @@ fun ScheduleForm(navController: NavController, onSave: (ScheduleItem) -> Unit) {
             Column(
                 modifier = Modifier.weight(1f)
             ) {
-                availableStages.drop(3).forEach { stage ->  // Last two stages
-                    Row(
-                        verticalAlignment = Alignment.CenterVertically
-                    ) {
+                availableStages.drop(3).forEach { stage ->
+                    Row(verticalAlignment = Alignment.CenterVertically) {
                         Checkbox(
                             checked = selectedStages.contains(stage),
                             onCheckedChange = { isChecked ->
@@ -146,11 +155,7 @@ fun ScheduleForm(navController: NavController, onSave: (ScheduleItem) -> Unit) {
                                 }
                             }
                         )
-                        Text(
-                            stage,
-                            modifier = Modifier.padding(start = 8.dp),
-                            color = Maroon // Set the text color to Maroon
-                        )
+                        Text(stage, modifier = Modifier.padding(start = 8.dp), color = Maroon)
                     }
                 }
             }
@@ -158,7 +163,7 @@ fun ScheduleForm(navController: NavController, onSave: (ScheduleItem) -> Unit) {
 
         Spacer(modifier = Modifier.height(16.dp))
 
-        // Save Button at the bottom right with shadow
+        // Submit Button with shadow
         Box(
             modifier = Modifier
                 .fillMaxSize()
@@ -167,16 +172,8 @@ fun ScheduleForm(navController: NavController, onSave: (ScheduleItem) -> Unit) {
         ) {
             Button(
                 onClick = {
-                    val schedule = ScheduleItem(
-                        task = taskName,
-                        startDate = startDate,
-                        endDate = endDate,
-                        description = description,
-                        stage = selectedStages.joinToString(", "),
-                        progressPercentage = progressPercentage
-                    )
-                    onSave(schedule)
-                    navController.popBackStack() 
+                    // Set the trigger for the API call
+                    triggerApiCall.value = true
                 },
                 modifier = Modifier
                     .size(120.dp, 40.dp)
@@ -187,8 +184,58 @@ fun ScheduleForm(navController: NavController, onSave: (ScheduleItem) -> Unit) {
                 Text("Simpan", color = Color.White)
             }
         }
+
+        // Loading or Response Message
+        if (isLoading) {
+            Text("Mengirim data...", color = Maroon, fontSize = 18.sp)
+        }
+
+        if (responseMessage.isNotEmpty()) {
+            Text(
+                responseMessage,
+                color = if (responseMessage.contains("berhasil")) Color.Green else Color.Red,
+                fontSize = 18.sp
+            )
+        }
+    }
+
+    val formattedStartDate = convertDateToApiFormat(startDate)
+    val formattedEndDate = convertDateToApiFormat(endDate)
+
+
+    // Launch the API call when triggerApiCall is set to true
+    if (triggerApiCall.value) {
+        val pengembanganRequest = PengembanganRequest(
+            pengajuan_id = id ?: "",
+            tanggal_mulai = formattedStartDate,
+            tanggal_selesai = formattedEndDate,
+            tahap = selectedStages.joinToString(", "),
+            persentase = progressPercentage,
+            keterangan = description,
+            status = "developed"
+        )
+
+        LaunchedEffect(triggerApiCall.value) {
+            isLoading = true
+            try {
+                val response = postPengembangan(pengembanganRequest)
+                if (response.status.value in 200..299) {
+                    responseMessage = "Pengembangan berhasil disubmit!"
+                    navController.popBackStack()
+                } else {
+                    responseMessage = "Gagal mengirim Pengembangan!"
+                }
+            } catch (e: Exception) {
+                responseMessage = "Error: ${e.message}"
+            } finally {
+                isLoading = false
+            }
+        }
     }
 }
+
+
+
 
 
 @Composable

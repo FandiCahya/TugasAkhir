@@ -77,6 +77,7 @@ fun ListPengajuanScreenButuhKonfirmasi(navController: NavController,role: String
     if (showPopup) {
         DetailPopupUsulanUser(
             onDismiss = { showPopup = false },
+            id = selectedDetail.id,  // Use the dynamically selected id
             hariTanggal = selectedDetail.tanggal,
             namaSistem = selectedDetail.namaSistem,
             jenisSistem = selectedDetail.jenisSistem,

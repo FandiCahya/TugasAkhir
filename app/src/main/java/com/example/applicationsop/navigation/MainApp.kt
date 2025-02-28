@@ -147,9 +147,11 @@ fun MainApp() {
         }
 
         // Direct tambah jadwal pengembangan
-        composable("addSchedule") {
+        composable("addSchedule?id={id}&namaSistem={namaSistem}") {backStackEntry ->
+            val id = backStackEntry.arguments?.getString("id")
+            val namaSistem = backStackEntry.arguments?.getString("namaSistem")
             ScheduleForm(
-                navController = navController,
+                navController = navController, id = id,namaSistem = namaSistem,
                 onSave = { scheduleItem ->
                     // Misalnya, kamu menyimpan scheduleItem ke database atau state management
                     navController.popBackStack() // Kembali ke halaman sebelumnya setelah menyimpan
