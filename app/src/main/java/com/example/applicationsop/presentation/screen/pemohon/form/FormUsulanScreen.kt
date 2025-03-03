@@ -42,7 +42,7 @@ import com.example.applicationsop.presentation.component.ActionButton
 import com.example.applicationsop.presentation.component.DatePickerField
 import com.example.applicationsop.presentation.component.DropdownField
 import com.example.applicationsop.presentation.component.FormField
-import com.example.applicationsop.presentation.component.HeaderFormUsulan
+import com.example.applicationsop.presentation.component.header.HeaderForm
 import com.example.applicationsop.presentation.component.signaturepad.PathState
 import com.example.applicationsop.presentation.component.signaturepad.SignatureDialog
 import com.example.applicationsop.ui.theme.Maroon
@@ -136,7 +136,7 @@ fun FormUsulanScreen(navController: NavController, userId: String?) {
             .verticalScroll(rememberScrollState())
     ) {
         // Header
-        HeaderFormUsulan("Form Pembuatan Perangkat Lunak", navController)
+        HeaderForm("Form Pembuatan Perangkat Lunak", navController)
 
         // Form Fields
         Column(

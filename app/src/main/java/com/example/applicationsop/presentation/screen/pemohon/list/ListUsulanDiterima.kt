@@ -18,8 +18,8 @@ import com.example.applicationsop.Api.fetchPengajuanList
 import com.example.applicationsop.data.DetailInfo
 import com.example.applicationsop.data.ListPengajuanItem
 import com.example.applicationsop.models.Pengajuan
-import com.example.applicationsop.presentation.component.DetailPopupUsulanUser
-import com.example.applicationsop.presentation.component.HeaderWithSearch
+import com.example.applicationsop.presentation.component.header.HeaderWithSearch
+import com.example.applicationsop.presentation.component.popup.DetailPopupUsulanUser
 
 @Composable
 fun ListPengajuanScreenDiterima(navController: NavController, role: String?, devisi: String?) {

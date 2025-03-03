@@ -141,9 +141,12 @@ fun MainApp() {
             ListPengujianScreenAdmin(navController = navController)
         }
 
-        // Halaman FormUsulanScreen
+        // Halaman Form Pengujian
         composable("formPengujian") {
-            FormPengujianAdmin(navController = navController) // Pastikan ini sesuai dengan nama layar
+            FormPengujianAdmin(
+                navController = navController,
+                namaSistem = "Nama Sistem" // Pastikan Anda mengirimkan parameter yang diperlukan
+            )
         }
 
         // Direct tambah jadwal pengembangan

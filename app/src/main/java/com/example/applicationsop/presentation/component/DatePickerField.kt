@@ -31,20 +31,23 @@ fun DatePickerField(
     label: String,
     selectedDate: String,
     onDateSelected: (String) -> Unit,
-    isError: Boolean = false
+    isError: Boolean = false,
+    showLabel: Boolean = true // Added parameter to control label visibility
 ) {
     val context = LocalContext.current
     var isFocused by remember { mutableStateOf(false) }
 
     Column(modifier = Modifier.fillMaxWidth()) {
-        // Label
-        Text(
-            text = label,
-            fontSize = 16.sp,
-            fontWeight = FontWeight.Bold,
-            color = Color.Gray,
-            modifier = Modifier.padding(bottom = 4.dp)
-        )
+        // Show label only if showLabel is true
+        if (showLabel) {
+            Text(
+                text = label,
+                fontSize = 16.sp,
+                fontWeight = FontWeight.Bold,
+                color = Color.Gray,
+                modifier = Modifier.padding(bottom = 4.dp)
+            )
+        }
 
         // Date Picker Box without placeholder and black background
         Box(
@@ -62,7 +65,7 @@ fun DatePickerField(
                     shape = RoundedCornerShape(8.dp)
                 )
                 .padding(horizontal = 8.dp)
-                .padding(top = 7.dp)// Padding for inside text
+                .padding(top = 7.dp) // Padding for inside text
                 .onFocusChanged { focusState ->
                     isFocused = focusState.isFocused // Track focus state
                 }
