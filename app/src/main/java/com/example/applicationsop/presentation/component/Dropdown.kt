@@ -66,7 +66,7 @@ fun DropdownField(
                     color = if (isError) Color.Red else if (isFocused) Maroon else Color.LightGray, // Use Maroon when focused, otherwise LightGray
                     shape = RoundedCornerShape(8.dp)
                 )
-                .padding(16.dp) // Padding for inside text
+                .padding(horizontal = 8.dp)
                 .onFocusChanged { focusState ->
                     isFocused = focusState.isFocused // Track focus state
                 }
@@ -76,7 +76,7 @@ fun DropdownField(
                     displayNames[selectedOption] ?: selectedOption
                 else "Pilih $label",
                 fontSize = 16.sp,
-                color = Color.Black,
+                color = Color.DarkGray,
                 modifier = Modifier.align(Alignment.CenterStart).padding(8.dp)
             )
         }
