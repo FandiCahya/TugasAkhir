@@ -61,7 +61,8 @@ fun DatePickerField(
                     color = if (isError) Color.Red else if (isFocused) Maroon else Color.LightGray, // Use Maroon when focused, otherwise LightGray
                     shape = RoundedCornerShape(8.dp)
                 )
-                .padding(16.dp) // Padding for inside text
+                .padding(horizontal = 8.dp)
+                .padding(top = 7.dp)// Padding for inside text
                 .onFocusChanged { focusState ->
                     isFocused = focusState.isFocused // Track focus state
                 }

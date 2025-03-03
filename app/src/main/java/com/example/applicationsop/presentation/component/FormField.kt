@@ -19,7 +19,7 @@ fun FormField(label: String, placeholder: String, value: String, onValueChange: 
     OutlinedTextField(
         value = value,
         onValueChange = { onValueChange(it) }, // Update the state when the text changes
-        label = { Text(label) },
+        label = { Text(label, color = Color.DarkGray) },
         placeholder = { Text(placeholder) },
         modifier = Modifier.fillMaxWidth(),
         shape = RoundedCornerShape(8.dp),

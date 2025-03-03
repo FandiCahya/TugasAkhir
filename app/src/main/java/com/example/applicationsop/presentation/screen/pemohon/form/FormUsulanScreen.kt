@@ -115,9 +115,9 @@ fun FormUsulanScreen(navController: NavController, userId: String?) {
 
                 // Check if the response was successful
                 if (response.status.value in 200..299) {
-                    responseMessage = "Pengajuan submitted successfully!"
+                    responseMessage = "Pengajuan berhasil dikirim!"
                 } else {
-                    responseMessage = "Failed to submit Pengajuan. Please try again."
+                    responseMessage = "Gagal mengirim. coba lagi!."
                 }
             } catch (e: Exception) {
                 responseMessage = "Error: ${e.message}"
@@ -204,8 +204,8 @@ fun FormUsulanScreen(navController: NavController, userId: String?) {
             Button(
                 onClick = { isDialogOpen.value = true },
                 modifier = Modifier
-                    .width(150.dp)
-                    .padding(8.dp),
+                    .width(150.dp),
+//                    .padding(8.dp),
                 colors = ButtonDefaults.buttonColors(containerColor = Maroon),
                 shape = RoundedCornerShape(15.dp) // Mengatur sudut membulat lebih kecil
             ) {
@@ -254,7 +254,7 @@ fun FormUsulanScreen(navController: NavController, userId: String?) {
             Row(
                 modifier = Modifier
                     .fillMaxWidth() // Memastikan Row memanfaatkan lebar penuh
-                    .padding(16.dp), // Padding agar tombol tidak menempel pada tepi layar
+                    .padding(start = 16.dp, bottom = 16.dp, end = 16.dp), // Padding agar tombol tidak menempel pada tepi layar
                 horizontalArrangement = Arrangement.End // Mengatur agar tombol berada di kanan
             ) {
                 ActionButton(
