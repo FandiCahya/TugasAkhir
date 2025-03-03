@@ -1,53 +1,30 @@
 package com.example.applicationsop.presentation.screen.admin.form
 
-import android.content.Context
 import androidx.compose.foundation.background
-import androidx.compose.foundation.clickable
+import androidx.compose.foundation.border
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.RoundedCornerShape
-import androidx.compose.foundation.text.BasicTextField
-import androidx.compose.foundation.text.KeyboardOptions
-import androidx.compose.foundation.text.KeyboardActions
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
-import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.Alignment
 import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import androidx.compose.ui.text.style.TextAlign
-import androidx.compose.material3.OutlinedTextField
 import androidx.compose.ui.draw.shadow
-import androidx.compose.ui.graphics.Brush
-import androidx.compose.ui.platform.LocalContext
 import androidx.navigation.NavController
-import com.example.applicationsop.Api.postPengembangan
-import com.example.applicationsop.data.ScheduleItem
-import com.example.applicationsop.models.PengembanganRequest
-import com.example.applicationsop.presentation.component.BackButton
 import com.example.applicationsop.ui.theme.Maroon
 import com.example.applicationsop.ui.theme.Putih
-import java.util.Calendar
-import androidx.compose.runtime.LaunchedEffect
-import androidx.compose.runtime.Composable
-
-fun convertDateToApiFormat(date: String): String {
-    // Format tanggal yang diterima dalam format dd/MM/yyyy menjadi yyyy-MM-dd
-    val parts = date.split("/")
-    return if (parts.size == 3) {
-        val day = parts[0].padStart(2, '0')
-        val month = parts[1].padStart(2, '0')
-        val year = parts[2]
-        "$year-$month-$day"
-    } else {
-        ""  // Return empty string if date format is not valid
-    }
-}
-
+import com.example.applicationsop.presentation.component.DatePickerField
+import com.example.applicationsop.presentation.component.FormField
+import com.example.applicationsop.models.PengembanganRequest
+import com.example.applicationsop.Api.postPengembangan
+import com.example.applicationsop.data.ScheduleItem
+import com.example.applicationsop.presentation.component.header.HeaderForm
+import com.example.applicationsop.presentation.screen.pemohon.form.convertDateToApiFormat
 
 @Composable
 fun ScheduleForm(
@@ -56,7 +33,6 @@ fun ScheduleForm(
     namaSistem: String?,
     onSave: (ScheduleItem) -> Unit
 ) {
-    var taskName by remember { mutableStateOf("") }
     var startDate by remember { mutableStateOf("") }
     var endDate by remember { mutableStateOf("") }
     var description by remember { mutableStateOf("") }
@@ -80,7 +56,7 @@ fun ScheduleForm(
             .verticalScroll(scrollState)
     ) {
         // Header Section
-        HeaderComposableFormPengujian("Tambah Jadwal Pengembangan", navController)
+        HeaderForm("Tambah Jadwal Pengembangan", navController)
 
         Column(
             modifier = Modifier
@@ -88,17 +64,61 @@ fun ScheduleForm(
                 .padding(16.dp),
             verticalArrangement = Arrangement.spacedBy(16.dp)
         ) {
-            Text(
-                text = "Perangkat yang dikembangkan: $namaSistem",
-                modifier = Modifier.fillMaxWidth(),
-                color = Maroon,
-                fontSize = 16.sp,
-                fontWeight = FontWeight.Bold
+            var isFocused by remember { mutableStateOf(false) }
+
+            Column(modifier = Modifier.fillMaxWidth()) {
+                // Label
+                Text(
+                    text = "Perangkat yang dikembangkan:",
+                    fontSize = 16.sp,
+                    fontWeight = FontWeight.Bold,
+                    color = Color.Gray,
+                    modifier = Modifier.padding(bottom = 4.dp) // Spacing between label and content
+                )
+
+                // Box to display the device name
+                Box(
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .height(56.dp) // Ensure consistent height for the box
+                        .border(
+                            width = 1.dp,
+                            color = Color.LightGray, // Border color
+                            shape = RoundedCornerShape(8.dp) // Rounded corners for a softer look
+                        )
+                        .padding(horizontal = 8.dp) // Horizontal padding for the text inside
+                ) {
+                    Text(
+                        text = "$namaSistem", // Display the device name
+                        fontSize = 16.sp,
+                        color = Color.Black, // Text color
+                        modifier = Modifier
+                            .align(Alignment.CenterStart) // Align text to the left
+                            .padding(8.dp) // Padding for the text inside the box
+                    )
+                }
+            }
+
+
+            // Use the imported DatePickerField
+            DatePickerField(
+                label = "Tanggal Mulai",
+                selectedDate = startDate,
+                onDateSelected = { startDate = it }
+            )
+            DatePickerField(
+                label = "Tanggal Selesai",
+                selectedDate = endDate,
+                onDateSelected = { endDate = it }
             )
 
-            DatePickerField(label = "Tanggal Mulai") { startDate = it }
-            DatePickerField(label = "Tanggal Selesai") { endDate = it }
-            FormField(label = "Keterangan", placeholder = "Isi keterangan") { description = it }
+            // Use the imported FormField for Keterangan
+            FormField(
+                label = "Keterangan",
+                placeholder = "Isi keterangan",
+                value = description,
+                onValueChange = { description = it }
+            )
         }
 
         Spacer(modifier = Modifier.height(16.dp))
@@ -130,7 +150,12 @@ fun ScheduleForm(
                                 } else {
                                     selectedStages - stage
                                 }
-                            }
+                            },
+                            colors = CheckboxDefaults.colors(
+                                checkedColor = Maroon, // Warna centang Maroon
+                                uncheckedColor = Color.LightGray, // Warna checkbox saat tidak dicentang
+                                checkmarkColor = Color.White // Warna tanda centang itu sendiri
+                            )
                         )
                         Text(stage, modifier = Modifier.padding(start = 8.dp), color = Maroon)
                     }
@@ -153,7 +178,12 @@ fun ScheduleForm(
                                 } else {
                                     selectedStages - stage
                                 }
-                            }
+                            },
+                            colors = CheckboxDefaults.colors(
+                                checkedColor = Maroon, // Warna centang Maroon
+                                uncheckedColor = Color.LightGray, // Warna checkbox saat tidak dicentang
+                                checkmarkColor = Color.White // Warna tanda centang itu sendiri
+                            )
                         )
                         Text(stage, modifier = Modifier.padding(start = 8.dp), color = Maroon)
                     }
@@ -233,114 +263,3 @@ fun ScheduleForm(
         }
     }
 }
-
-
-
-
-
-@Composable
-fun FormField(label: String, placeholder: String, onValueChange: (String) -> Unit) {
-    var value by remember { mutableStateOf("") }
-    OutlinedTextField(
-        value = value,
-        onValueChange = {
-            value = it
-            onValueChange(it)
-        },
-        label = { Text(label) },
-        placeholder = { Text(placeholder) },
-        modifier = Modifier.fillMaxWidth(),
-        shape = RoundedCornerShape(8.dp),
-        colors = OutlinedTextFieldDefaults.colors(
-            focusedBorderColor = Maroon,
-            unfocusedBorderColor = Color.LightGray
-        ),
-        keyboardOptions = KeyboardOptions.Default.copy(imeAction = ImeAction.Next),
-        keyboardActions = KeyboardActions(onNext = { /* Handle next */ })
-    )
-}
-
-@Composable
-fun DatePickerField(label: String, onDateSelected: (String) -> Unit) {
-    var selectedDate by remember { mutableStateOf("") }
-    val context = LocalContext.current
-
-    OutlinedTextField(
-        value = selectedDate,
-        onValueChange = { selectedDate = it },
-        label = { Text(label) },
-        placeholder = { Text("Pilih Tanggal") },
-        modifier = Modifier
-            .fillMaxWidth()
-            .clickable {
-                showDatePicker(context) { date ->
-                    selectedDate = date
-                    onDateSelected(date)
-                }
-            },
-        readOnly = true,
-        colors = OutlinedTextFieldDefaults.colors(
-            focusedBorderColor = Maroon,
-            unfocusedBorderColor = Color.LightGray
-        )
-    )
-}
-
-@OptIn(ExperimentalMaterial3Api::class)
-@Composable
-fun showDatePickerAdd(context: Context, onDateSelected: (String) -> Unit) {
-    val calendar = Calendar.getInstance()
-    val year = calendar.get(Calendar.YEAR)
-    val month = calendar.get(Calendar.MONTH)
-    val day = calendar.get(Calendar.DAY_OF_MONTH)
-
-    android.app.DatePickerDialog(
-        context,
-        { _, selectedYear, selectedMonth, selectedDay ->
-            val formattedDate =
-                String.format("%02d/%02d/%d", selectedDay, selectedMonth + 1, selectedYear)
-            onDateSelected(formattedDate)
-        },
-        year,
-        month,
-        day
-    ).show()
-}
-
-
-@Composable
-fun HeaderComposableFormAddSchedule(title: String, navController: NavController) {
-    Box(
-        modifier = Modifier
-            .fillMaxWidth()
-            .background(
-                Brush.horizontalGradient(
-                    colors = listOf(Maroon, Color.White.copy(alpha = 0f)),
-                    startX = 0f,
-                    endX = Float.POSITIVE_INFINITY
-                )
-            )
-            .padding(16.dp)
-    ) {
-        Row(
-            modifier = Modifier.fillMaxWidth(),
-            verticalAlignment = Alignment.CenterVertically,
-            horizontalArrangement = Arrangement.Start
-        ) {
-            BackButton(
-                navController = navController,
-                colorVersion = "w"
-            )
-
-            Text(
-                text = title,
-                Modifier.padding(start = 45.dp),
-                fontSize = 24.sp,
-                fontWeight = FontWeight.Bold,
-                color = Putih,
-                textAlign = TextAlign.Center
-            )
-        }
-    }
-}
-

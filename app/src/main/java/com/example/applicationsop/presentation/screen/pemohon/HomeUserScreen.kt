@@ -26,10 +26,10 @@ import com.example.applicationsop.ui.theme.ijo
 import com.example.applicationsop.ui.theme.abang
 import com.example.applicationsop.ui.theme.kuning
 import androidx.navigation.NavController
-import com.example.applicationsop.presentation.component.HeaderHomeUser
 import com.example.applicationsop.presentation.component.ProgressCard
 import com.example.applicationsop.presentation.component.ProgressCardRiwayat
 import com.example.applicationsop.presentation.component.SubmissionCard
+import com.example.applicationsop.presentation.component.header.HeaderHomeUser
 import java.time.LocalTime
 
 @RequiresApi(Build.VERSION_CODES.O)

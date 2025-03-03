@@ -26,7 +26,7 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.navigation.NavController
 import com.example.applicationsop.presentation.component.BackButton
-import com.example.applicationsop.presentation.component.HeaderWithSearch
+import com.example.applicationsop.presentation.component.header.HeaderWithSearch
 import com.example.applicationsop.ui.theme.Maroon
 import com.example.applicationsop.ui.theme.abang
 import com.example.applicationsop.ui.theme.ijo
@@ -39,7 +39,8 @@ data class ScheduleItem(
     val endDate: String,
     val description: String,
     val stage: String,
-    val progressPercentage: Int // Ensure this is an Int
+    val progressPercentage: Int,
+    val status: String
 )
 
 @Composable
@@ -134,13 +135,15 @@ fun ListPengembanganScreen(navController: NavController) {
             items(2) { index ->
                 // Sample schedule data
                 val scheduleItem = ScheduleItem(
-                    task = "Nama Sistem ${index + 1}",
-                    startDate = "25/10/2025",
-                    endDate = "30/10/2025",
-                    description = "Deskripsi singkat",
-                    stage = "Desain Ui/Ux",
-                    progressPercentage = 50
+                    task = "Task 1",
+                    startDate = "2025-03-01",
+                    endDate = "2025-03-10",
+                    description = "Task Description",
+                    stage = "Desain UI/UX",
+                    progressPercentage = 50,
+                    status = "developed" // Set status here
                 )
+
 
                 // Pass actual schedule data to the ListPengembangan composable
                 ListPengembangan(
