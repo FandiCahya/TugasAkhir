@@ -32,6 +32,7 @@ import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.compose.ui.zIndex
@@ -267,5 +268,43 @@ fun HeaderHomeUser(navController: NavController, nameUser: String?, TokenUser: S
 
         // Search Bar (tetap berada di bawah teks dan ikon)
         Spacer(modifier = Modifier.height(10.dp))
+    }
+}
+
+@Composable
+fun HeaderFormUsulan(title: String, navController: NavController) {
+    Box(
+        modifier = Modifier
+            .fillMaxWidth()
+            .background(
+                brush = Brush.verticalGradient(
+                    colors = listOf(Maroon, Color.Transparent), // Gradasi dari Maroon ke Transparan
+                    startY = 0f,
+                    endY = Float.POSITIVE_INFINITY
+                )
+            )
+            .padding(16.dp)
+    ) {
+        // Header with Back Button and Title
+        Row(
+            modifier = Modifier.fillMaxWidth(),
+            verticalAlignment = Alignment.CenterVertically, // Vertically align the items
+            horizontalArrangement = Arrangement.Start // Align items to the start (left)
+        ) {
+            BackButton(
+                navController = navController,
+                colorVersion = "w"
+            )  // Back Button on the left
+
+            Spacer(modifier = Modifier.weight(1f))
+
+            Text(
+                text = title,
+                fontSize = 24.sp,
+                fontWeight = FontWeight.Bold,
+                color = Putih,
+                textAlign = TextAlign.Center // Ensure the title is centered
+            )
+        }
     }
 }
