@@ -3,12 +3,8 @@ package com.example.applicationsop.models
 import kotlinx.serialization.Serializable
 
 @Serializable
-data class PengembanganRequest(
-    val pengajuan_id: String? = null,
-    val tanggal_mulai: String? = null,
-    val tanggal_selesai: String? = null,
+data class UpdatePengembangan(
     val tahap: String? = null,
     val persentase: Int? = null,
-    val keterangan: String? = null,
     val status: String? = null
 )
