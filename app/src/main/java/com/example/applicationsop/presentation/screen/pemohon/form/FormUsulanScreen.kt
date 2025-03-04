@@ -48,6 +48,8 @@ import com.example.applicationsop.presentation.component.signaturepad.SignatureD
 import com.example.applicationsop.ui.theme.Maroon
 import com.example.applicationsop.ui.theme.Putih
 import kotlinx.coroutines.launch
+import java.io.File
+
 
 fun convertDateToApiFormat(date: String): String {
     // Format tanggal yang diterima dalam format dd/MM/yyyy menjadi yyyy-MM-dd
@@ -110,14 +112,27 @@ fun FormUsulanScreen(navController: NavController, userId: String?) {
                     user_id = userId
                 )
 
-                // Make the API call
-                val response = postPengajuan(pengajuanRequest)
+                // Convert the signature image to a file if available
+                val signatureFile = image.value?.let { bitmap ->
+                    val file = File(navController.context.cacheDir, "signature.png")
+                    file.outputStream().use { out ->
+                        bitmap.compress(Bitmap.CompressFormat.PNG, 100, out)
+                    }
+                    file
+                }
 
-                // Check if the response was successful
-                if (response.status.value in 200..299) {
-                    responseMessage = "Pengajuan berhasil dikirim!"
+                if (signatureFile != null) {
+                    // Make the API call to post the form data with signature file
+                    val response = postPengajuan(pengajuanRequest, signatureFile)
+
+                    // Check if the response was successful
+                    if (response.status.value in 200..299) {
+                        responseMessage = "Pengajuan berhasil dikirim!"
+                    } else {
+                        responseMessage = "Gagal mengirim. Coba lagi!"
+                    }
                 } else {
-                    responseMessage = "Gagal mengirim. coba lagi!."
+                    responseMessage = "Tanda tangan diperlukan."
                 }
             } catch (e: Exception) {
                 responseMessage = "Error: ${e.message}"
@@ -205,7 +220,6 @@ fun FormUsulanScreen(navController: NavController, userId: String?) {
                 onClick = { isDialogOpen.value = true },
                 modifier = Modifier
                     .width(150.dp),
-//                    .padding(8.dp),
                 colors = ButtonDefaults.buttonColors(containerColor = Maroon),
                 shape = RoundedCornerShape(15.dp) // Mengatur sudut membulat lebih kecil
             ) {
@@ -281,6 +295,5 @@ fun FormUsulanScreen(navController: NavController, userId: String?) {
         }
     }
 }
-
 
 

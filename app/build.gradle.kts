@@ -4,7 +4,6 @@ plugins {
     alias(libs.plugins.kotlin.compose)
     alias(libs.plugins.kotlin.ksp)
     alias(libs.plugins.kotlinx.serialization)
-
 }
 
 android {
@@ -45,7 +44,14 @@ android {
     }
     packaging {
         resources {
+            exclude("META-INF/DEPENDENCIES")
             excludes += "/META-INF/{AL2.0,LGPL2.1}"
+            exclude("win32-x86-64/attach_hotspot_windows.dll")
+            exclude("win32-x86/attach_hotspot_windows.dll")
+            exclude("META-INF/licenses/ASM")
+            exclude("META-INF/LICENSE-notice.md")
+            merges += "META-INF/LICENSE.md"
+
         }
     }
 }
@@ -83,6 +89,11 @@ dependencies {
     implementation(libs.ktor.client.okhttp)
     implementation(libs.kotlinx.coroutines.core)
     implementation(libs.kotlinx.coroutines.android)
+    implementation(libs.ktor.server.test.host)
+
+    implementation(libs.kotlin.test)
+    implementation(libs.kotlinx.coroutines.debug)
+    implementation(libs.byte.buddy.agent)
 
     // Icon
     implementation(libs.androidx.material.icons.extended)
@@ -92,4 +103,5 @@ dependencies {
     implementation("io.ktor:ktor-client-content-negotiation:3.0.3")
     implementation("org.jetbrains.kotlinx:kotlinx-serialization-json:1.8.0")
     implementation("io.ktor:ktor-serialization-kotlinx-json")
+
 }
