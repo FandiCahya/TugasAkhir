@@ -158,25 +158,22 @@ fun ListPengembanganAdminScreen(navController: NavController) {
         }
     }
 
-    // Show popup only when it's true
     selectedScheduleItem?.let { scheduleItem ->
         if (showPopup) {
             SchedulePopup(
                 onDismiss = { showPopup = false },
                 onSave = { newSchedule ->
-                    // Fungsi untuk menyimpan jadwal baru
-                    // Update schedule item yang dipilih dengan data baru
                     selectedScheduleItem = newSchedule
-                    showPopup = false // Menutup popup setelah menyimpan
+                    showPopup = false
                 },
                 taskName = scheduleItem.task,
                 startDate = scheduleItem.startDate,
                 endDate = scheduleItem.endDate,
                 description = scheduleItem.description,
-                selectedStages = scheduleItem.stage.split(", "), // Misalnya, split tahapan yang dipilih
+                selectedStages = scheduleItem.stage.split(", "),
                 progressPercentage = scheduleItem.progressPercentage,
-                status = scheduleItem.status, // Passing the status value
-                navController = navController // Passing navController
+                status = scheduleItem.status,
+                navController = navController
             )
         }
     }
