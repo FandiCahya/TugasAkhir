@@ -76,6 +76,7 @@ fun SchedulePopup(
         // Card Popup
         Card(
             modifier = Modifier
+                .align(Alignment.Center)
                 .fillMaxWidth()
                 .padding(20.dp)
                 .shadow(8.dp, RoundedCornerShape(16.dp)),
@@ -253,7 +254,7 @@ fun SchedulePopup(
                         horizontalArrangement = Arrangement.SpaceBetween
                     ) {
                         if (status == "developed") {
-                            // Tombol Update
+                            // Tombol Update di kiri
                             Button(
                                 onClick = {
                                     val updatedSchedule = ScheduleItem(
@@ -269,7 +270,7 @@ fun SchedulePopup(
                                     onDismiss() // Close the popup
                                 },
                                 modifier = Modifier
-                                    .width(120.dp)
+                                    .width(180.dp)
                                     .shadow(4.dp, RoundedCornerShape(16.dp)),
                                 colors = ButtonDefaults.buttonColors(containerColor = Maroon),
                                 shape = RoundedCornerShape(16.dp)
@@ -277,7 +278,7 @@ fun SchedulePopup(
                                 Text("Update", color = Color.White)
                             }
                         } else if (status == "finished") {
-                            // Tombol Form Pengujian
+                            // Tombol Form Pengujian di kiri
                             Button(
                                 onClick = {
                                     navController.navigate("formPengujian") // Navigate to FormPengujianAdmin screen
@@ -285,11 +286,23 @@ fun SchedulePopup(
                                 modifier = Modifier
                                     .width(180.dp)
                                     .shadow(4.dp, RoundedCornerShape(16.dp)),
-                                colors = ButtonDefaults.buttonColors(containerColor = Color.Gray),
+                                colors = ButtonDefaults.buttonColors(containerColor = Maroon),
                                 shape = RoundedCornerShape(16.dp)
                             ) {
                                 Text("Form Pengujian", color = Color.White)
                             }
+                        }
+
+                        // Tombol Close di kanan
+                        Button(
+                            onClick = onDismiss,
+                            modifier = Modifier
+                                .width(100.dp)
+                                .shadow(4.dp, RoundedCornerShape(16.dp)),
+                            colors = ButtonDefaults.buttonColors(containerColor = Color.Gray),
+                            shape = RoundedCornerShape(16.dp)
+                        ) {
+                            Text("Close", color = Color.White)
                         }
                     }
                 }
