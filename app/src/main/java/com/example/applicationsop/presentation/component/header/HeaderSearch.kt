@@ -30,6 +30,7 @@ import androidx.navigation.NavController
 import com.example.applicationsop.presentation.component.BackButton
 import com.example.applicationsop.ui.theme.Maroon
 
+
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun HeaderWithSearch(
@@ -101,11 +102,11 @@ fun HeaderWithSearch(
                     .fillMaxWidth()
                     .height(45.dp),
                 shape = RoundedCornerShape(50.dp),
-                colors = TextFieldDefaults.textFieldColors(
-                    containerColor = Color.White,
-                    focusedIndicatorColor = Color.Transparent,  // Remove the focus indicator line
-                    unfocusedIndicatorColor = Color.Transparent // Remove the unfocused indicator line
-                )
+//                colors = TextFieldDefaults.textFieldColors(
+//                    containerColor = Color.White,
+//                    focusedIndicatorColor = Color.Transparent,  // Remove the focus indicator line
+//                    unfocusedIndicatorColor = Color.Transparent // Remove the unfocused indicator line
+//                )
             )
         }
     }

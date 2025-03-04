@@ -21,7 +21,42 @@ class MainActivity : ComponentActivity() {
                     modifier = Modifier.fillMaxSize()
                 ) {
                     val navController = rememberNavController() // Inisialisasi NavController
-                    MainApp() // Panggil AppNavigation dengan navController
+//                    MainApp() // Panggil AppNavigation dengan navController
+
+                    // Retrieve user data from Intent
+                    val token = intent.getStringExtra("token")
+                    val userId = intent.getStringExtra("userId")
+                    val role = intent.getStringExtra("role")
+                    val name = intent.getStringExtra("name")
+                    val email = intent.getStringExtra("email")
+                    val devisi = intent.getStringExtra("devisi")
+
+                    println("Token: $token")
+
+                    // Check if token exists
+                    if (token != null) {
+                        // Pass data to MainApp
+                        MainApp(
+                            navController = navController,
+                            token = token,
+                            userId = userId,
+                            role = role,
+                            name = name,
+                            email = email,
+                            devisi = devisi
+                        )
+                    } else {
+                        // If no token, navigate to login
+                        MainApp(
+                            navController = navController,
+                            token = null,
+                            userId = null,
+                            role = null,
+                            name = null,
+                            email = null,
+                            devisi = null
+                        )
+                    }
                 }
             }
         }

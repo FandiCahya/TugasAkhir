@@ -3,6 +3,7 @@ package com.example.applicationsop.navigation
 import android.os.Build
 import androidx.annotation.RequiresApi
 import androidx.compose.runtime.Composable
+import androidx.navigation.NavController
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
@@ -25,16 +26,64 @@ import com.example.applicationsop.presentation.screen.pemohon.list.ListPengajuan
 
 @RequiresApi(Build.VERSION_CODES.O)
 @Composable
-fun MainApp() {
+fun MainApp(navController: NavController, token: String?, userId: String?, role: String?, name: String?, email: String?, devisi: String?) {
     val navController = rememberNavController()
-    NavHost(
-        navController = navController,
-        startDestination = "login" // Set rute awal untuk login
-    ) {
-        // Rute untuk LoginScreen
+    NavHost(navController = navController, startDestination = if (token != null) "home" else "login") {
+
         composable("login") {
-            LoginScreen(navController = navController) // Pass navController ke LoginScreen
+            LoginScreen(navController = navController) // Pass navController to LoginScreen
         }
+        composable("home") {
+            if (token != null) {
+                // Navigate based on the role
+                if (role == "admin") {
+                    HomeAdminScreen(
+                        navController = navController,
+                        token = token,
+                        userId = userId,
+                        role = role,
+                        name = name,
+                        email = email,
+                        devisi = devisi
+                    )
+                } else {
+                    HomeUserScreen(
+                        navController = navController,
+                        token = token,
+                        userId = userId,
+                        role = role,
+                        name = name,
+                        email = email,
+                        devisi = devisi
+                    )
+                }
+            }
+        }
+
+        //User Navigation
+        // Rute untuk HomeUserScreen
+        composable("homeUser/{token}/{userId}/{role}/{name}/{email}/{devisi}") { backStackEntry ->
+            val token = backStackEntry.arguments?.getString("token")
+            val userId = backStackEntry.arguments?.getString("userId")
+            val role = backStackEntry.arguments?.getString("role")
+            val name = backStackEntry.arguments?.getString("name")
+            val email = backStackEntry.arguments?.getString("email")
+            val devisi = backStackEntry.arguments?.getString("devisi")
+            HomeUserScreen(navController = navController, token = token, userId = userId, role = role, name = name, email = email, devisi = devisi)
+        }
+
+        // Admin Navigation
+        // Rute untuk HomeAdminScreen dengan parameter
+        composable("homeAdmin/{token}/{userId}/{role}/{name}/{email}/{devisi}") { backStackEntry ->
+            val token = backStackEntry.arguments?.getString("token")
+            val userId = backStackEntry.arguments?.getString("userId")
+            val role = backStackEntry.arguments?.getString("role")
+            val name = backStackEntry.arguments?.getString("name")
+            val email = backStackEntry.arguments?.getString("email")
+            val devisi = backStackEntry.arguments?.getString("devisi")
+            HomeAdminScreen(navController = navController, token = token, userId = userId, role = role, name = name, email = email, devisi = devisi)
+        }
+
 
 
         // Halaman FormUsulanScreen User
@@ -92,29 +141,7 @@ fun MainApp() {
             ListPengembanganScreen(navController = navController)
         }
 
-        //User Navigation
-        // Rute untuk HomeUserScreen
-        composable("homeUser/{token}/{userId}/{role}/{name}/{email}/{devisi}") { backStackEntry ->
-            val token = backStackEntry.arguments?.getString("token")
-            val userId = backStackEntry.arguments?.getString("userId")
-            val role = backStackEntry.arguments?.getString("role")
-            val name = backStackEntry.arguments?.getString("name")
-            val email = backStackEntry.arguments?.getString("email")
-            val devisi = backStackEntry.arguments?.getString("devisi")
-            HomeUserScreen(navController = navController, token = token, userId = userId, role = role, name = name, email = email, devisi = devisi)
-        }
 
-        // Admin Navigation
-        // Rute untuk HomeAdminScreen dengan parameter
-        composable("homeAdmin/{token}/{userId}/{role}/{name}/{email}/{devisi}") { backStackEntry ->
-            val token = backStackEntry.arguments?.getString("token")
-            val userId = backStackEntry.arguments?.getString("userId")
-            val role = backStackEntry.arguments?.getString("role")
-            val name = backStackEntry.arguments?.getString("name")
-            val email = backStackEntry.arguments?.getString("email")
-            val devisi = backStackEntry.arguments?.getString("devisi")
-            HomeAdminScreen(navController = navController, token = token, userId = userId, role = role, name = name, email = email, devisi = devisi)
-        }
 
         // List Pengajuan
         composable("list_pengajuanAdmin1") {

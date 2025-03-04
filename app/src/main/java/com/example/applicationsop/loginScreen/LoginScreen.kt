@@ -237,7 +237,15 @@ fun LoginButtonComposable(
                 // Cek apakah login berhasil
                 if (response != null && response.token != null) {
                     // Login berhasil, simpan token
-                    saveToken(context, response.token)
+                    saveUserData(
+                        context,
+                        response.token,
+                        response.user.id ?: "",
+                        response.user.role ?: "",
+                        response.user.name ?: "",
+                        response.user.email ?: "",
+                        response.user.devisi ?: ""
+                    )
                     // Menentukan navigasi berdasarkan role
                     when (response.user.role) {
                         "admin" -> {
@@ -295,10 +303,19 @@ fun saveToken(context: Context, token: String) {
     editor.putString("TOKEN", token)  // Save the token with the key "TOKEN"
     editor.apply()  // Commit changes
 }
-
-fun getToken(context: Context): String? {
+fun saveUserData(context: Context, token: String, userId: String, role: String, name: String, email: String, devisi: String) {
     val sharedPreferences = context.getSharedPreferences("MyPrefs", Activity.MODE_PRIVATE)
-    return sharedPreferences.getString("TOKEN", null)  // Return null if the token doesn't exist
+    val editor = sharedPreferences.edit()
+    editor.putString("TOKEN", token)  // Simpan token
+    editor.putString("USER_ID", userId) // Simpan userId
+    editor.putString("ROLE", role) // Simpan role
+    editor.putString("NAME", name) // Simpan name
+    editor.putString("EMAIL", email) // Simpan email
+    editor.putString("DEVISI", devisi) // Simpan devisi
+    editor.apply() // Commit perubahan
 }
+
+
+
 
 
