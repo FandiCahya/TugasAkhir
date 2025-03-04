@@ -35,6 +35,7 @@ import com.example.applicationsop.ui.theme.kuning
 // Data model for the schedule
 data class ScheduleItem(
     val task: String,
+    val id: String,
     val startDate: String,
     val endDate: String,
     val description: String,
@@ -136,6 +137,7 @@ fun ListPengembanganScreen(navController: NavController) {
                 // Sample schedule data
                 val scheduleItem = ScheduleItem(
                     task = "Task 1",
+                    id = "1",
                     startDate = "2025-03-01",
                     endDate = "2025-03-10",
                     description = "Task Description",

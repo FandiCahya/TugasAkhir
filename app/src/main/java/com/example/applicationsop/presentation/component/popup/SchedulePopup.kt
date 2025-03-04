@@ -39,14 +39,19 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.navigation.NavController
+import com.example.applicationsop.Api.updatePengembangan
+import com.example.applicationsop.models.UpdatePengembangan
 import com.example.applicationsop.presentation.screen.pemohon.ScheduleItem
 import com.example.applicationsop.ui.theme.Maroon
+import androidx.compose.runtime.rememberCoroutineScope
+import kotlinx.coroutines.launch
 
 @Composable
 fun SchedulePopup(
     onDismiss: () -> Unit,
     onSave: (ScheduleItem) -> Unit,
     taskName: String,
+    id: String,
     startDate: String,
     endDate: String,
     description: String,
@@ -55,7 +60,9 @@ fun SchedulePopup(
     status: String, // Adding status to the parameters
     navController: NavController // Adding navController for navigation to the new form
 ) {
+
     var taskNameState by remember { mutableStateOf(taskName) }
+    var idState by remember { mutableStateOf(id) }
     var startDateState by remember { mutableStateOf(startDate) }
     var endDateState by remember { mutableStateOf(endDate) }
     var descriptionState by remember { mutableStateOf(description) }
@@ -63,7 +70,7 @@ fun SchedulePopup(
     var progressPercentageState by remember { mutableStateOf(progressPercentage) }
 
     val availableStages = listOf("Analisis", "Desain UI/UX", "Pengerjaan", "Penyelesaian", "Testing")
-
+    val coroutineScope = rememberCoroutineScope()
     Box(modifier = Modifier.fillMaxSize()) {
         // Gelap di latar belakang
         Box(
@@ -257,17 +264,16 @@ fun SchedulePopup(
                             // Tombol Update di kiri
                             Button(
                                 onClick = {
-                                    val updatedSchedule = ScheduleItem(
-                                        task = taskNameState,
-                                        startDate = startDateState,
-                                        endDate = endDateState,
-                                        description = descriptionState,
-                                        stage = selectedStagesState.joinToString(", "),
-                                        progressPercentage = progressPercentageState,
-                                        status = if (progressPercentageState == 100) "finished" else "developed" // Logic for setting status
-                                    )
-                                    onSave(updatedSchedule) // Update the schedule
-                                    onDismiss() // Close the popup
+                                    coroutineScope.launch { // Run inside coroutine
+                                        // Send the updated data to the API
+                                        val updatedPengembangan = UpdatePengembangan(
+                                            tahap = selectedStagesState.joinToString(", "),
+                                            persentase = progressPercentageState,
+                                            status = if (progressPercentageState == 100) "finished" else "developed"
+                                        )
+                                        updatePengembangan(idState, updatedPengembangan) // Call the update API
+                                        onDismiss() // Close the popup
+                                    }
                                 },
                                 modifier = Modifier
                                     .width(180.dp)

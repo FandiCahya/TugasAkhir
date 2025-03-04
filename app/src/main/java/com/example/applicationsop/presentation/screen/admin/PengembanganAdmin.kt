@@ -136,6 +136,7 @@ fun ListPengembanganAdminScreen(navController: NavController) {
                 // Create a ScheduleItem from Pengembangan data
                 val scheduleItem = ScheduleItem(
                     task = pengembangan.pengajuan.nama_sistem, // Nama sistem from Pengajuan
+                    id = pengembangan.id, // ID from Pengembangan
                     startDate = pengembangan.tanggal_mulai, // Start date
                     endDate = pengembangan.tanggal_selesai, // End date
                     description = pengembangan.keterangan, // Description from Pengembangan
@@ -167,6 +168,7 @@ fun ListPengembanganAdminScreen(navController: NavController) {
                     showPopup = false
                 },
                 taskName = scheduleItem.task,
+                id = scheduleItem.id,
                 startDate = scheduleItem.startDate,
                 endDate = scheduleItem.endDate,
                 description = scheduleItem.description,
