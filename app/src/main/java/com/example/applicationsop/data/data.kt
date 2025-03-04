@@ -53,6 +53,19 @@ data class ScheduleItem(
     val progressPercentage: Int // Ensure this is an Int
 )
 
+// Data class for storing detailed information
+data class DetailPengujian(
+    val id: String, // Unique ID for identification
+    val namaSistem: String = "",
+    val versiPerangkat: String = "", // Add this field
+    val tujuanPengujian: String = "", // Add this field
+    val metodePengujian: String = "", // Add this field
+    val tanggalPengujian: String = "", // Add this field
+    val pelaksanaPengujian: String = "", // Add this field
+    var status: String = ""
+)
+
+
 @Composable
 fun ListPengajuanItem(
     namaSistem: String,

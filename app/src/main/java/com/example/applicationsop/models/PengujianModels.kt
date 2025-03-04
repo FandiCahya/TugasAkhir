@@ -10,6 +10,7 @@ data class Pengujian(
     val tujuan: String,
     val metode: String,
     val tanggal: String,
+    val status: String,
     val pelaksana: Pelaksana,
     val pengembangan: Pengembangan,  // Use Pengajuan model here
     val pengujian_detail: List<pengujian_detail>

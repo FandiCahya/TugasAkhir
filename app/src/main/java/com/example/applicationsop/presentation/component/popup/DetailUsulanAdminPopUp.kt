@@ -23,6 +23,7 @@ import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.Divider
 import androidx.compose.material3.Icon
 import androidx.compose.material3.Text
+import androidx.compose.material3.TextField
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
@@ -338,8 +339,8 @@ fun DetailPopupUsulanAdmin(
 
                         Button(
                             onClick = {
-                                showAlasanInput = true
-                            }, // Menampilkan input alasan jika Tolak ditekan
+                                showAlasanInput = true // Show the input for reason
+                            },
                             modifier = Modifier
                                 .width(120.dp)
                                 .shadow(4.dp, RoundedCornerShape(16.dp)),
@@ -349,23 +350,41 @@ fun DetailPopupUsulanAdmin(
                             Text("Tolak", color = Color.White)
                         }
                     }
-                }
-            }
 
-            // Add Schedule button visibility based on status
-            if (status == "accepted") {
-                Button(
-                    onClick = { navController.navigate("addSchedule?id=$id&namaSistem=$namaSistem") },
-                    modifier = Modifier
-                        .width(150.dp)
-                        .padding(bottom = 15.dp)
-                        .padding(end = 15.dp)
-                        .align(Alignment.End)
-                        .shadow(4.dp, RoundedCornerShape(16.dp)),
-                    colors = ButtonDefaults.buttonColors(containerColor = Maroon),
-                    shape = RoundedCornerShape(16.dp)
-                ) {
-                    Text("Add Schedule", color = Color.White)
+                    // Tampilkan input alasan jika tombol Tolak ditekan
+                    if (showAlasanInput) {
+                        // Input alasan
+                        Column(
+                            modifier = Modifier.fillMaxWidth().padding(top = 16.dp)
+                        ) {
+                            Text("Alasan Penolakan", fontWeight = FontWeight.Bold, color = Color.Black)
+                            Spacer(modifier = Modifier.height(8.dp))
+                            TextField(
+                                value = inputAlasan,
+                                onValueChange = { inputAlasan = it },
+                                placeholder = { Text("Masukkan alasan") },
+                                modifier = Modifier.fillMaxWidth(),
+                                maxLines = 3
+                            )
+                            Spacer(modifier = Modifier.height(8.dp))
+
+                            // Button to submit the rejection reason
+                            Button(
+                                onClick = {
+                                    if (inputAlasan.isNotEmpty()) {
+                                        // Call the onRejectClick function with the inputAlasan value
+                                        onRejectClick(inputAlasan)
+                                        onDismiss()
+                                    }
+                                },
+                                modifier = Modifier.align(Alignment.CenterHorizontally),
+                                colors = ButtonDefaults.buttonColors(containerColor = abang),
+                                shape = RoundedCornerShape(16.dp)
+                            ) {
+                                Text("Kirim Alasan", color = Color.White)
+                            }
+                        }
+                    }
                 }
             }
         }

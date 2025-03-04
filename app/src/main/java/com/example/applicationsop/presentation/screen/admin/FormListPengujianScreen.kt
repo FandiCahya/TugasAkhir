@@ -29,7 +29,7 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.sp
 import androidx.navigation.NavController
 import com.example.applicationsop.Api.fetchPengujianList
-import com.example.applicationsop.data.DetailInfo
+import com.example.applicationsop.data.DetailPengujian
 import com.example.applicationsop.models.Pengujian
 import com.example.applicationsop.presentation.component.header.HeaderWithSearch
 import com.example.applicationsop.ui.theme.Maroon
@@ -39,12 +39,12 @@ import com.example.applicationsop.ui.theme.kuning
 
 @Composable
 fun ListPengujianItem(
-    namaSistem: String,
-    tanggal: String,
-    jenisSistem: String,
-    rencanaAnggaran: String,
-    masalahSistem: String,
-    outputHasil: String,
+    perangkat_lunak: String,
+    versiPerangkat: String,
+    tujuanPengujian: String,
+    metodePengujian: String,
+    tanggalPengujian: String,
+    pelaksanaPengujian: String,
     status: String,
     onClick: () -> Unit // Fungsi untuk menangani klik
 ) {
@@ -84,7 +84,7 @@ fun ListPengujianItem(
             modifier = Modifier.weight(1f)
         ) {
             Text(
-                text = namaSistem,
+                text = perangkat_lunak,
                 fontSize = 16.sp,
                 fontWeight = FontWeight.Bold,
                 color = Color.Black
@@ -112,14 +112,13 @@ fun ListPengujianItem(
 @Composable
 fun ListPengujianScreenAdmin(navController: NavController) {
     var showPopup by remember { mutableStateOf(false) }
-    var selectedDetail by remember { mutableStateOf(DetailInfo(id = "")) }
+    var selectedDetail by remember { mutableStateOf(DetailPengujian(id = "")) }
     var pengujianList by remember { mutableStateOf<List<Pengujian>>(emptyList()) }
 
     LaunchedEffect(Unit) {
         // Fetching the data when the Composable is first launched
         val fetchedPengujianList = fetchPengujianList() // Fetch the data
         pengujianList = fetchedPengujianList // Updating the state
-//        println("Pengujian List View :${pengujianList}")
     }
 
     Column(
@@ -138,24 +137,26 @@ fun ListPengujianScreenAdmin(navController: NavController) {
                     else -> "Pengembangan Belum Selesai"
                 }
 
+                // Passing the data to ListPengujianItem composable
                 ListPengujianItem(
-                    namaSistem = pengujian.perangkat_lunak, // System name from the API
-                    tanggal = pengujian.tanggal, // Date of testing
-                    jenisSistem = pengujian.metode.toString(), // System type (converted to string from Int if needed)
-                    rencanaAnggaran = pengujian.pengujian_detail.firstOrNull()?.hasil_diharapkan ?: "Data Tidak Tersedia", // Example of another field
-                    masalahSistem = pengujian.pengujian_detail.firstOrNull()?.kasus_uji ?: "Data Tidak Tersedia", // Example of another field
-                    outputHasil = pengujian.pengujian_detail.firstOrNull()?.hasil_pengujian ?: "Data Tidak Tersedia", // Example of another field
-                    status = status,
+                    perangkat_lunak = pengujian.perangkat_lunak,  // System name from Pengujian object
+                    versiPerangkat = pengujian.versi,  // Version from Pengujian object
+                    tujuanPengujian = pengujian.tujuan,  // Purpose from Pengujian object
+                    metodePengujian = pengujian.metode,  // Testing method from Pengujian object
+                    tanggalPengujian = pengujian.tanggal,  // Date of testing
+                    pelaksanaPengujian = pengujian.pelaksana.name,  // Executor's name
+                    status = pengujian.status,
                     onClick = {
-                        selectedDetail = DetailInfo(
+                        // Populate selectedDetail with all required data
+                        selectedDetail = DetailPengujian(
                             id = pengujian.id,
                             namaSistem = pengujian.perangkat_lunak,
-                            tanggal = pengujian.tanggal,
-                            jenisSistem = pengujian.metode.toString(),
-                            rencanaAnggaran = pengujian.pengujian_detail.firstOrNull()?.hasil_diharapkan ?: "Data Tidak Tersedia",
-                            masalahSistem = pengujian.pengujian_detail.firstOrNull()?.kasus_uji ?: "Data Tidak Tersedia",
-                            outputHasil = pengujian.pengujian_detail.firstOrNull()?.hasil_pengujian ?: "Data Tidak Tersedia",
-                            status = status
+                            versiPerangkat = pengujian.versi,
+                            tujuanPengujian = pengujian.tujuan,
+                            metodePengujian = pengujian.metode,
+                            tanggalPengujian = pengujian.tanggal,
+                            pelaksanaPengujian = pengujian.pelaksana.name,
+                            status = pengujian.status
                         )
                         showPopup = true
                     }
@@ -168,18 +169,17 @@ fun ListPengujianScreenAdmin(navController: NavController) {
     if (showPopup) {
         DetailPopupPengujian(
             onDismiss = { showPopup = false },
-            hariTanggal = selectedDetail.tanggal,
+            hariTanggal = selectedDetail.tanggalPengujian,
             namaSistem = selectedDetail.namaSistem,
-            jenisSistem = selectedDetail.jenisSistem,
-            rencanaAnggaran = selectedDetail.rencanaAnggaran,
-            masalahSistem = selectedDetail.masalahSistem,
-            outputHasil = selectedDetail.outputHasil,
-            status = selectedDetail.status,
+            versiPerangkat = selectedDetail.versiPerangkat,
+            tujuanPengujian = selectedDetail.tujuanPengujian,
+            metodePengujian = selectedDetail.metodePengujian,
+            tanggalPengujian = selectedDetail.tanggalPengujian,
+            pelaksanaPengujian = selectedDetail.pelaksanaPengujian,
             navController = navController
         )
     }
 }
-
 
 
 
@@ -188,11 +188,11 @@ fun DetailPopupPengujian(
     onDismiss: () -> Unit,
     hariTanggal: String,
     namaSistem: String,
-    jenisSistem: String,
-    rencanaAnggaran: String,
-    masalahSistem: String,
-    outputHasil: String,
-    status: String,
+    versiPerangkat: String,
+    tujuanPengujian: String,
+    metodePengujian: String,
+    tanggalPengujian: String,
+    pelaksanaPengujian: String,
     navController: NavController // Menambahkan navController sebagai parameter
 ) {
     Box(modifier = Modifier.fillMaxSize()) {
@@ -260,29 +260,173 @@ fun DetailPopupPengujian(
 
                     Spacer(modifier = Modifier.height(8.dp))
 
-                    Row(
+                    // Perangkat yang dikembangkan
+                    Row(modifier = Modifier.fillMaxWidth()) {
+                        Text("Perangkat yang dikembangkan", fontWeight = FontWeight.Bold, color = Color.Gray)
+                    }
+                    Box(
                         modifier = Modifier
                             .fillMaxWidth()
-                            .padding(top = 20.dp),
-                        horizontalArrangement = Arrangement.Center
+                            .height(56.dp)
+                            .border(
+                                width = 1.dp,
+                                color = Color.LightGray,
+                                shape = RoundedCornerShape(8.dp)
+                            )
+                            .padding(horizontal = 8.dp)
                     ) {
-                        Button(
-                            onClick = {
-                                // Navigate to the formPengujian screen
-                                navController.navigate("formPengujian")
-                            },
-                            modifier = Modifier
-                                .fillMaxWidth()
-                                .padding(horizontal = 16.dp)
-                                .height(50.dp),
-                            colors = ButtonDefaults.buttonColors(containerColor = Maroon),
-                            shape = RoundedCornerShape(16.dp)
-                        ) {
-                            Text("Lanjut ke Form Pengujian", color = Color.White)
-                        }
+                        Text(
+                            text = "$namaSistem",
+                            fontSize = 16.sp,
+                            color = Color.Black,
+                            modifier = Modifier.align(Alignment.CenterStart).padding(8.dp)
+                        )
+                    }
+
+                    Spacer(modifier = Modifier.height(8.dp))
+
+                    // Versi Perangkat Lunak
+                    Row(modifier = Modifier.fillMaxWidth()) {
+                        Text("Versi Perangkat Lunak", fontWeight = FontWeight.Bold, color = Color.Gray)
+                    }
+                    Box(
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .height(56.dp)
+                            .border(
+                                width = 1.dp,
+                                color = Color.LightGray,
+                                shape = RoundedCornerShape(8.dp)
+                            )
+                            .padding(horizontal = 8.dp)
+                    ) {
+                        Text(
+                            text = "$versiPerangkat",
+                            fontSize = 16.sp,
+                            color = Color.Black,
+                            modifier = Modifier.align(Alignment.CenterStart).padding(8.dp)
+                        )
+                    }
+
+                    Spacer(modifier = Modifier.height(8.dp))
+
+                    // Tujuan Pengujian
+                    Row(modifier = Modifier.fillMaxWidth()) {
+                        Text("Tujuan Pengujian", fontWeight = FontWeight.Bold, color = Color.Gray)
+                    }
+                    Box(
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .height(56.dp)
+                            .border(
+                                width = 1.dp,
+                                color = Color.LightGray,
+                                shape = RoundedCornerShape(8.dp)
+                            )
+                            .padding(horizontal = 8.dp)
+                    ) {
+                        Text(
+                            text = "$tujuanPengujian",
+                            fontSize = 16.sp,
+                            color = Color.Black,
+                            modifier = Modifier.align(Alignment.CenterStart).padding(8.dp)
+                        )
+                    }
+
+                    Spacer(modifier = Modifier.height(8.dp))
+
+                    // Metode Pengujian
+                    Row(modifier = Modifier.fillMaxWidth()) {
+                        Text("Metode Pengujian", fontWeight = FontWeight.Bold, color = Color.Gray)
+                    }
+                    Box(
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .height(56.dp)
+                            .border(
+                                width = 1.dp,
+                                color = Color.LightGray,
+                                shape = RoundedCornerShape(8.dp)
+                            )
+                            .padding(horizontal = 8.dp)
+                    ) {
+                        Text(
+                            text = "$metodePengujian",
+                            fontSize = 16.sp,
+                            color = Color.Black,
+                            modifier = Modifier.align(Alignment.CenterStart).padding(8.dp)
+                        )
+                    }
+
+                    Spacer(modifier = Modifier.height(8.dp))
+
+                    // Tanggal Pengujian
+                    Row(modifier = Modifier.fillMaxWidth()) {
+                        Text("Tanggal Pengujian", fontWeight = FontWeight.Bold, color = Color.Gray)
+                    }
+                    Box(
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .height(56.dp)
+                            .border(
+                                width = 1.dp,
+                                color = Color.LightGray,
+                                shape = RoundedCornerShape(8.dp)
+                            )
+                            .padding(horizontal = 8.dp)
+                    ) {
+                        Text(
+                            text = "$tanggalPengujian",
+                            fontSize = 16.sp,
+                            color = Color.Black,
+                            modifier = Modifier.align(Alignment.CenterStart).padding(8.dp)
+                        )
+                    }
+
+                    Spacer(modifier = Modifier.height(8.dp))
+
+                    // Pelaksana Pengujian
+                    Row(modifier = Modifier.fillMaxWidth()) {
+                        Text("Pelaksana Pengujian", fontWeight = FontWeight.Bold, color = Color.Gray)
+                    }
+                    Box(
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .height(56.dp)
+                            .border(
+                                width = 1.dp,
+                                color = Color.LightGray,
+                                shape = RoundedCornerShape(8.dp)
+                            )
+                            .padding(horizontal = 8.dp)
+                    ) {
+                        Text(
+                            text = "$pelaksanaPengujian",
+                            fontSize = 16.sp,
+                            color = Color.Black,
+                            modifier = Modifier.align(Alignment.CenterStart).padding(8.dp)
+                        )
+                    }
+
+                    Spacer(modifier = Modifier.height(20.dp))
+
+                    // Button for form
+                    Button(
+                        onClick = {
+                            navController.navigate("formPengujian")
+                        },
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .padding(horizontal = 16.dp)
+                            .height(50.dp),
+                        colors = ButtonDefaults.buttonColors(containerColor = Maroon),
+                        shape = RoundedCornerShape(16.dp)
+                    ) {
+                        Text("Lanjut ke Form Pengujian", color = Color.White)
                     }
                 }
             }
         }
     }
 }
+
