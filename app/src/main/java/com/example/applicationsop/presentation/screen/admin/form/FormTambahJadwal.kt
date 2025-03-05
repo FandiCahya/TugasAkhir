@@ -56,7 +56,7 @@ fun ScheduleForm(
             .verticalScroll(scrollState)
     ) {
         // Header Section
-        HeaderForm("Tambah Jadwal Pengembangan", navController)
+        HeaderForm("Jadwal Pengembangan", navController)
 
         Column(
             modifier = Modifier

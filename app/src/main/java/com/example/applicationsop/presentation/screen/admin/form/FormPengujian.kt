@@ -4,7 +4,6 @@ import android.app.Activity
 import android.content.Context
 import android.graphics.Bitmap
 import android.graphics.Rect
-import androidx.compose.foundation.Canvas
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
@@ -12,6 +11,7 @@ import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
@@ -22,6 +22,7 @@ import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
+import androidx.compose.material3.Divider
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
@@ -36,7 +37,6 @@ import androidx.compose.ui.draw.shadow
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.Path
 import androidx.compose.ui.graphics.asImageBitmap
-import androidx.compose.ui.graphics.drawscope.Stroke
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
@@ -45,17 +45,13 @@ import androidx.media3.common.util.UnstableApi
 import androidx.navigation.NavController
 import com.example.applicationsop.Api.postPengujian
 import com.example.applicationsop.models.PengujianRequest
-import com.example.applicationsop.presentation.component.ActionButton
 import com.example.applicationsop.presentation.component.DatePickerField
 import com.example.applicationsop.presentation.component.FormField
 import com.example.applicationsop.presentation.component.header.HeaderForm
 import com.example.applicationsop.presentation.component.signaturepad.PathState
 import com.example.applicationsop.presentation.component.signaturepad.SignatureDialog
 import com.example.applicationsop.ui.theme.Maroon
-import com.example.applicationsop.ui.theme.PinkTua
 import com.example.applicationsop.ui.theme.Putih
-import java.util.Calendar
-import androidx.compose.runtime.rememberCoroutineScope
 import kotlinx.coroutines.launch
 import kotlinx.serialization.json.Json
 import java.text.SimpleDateFormat
@@ -84,11 +80,16 @@ fun getUserData(context: Context): Map<String, String?> {
 @OptIn(ExperimentalComposeUiApi::class)
 @Composable
 fun FormPengujianAdmin(navController: NavController, idPengembangan: String?, namaSistem: String?) {
+    // Informasi Pengujian
     var versiPerangkat by remember { mutableStateOf("") }
     var tujuanPengujian by remember { mutableStateOf("") }
     var metodePengujian by remember { mutableStateOf("") }
     var tanggalPengujian by remember { mutableStateOf("") }
 //    var pelaksanaPengujian by remember { mutableStateOf("") }
+
+    // Detail Pengujian
+    var nama_uji by remember { mutableStateOf("") }
+
     // Date formatting
     val dateFormat = SimpleDateFormat("yyyy-MM-dd", Locale.getDefault())
     // When a date is selected, format it to yyyy-MM-dd
@@ -105,6 +106,9 @@ fun FormPengujianAdmin(navController: NavController, idPengembangan: String?, na
     val drawColor = remember { mutableStateOf(Color.Black) }
     val drawBrush = remember { mutableStateOf(5f) }
     val usedColors = remember { mutableStateOf(mutableSetOf(Color.Black, Color.White, Color.Gray)) }
+
+    // catatan
+    var showCatatan by remember { mutableStateOf(false) }
 
     val coroutineScope = rememberCoroutineScope()
 
@@ -127,7 +131,8 @@ fun FormPengujianAdmin(navController: NavController, idPengembangan: String?, na
             .verticalScroll(scrollState)
     ) {
         // Header Section
-        HeaderForm("Formulir Pengujian", navController)
+        HeaderForm(title = "Formulir Pengujian", navController        )
+
 
         // Form Fields Section
         Column(
@@ -136,6 +141,17 @@ fun FormPengujianAdmin(navController: NavController, idPengembangan: String?, na
                 .padding(16.dp),
             verticalArrangement = Arrangement.spacedBy(16.dp)
         ) {
+            // Judul Form Informasi Pengujian
+            Text(
+                text = "Informasi Pengujian",
+                fontSize = 18.sp,
+                fontWeight = FontWeight.Bold,
+                color = Color.Black
+            )
+
+            // Garis Pemisah untuk Membantu Visualisasi
+            Divider(color = Color.Gray, thickness = 1.dp)
+
             Column(modifier = Modifier.fillMaxWidth()) {
                 // Label
                 Text(
@@ -143,7 +159,7 @@ fun FormPengujianAdmin(navController: NavController, idPengembangan: String?, na
                     fontSize = 16.sp,
                     fontWeight = FontWeight.Bold,
                     color = Color.Gray,
-                    modifier = Modifier.padding(bottom = 4.dp) // Spacing between label and content
+                    modifier = Modifier.padding(bottom = 4.dp)
                 )
 
                 // Box to display the device name
@@ -192,16 +208,85 @@ fun FormPengujianAdmin(navController: NavController, idPengembangan: String?, na
                 showLabel = false // Hide the label
             )
 
-//            FormField(label = "Pelaksana Pengujian", placeholder = "Isi pelaksana pengujian", value = pelaksanaPengujian, onValueChange = { pelaksanaPengujian = it })
+//           FormField(label = "Pelaksana Pengujian", placeholder = "Isi pelaksana pengujian", value = pelaksanaPengujian, onValueChange = { pelaksanaPengujian = it })
 
-            // Penguji Section
-//            Text(
-//                text = "Penguji:",
-//                fontSize = 16.sp,
-//                fontWeight = FontWeight.Bold,
-//                color = Maroon
+            Spacer(modifier = Modifier.padding(horizontal = 0.dp))
+
+            // Judul Form Informasi Pengujian
+            Text(
+                text = "Uraian Pengujian",
+                fontSize = 18.sp,
+                fontWeight = FontWeight.Bold,
+                color = Color.Black
+            )
+
+            // Line separator
+            Divider(modifier = Modifier.padding(top = 8.dp))
+
+            FormField(
+                label = "Nama Uji",
+                placeholder = "Isi nama uji",
+                value = versiPerangkat,
+                onValueChange = { versiPerangkat = it })
+            FormField(
+                label = "Kasus Uji",
+                placeholder = "Isi kasus uji",
+                value = tujuanPengujian,
+                onValueChange = { tujuanPengujian = it })
+            FormField(
+                label = "Hasil Yang Diharapkan",
+                placeholder = "Isi hasil yang diharapkan",
+                value = metodePengujian,
+                onValueChange = { metodePengujian = it })
+            FormField(
+                label = "Hasil Pengujian",
+                placeholder = "Isi hasil yang diharapkan",
+                value = metodePengujian,
+                onValueChange = { metodePengujian = it })
+//            DropdownField(
+//                label = "Keterangan",
+//                options = listOf("OK", "Tidak"),
+//                selectedOption = rencanaAnggaran,
+//                onOptionSelected = { rencanaAnggaran = it }
 //            )
 
+            // Tombol untuk menampilkan/menghilangkan catatan
+            Button(
+                onClick = { showCatatan = !showCatatan }, // Toggle state saat diklik
+                modifier = Modifier.fillMaxWidth()
+            ) {
+                Text(if (showCatatan) "Sembunyikan Catatan" else "Tambah Catatan") // Label tombol berubah sesuai state
+            }
+
+            // Tampilkan hanya jika showCatatan bernilai true
+            if (showCatatan) {
+                Text(
+                    text = "Catatan Pengujian",
+                    fontSize = 18.sp,
+                    fontWeight = FontWeight.Bold,
+                    color = Color.Black
+                )
+
+                Divider(modifier = Modifier.padding(top = 8.dp))
+
+                FormField(
+                    label = "Uraian",
+                    placeholder = "Isi uraian",
+                    value = versiPerangkat,
+                    onValueChange = { versiPerangkat = it })
+                FormField(
+                    label = "Rencana Tindak Lanjut",
+                    placeholder = "Isi rencana tindak lanjut",
+                    value = tujuanPengujian,
+                    onValueChange = { tujuanPengujian = it })
+                FormField(
+                    label = "Penanggung Jawab",
+                    placeholder = "Isi hasil yang diharapkan",
+                    value = metodePengujian,
+                    onValueChange = { metodePengujian = it })
+            }
+
+            // Tanda tangan
             Button(
                 onClick = {
                     try {
@@ -248,44 +333,10 @@ fun FormPengujianAdmin(navController: NavController, idPengembangan: String?, na
                 Text("Tanda Tangan Penguji:", color = Maroon)
             }
 
-            // Submit Button with Catatan and Uraian buttons to the left
             Row(
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .padding(16.dp),
-                horizontalArrangement = Arrangement.spacedBy(8.dp) // Uniform space between buttons
+                modifier = Modifier.fillMaxWidth() .padding(end = 10.dp),
+                horizontalArrangement = Arrangement.End
             ) {
-                // Row for the smaller buttons (Catatan and Uraian)
-                Row(
-                    modifier = Modifier.weight(1f), // This makes sure the Row takes available space
-                    horizontalArrangement = Arrangement.spacedBy(8.dp) // Space between buttons
-                ) {
-                    // Button for Catatan
-                    Button(
-                        onClick = { /* Handle Catatan click */ },
-                        modifier = Modifier
-                            .width(100.dp) // Maintain the same width for uniformity
-                            .shadow(4.dp, RoundedCornerShape(16.dp)), // Apply shadow to all buttons
-                        colors = ButtonDefaults.buttonColors(containerColor = PinkTua),
-                        shape = RoundedCornerShape(16.dp)
-                    ) {
-                        Text("Catatan", color = Color.White)
-                    }
-
-                    // Button for Uraian
-                    Button(
-                        onClick = { /* Handle Uraian click */ },
-                        modifier = Modifier
-                            .width(100.dp) // Maintain the same width for uniformity
-                            .shadow(4.dp, RoundedCornerShape(16.dp)), // Apply shadow to all buttons
-                        colors = ButtonDefaults.buttonColors(containerColor = PinkTua),
-                        shape = RoundedCornerShape(16.dp)
-                    ) {
-                        Text("Uraian", color = Color.White)
-                    }
-                }
-
-                // Submit Button
                 Button(
                     onClick = {
                         val pengujianRequest = PengujianRequest(

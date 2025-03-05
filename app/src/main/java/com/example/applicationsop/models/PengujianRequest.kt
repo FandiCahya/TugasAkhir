@@ -12,3 +12,13 @@ data class PengujianRequest(
     val tanggal: String?,
     val pelaksana_id: String?
 )
+
+@Serializable
+data class PengujianDetailRequest(
+    val id: String,
+    val nama_uji: String,
+    val kasus_uji: String,
+    val hasil_diharapkan: String,
+    val hasil_pengujian: String,
+    val status: String
+)
