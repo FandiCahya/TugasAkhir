@@ -47,14 +47,14 @@ fun HeaderForm(title: String, navController: NavController) {
                 colorVersion = "w"
             )  // Back Button on the left
 
-            Spacer(modifier = Modifier.weight(1f))
+            Spacer(modifier = Modifier.padding(horizontal = 30.dp))
 
             Text(
                 text = title,
                 fontSize = 24.sp,
                 fontWeight = FontWeight.Bold,
                 color = Putih,
-                textAlign = TextAlign.Center // Ensure the title is centered
+                textAlign = TextAlign.Center,
             )
         }
     }

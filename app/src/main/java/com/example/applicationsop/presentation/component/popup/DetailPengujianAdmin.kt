@@ -37,6 +37,7 @@ import androidx.compose.ui.unit.sp
 import androidx.navigation.NavController
 import com.example.applicationsop.ui.theme.Maroon
 import com.example.applicationsop.ui.theme.abang
+import com.example.applicationsop.ui.theme.ijo
 
 @Composable
 fun DetailPopupPengujian(
@@ -177,19 +178,40 @@ fun DetailPopupPengujian(
                         }
                     }
 
-                    Spacer(modifier = Modifier.height(20.dp))
+                    Spacer(modifier = Modifier.height(16.dp))
 
-                    // Button for form
-                    Button(
-                        onClick = {
-                        },
+                    // Status Approval
+                    Text(
+                        text = "Status Approval",
+                        fontSize = 16.sp,
+                        fontWeight = FontWeight.Bold,
+                        color = Color.Black
+                    )
+                    Column(modifier = Modifier.padding(top = 8.dp)) {
+//                        approvalList.forEach { name ->
+//                            Text(" $name", color = Color.Black)
+//                        }
+                    }
+
+                    Spacer(modifier = Modifier.height(10.dp))
+
+                    Row(
                         modifier = Modifier
-                            .width(100.dp)
-                            .shadow(4.dp, RoundedCornerShape(16.dp)),
-                        colors = ButtonDefaults.buttonColors(containerColor = abang),
-                        shape = RoundedCornerShape(16.dp)
+                            .fillMaxWidth()
+                            .padding(top = 15.dp),
+                        horizontalArrangement = Arrangement.End // Menempatkan tombol di sebelah kanan
                     ) {
-                        Text("button", color = Color.White)
+                        Button(
+                            onClick = {
+                            },
+                            modifier = Modifier
+                                .width(130.dp)
+                                .shadow(4.dp, RoundedCornerShape(16.dp)),
+                            colors = ButtonDefaults.buttonColors(containerColor = Maroon),
+                            shape = RoundedCornerShape(16.dp)
+                        ) {
+                            Text("See All", color = Color.White)
+                        }
                     }
                 }
             }

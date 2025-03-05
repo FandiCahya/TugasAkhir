@@ -171,7 +171,7 @@ fun SchedulePopup(
 
                     // Tahap Pengerjaan
                     Text(
-                        "Pilih Tahap Pengerjaan:",
+                        if (status == "finished") "Tahap Pengerjaan" else "Pilih Tahap Pengerjaan",
                         fontWeight = FontWeight.Bold,
                         color = Color.Black,
                     )
@@ -199,9 +199,11 @@ fun SchedulePopup(
                                             progressPercentageState = (selectedStagesState.size * 100) / availableStages.size
                                         },
                                         colors = CheckboxDefaults.colors(
-                                            checkedColor = Maroon, // Maroon color for checked
-                                            uncheckedColor = Color.LightGray, // Light gray for unchecked
-                                            checkmarkColor = Color.White // White checkmark
+                                            checkedColor = Maroon,
+                                            uncheckedColor = Color.LightGray,
+                                            checkmarkColor = Color.White,
+                                            disabledCheckedColor = Maroon,
+                                            disabledUncheckedColor = Color.LightGray
                                         ),
                                         enabled = status != "finished" // Disable the checkbox when status is "finished"
                                     )
@@ -226,9 +228,11 @@ fun SchedulePopup(
                                             progressPercentageState = (selectedStagesState.size * 100) / availableStages.size
                                         },
                                         colors = CheckboxDefaults.colors(
-                                            checkedColor = Maroon, // Maroon color for checked
-                                            uncheckedColor = Color.LightGray, // Light gray for unchecked
-                                            checkmarkColor = Color.White // White checkmark
+                                            checkedColor = Maroon,
+                                            uncheckedColor = Color.LightGray,
+                                            checkmarkColor = Color.White,
+                                            disabledCheckedColor = Maroon,
+                                            disabledUncheckedColor = Color.LightGray
                                         ),
                                         enabled = status != "finished" // Disable the checkbox when status is "finished"
                                     )
@@ -261,11 +265,9 @@ fun SchedulePopup(
                         horizontalArrangement = Arrangement.SpaceBetween
                     ) {
                         if (status == "developed") {
-                            // Tombol Update di kiri
                             Button(
                                 onClick = {
                                     coroutineScope.launch { // Run inside coroutine
-                                        // Send the updated data to the API
                                         val updatedPengembangan = UpdatePengembangan(
                                             tahap = selectedStagesState.joinToString(", "),
                                             persentase = progressPercentageState,
@@ -308,7 +310,7 @@ fun SchedulePopup(
                             colors = ButtonDefaults.buttonColors(containerColor = Color.Gray),
                             shape = RoundedCornerShape(16.dp)
                         ) {
-                            Text("Close", color = Color.White)
+                            Text("Tutup", color = Color.White)
                         }
                     }
                 }
