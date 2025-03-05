@@ -10,6 +10,7 @@ data class PengajuanRequest(
     val rencana_anggaran: String?= null,
     val masalah: String?= null,
     val output: String?= null,
+    val alasan_penolakan: String?= null,
     val status: String? = null,
     val user_id: String?= null
 )
