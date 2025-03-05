@@ -20,6 +20,7 @@ import com.example.applicationsop.presentation.screen.admin.form.ScheduleForm
 import com.example.applicationsop.presentation.screen.pemohon.form.FormUsulanScreen
 import com.example.applicationsop.presentation.screen.pemohon.HomeUserScreen
 import com.example.applicationsop.presentation.screen.pemohon.ListPengembanganScreen
+import com.example.applicationsop.presentation.screen.pemohon.form.FormEditUsulan
 import com.example.applicationsop.presentation.screen.pemohon.list.ListPengajuanScreenButuhKonfirmasi
 import com.example.applicationsop.presentation.screen.pemohon.list.ListPengajuanScreenDiterima
 import com.example.applicationsop.presentation.screen.pemohon.list.ListPengajuanScreenDitolak
@@ -90,6 +91,11 @@ fun MainApp(navController: NavController, token: String?, userId: String?, role:
         composable("form_usulan?userId={userId}") { backStackEntry ->
             val userId = backStackEntry.arguments?.getString("userId")
             FormUsulanScreen(navController = navController, userId = userId)
+        }
+
+        // Pengembangaan user
+        composable("form_edit_usulan") {
+            FormEditUsulan(navController = navController, userId = userId)
         }
 
 
