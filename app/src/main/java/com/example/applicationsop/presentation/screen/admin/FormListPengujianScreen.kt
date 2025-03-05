@@ -1,6 +1,5 @@
 package com.example.applicationsop.presentation.screen.admin
 
-
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
@@ -17,22 +16,19 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.unit.dp
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Person
-import androidx.compose.material.icons.filled.Timer
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
-import androidx.compose.ui.draw.shadow
 import androidx.compose.ui.text.font.FontWeight
-import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.sp
 import androidx.navigation.NavController
 import com.example.applicationsop.Api.fetchPengujianList
 import com.example.applicationsop.data.DetailPengujian
 import com.example.applicationsop.models.Pengujian
 import com.example.applicationsop.presentation.component.header.HeaderWithSearch
-import com.example.applicationsop.ui.theme.Maroon
+import com.example.applicationsop.presentation.component.popup.DetailPopupPengujian
 import com.example.applicationsop.ui.theme.abang
 import com.example.applicationsop.ui.theme.ijo
 import com.example.applicationsop.ui.theme.kuning
@@ -96,18 +92,24 @@ fun ListPengujianItem(
                 modifier = Modifier.padding(vertical = 4.dp)
             )
 
+            // Handling status change for testing and finished states
             Text(
-                text = status,
+                text = when (status) {
+                    "testing" -> "Sedang di uji"
+                    "finished" -> "Pengujian Selesai"
+                    else -> status // Default fallback in case of other statuses
+                },
                 fontSize = 14.sp,
                 color = when (status) {
-                    "Pengembangan belum selesai" -> abang
-                    "Pengembangan" -> ijo
+                    "testing" -> kuning  // Yellow color for testing status
+                    "finished" -> ijo  // Green color for finished status
                     else -> Color.Black
                 }
             )
         }
     }
 }
+
 
 @Composable
 fun ListPengujianScreenAdmin(navController: NavController) {
@@ -169,7 +171,6 @@ fun ListPengujianScreenAdmin(navController: NavController) {
     if (showPopup) {
         DetailPopupPengujian(
             onDismiss = { showPopup = false },
-            hariTanggal = selectedDetail.tanggalPengujian,
             namaSistem = selectedDetail.namaSistem,
             versiPerangkat = selectedDetail.versiPerangkat,
             tujuanPengujian = selectedDetail.tujuanPengujian,
@@ -180,253 +181,3 @@ fun ListPengujianScreenAdmin(navController: NavController) {
         )
     }
 }
-
-
-
-@Composable
-fun DetailPopupPengujian(
-    onDismiss: () -> Unit,
-    hariTanggal: String,
-    namaSistem: String,
-    versiPerangkat: String,
-    tujuanPengujian: String,
-    metodePengujian: String,
-    tanggalPengujian: String,
-    pelaksanaPengujian: String,
-    navController: NavController // Menambahkan navController sebagai parameter
-) {
-    Box(modifier = Modifier.fillMaxSize()) {
-        Box(
-            modifier = Modifier
-                .fillMaxSize()
-                .background(Color.Black.copy(alpha = 0.4f)) // Gelapkan background
-                .clickable { onDismiss() } // Menutup popup jika area gelap di klik
-        )
-
-        Card(
-            modifier = Modifier
-                .align(Alignment.Center)
-                .fillMaxWidth()
-                .padding(20.dp)
-                .shadow(8.dp, RoundedCornerShape(16.dp)),
-            shape = RoundedCornerShape(16.dp),
-            colors = CardDefaults.cardColors(containerColor = Color.White)
-        ) {
-            Column(
-                modifier = Modifier.padding(16.dp)
-            ) {
-                // Icon and Title
-                Row(
-                    modifier = Modifier
-                        .fillMaxWidth()
-                        .padding(bottom = 8.dp),
-                    horizontalArrangement = Arrangement.Center
-                ) {
-                    Icon(
-                        imageVector = Icons.Filled.Timer,
-                        contentDescription = "Timer Icon",
-                        modifier = Modifier.size(24.dp),
-                        tint = Maroon
-                    )
-                }
-                Text(
-                    text = "Detail Usulan",
-                    fontSize = 18.sp,
-                    fontWeight = FontWeight.Bold,
-                    color = Color.Black,
-                    textAlign = TextAlign.Center,
-                    modifier = Modifier.padding(start = 110.dp)
-                )
-
-                // Line separator
-                Divider(modifier = Modifier.padding(vertical = 8.dp))
-
-                // Content
-                Column(
-                    modifier = Modifier.fillMaxWidth()
-                ) {
-                    // Row for Hari/Tanggal
-                    Row(
-                        modifier = Modifier.fillMaxWidth(),
-                        horizontalArrangement = Arrangement.Start
-                    ) {
-                        Column(modifier = Modifier.weight(1f)) {
-                            Text("Hari/Tanggal", fontWeight = FontWeight.Bold, color = Color.Black)
-                        }
-                        Column(modifier = Modifier.weight(2f)) {
-                            Text(": $hariTanggal", color = Color.Black)
-                        }
-                    }
-
-                    Spacer(modifier = Modifier.height(8.dp))
-
-                    // Perangkat yang dikembangkan
-                    Row(modifier = Modifier.fillMaxWidth()) {
-                        Text("Perangkat yang dikembangkan", fontWeight = FontWeight.Bold, color = Color.Gray)
-                    }
-                    Box(
-                        modifier = Modifier
-                            .fillMaxWidth()
-                            .height(56.dp)
-                            .border(
-                                width = 1.dp,
-                                color = Color.LightGray,
-                                shape = RoundedCornerShape(8.dp)
-                            )
-                            .padding(horizontal = 8.dp)
-                    ) {
-                        Text(
-                            text = "$namaSistem",
-                            fontSize = 16.sp,
-                            color = Color.Black,
-                            modifier = Modifier.align(Alignment.CenterStart).padding(8.dp)
-                        )
-                    }
-
-                    Spacer(modifier = Modifier.height(8.dp))
-
-                    // Versi Perangkat Lunak
-                    Row(modifier = Modifier.fillMaxWidth()) {
-                        Text("Versi Perangkat Lunak", fontWeight = FontWeight.Bold, color = Color.Gray)
-                    }
-                    Box(
-                        modifier = Modifier
-                            .fillMaxWidth()
-                            .height(56.dp)
-                            .border(
-                                width = 1.dp,
-                                color = Color.LightGray,
-                                shape = RoundedCornerShape(8.dp)
-                            )
-                            .padding(horizontal = 8.dp)
-                    ) {
-                        Text(
-                            text = "$versiPerangkat",
-                            fontSize = 16.sp,
-                            color = Color.Black,
-                            modifier = Modifier.align(Alignment.CenterStart).padding(8.dp)
-                        )
-                    }
-
-                    Spacer(modifier = Modifier.height(8.dp))
-
-                    // Tujuan Pengujian
-                    Row(modifier = Modifier.fillMaxWidth()) {
-                        Text("Tujuan Pengujian", fontWeight = FontWeight.Bold, color = Color.Gray)
-                    }
-                    Box(
-                        modifier = Modifier
-                            .fillMaxWidth()
-                            .height(56.dp)
-                            .border(
-                                width = 1.dp,
-                                color = Color.LightGray,
-                                shape = RoundedCornerShape(8.dp)
-                            )
-                            .padding(horizontal = 8.dp)
-                    ) {
-                        Text(
-                            text = "$tujuanPengujian",
-                            fontSize = 16.sp,
-                            color = Color.Black,
-                            modifier = Modifier.align(Alignment.CenterStart).padding(8.dp)
-                        )
-                    }
-
-                    Spacer(modifier = Modifier.height(8.dp))
-
-                    // Metode Pengujian
-                    Row(modifier = Modifier.fillMaxWidth()) {
-                        Text("Metode Pengujian", fontWeight = FontWeight.Bold, color = Color.Gray)
-                    }
-                    Box(
-                        modifier = Modifier
-                            .fillMaxWidth()
-                            .height(56.dp)
-                            .border(
-                                width = 1.dp,
-                                color = Color.LightGray,
-                                shape = RoundedCornerShape(8.dp)
-                            )
-                            .padding(horizontal = 8.dp)
-                    ) {
-                        Text(
-                            text = "$metodePengujian",
-                            fontSize = 16.sp,
-                            color = Color.Black,
-                            modifier = Modifier.align(Alignment.CenterStart).padding(8.dp)
-                        )
-                    }
-
-                    Spacer(modifier = Modifier.height(8.dp))
-
-                    // Tanggal Pengujian
-                    Row(modifier = Modifier.fillMaxWidth()) {
-                        Text("Tanggal Pengujian", fontWeight = FontWeight.Bold, color = Color.Gray)
-                    }
-                    Box(
-                        modifier = Modifier
-                            .fillMaxWidth()
-                            .height(56.dp)
-                            .border(
-                                width = 1.dp,
-                                color = Color.LightGray,
-                                shape = RoundedCornerShape(8.dp)
-                            )
-                            .padding(horizontal = 8.dp)
-                    ) {
-                        Text(
-                            text = "$tanggalPengujian",
-                            fontSize = 16.sp,
-                            color = Color.Black,
-                            modifier = Modifier.align(Alignment.CenterStart).padding(8.dp)
-                        )
-                    }
-
-                    Spacer(modifier = Modifier.height(8.dp))
-
-                    // Pelaksana Pengujian
-                    Row(modifier = Modifier.fillMaxWidth()) {
-                        Text("Pelaksana Pengujian", fontWeight = FontWeight.Bold, color = Color.Gray)
-                    }
-                    Box(
-                        modifier = Modifier
-                            .fillMaxWidth()
-                            .height(56.dp)
-                            .border(
-                                width = 1.dp,
-                                color = Color.LightGray,
-                                shape = RoundedCornerShape(8.dp)
-                            )
-                            .padding(horizontal = 8.dp)
-                    ) {
-                        Text(
-                            text = "$pelaksanaPengujian",
-                            fontSize = 16.sp,
-                            color = Color.Black,
-                            modifier = Modifier.align(Alignment.CenterStart).padding(8.dp)
-                        )
-                    }
-
-                    Spacer(modifier = Modifier.height(20.dp))
-
-                    // Button for form
-                    Button(
-                        onClick = {
-                            navController.navigate("formPengujian")
-                        },
-                        modifier = Modifier
-                            .fillMaxWidth()
-                            .padding(horizontal = 16.dp)
-                            .height(50.dp),
-                        colors = ButtonDefaults.buttonColors(containerColor = Maroon),
-                        shape = RoundedCornerShape(16.dp)
-                    ) {
-                        Text("Lanjut ke Form Pengujian", color = Color.White)
-                    }
-                }
-            }
-        }
-    }
-}
-
