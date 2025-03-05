@@ -296,8 +296,31 @@ fun DetailPopupUsulanAdmin(
                 // Line separator
                 Divider(modifier = Modifier.padding(vertical = 8.dp))
 
-                // Menampilkan tombol "Terima" dan "Tolak" hanya jika statusnya "pending" atau "rejected"
-                if (status == "pending" || status == "rejected") {
+                // Tombol berdasarkan status
+                if (status == "accepted") {
+                    Row(
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .padding(top = 15.dp),
+                        horizontalArrangement = Arrangement.End // Menempatkan tombol di sebelah kanan
+                    ) {
+                        Button(
+                            onClick = {
+                                // Redirect ke halaman "Add Schedule" dengan parameter id dan namaSistem
+                                navController.navigate("addSchedule?id=$id&namaSistem=$namaSistem")
+                            },
+                            modifier = Modifier
+                                .width(130.dp)
+                                .shadow(4.dp, RoundedCornerShape(16.dp)),
+                            colors = ButtonDefaults.buttonColors(containerColor = ijo),
+                            shape = RoundedCornerShape(16.dp)
+                        ) {
+                            Text("Add Schedule", color = Color.White)
+                        }
+                    }
+                }
+                else {
+                    // Tombol Terima dan Tolak untuk status selain "accepted"
                     Row(
                         modifier = Modifier
                             .fillMaxWidth()
