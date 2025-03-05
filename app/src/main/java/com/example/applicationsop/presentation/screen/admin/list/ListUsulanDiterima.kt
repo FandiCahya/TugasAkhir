@@ -25,15 +25,13 @@ import com.example.applicationsop.presentation.component.popup.DetailPopupUsulan
 @Composable
 fun ListPengajuanScreenAdmin3(navController: NavController) {
     var showPopup by remember { mutableStateOf(false) }
-    var selectedDetail by remember { mutableStateOf(DetailInfo(id="")) }
+    var selectedDetail by remember { mutableStateOf(DetailInfo(id = "")) }
     var pengajuanList by remember { mutableStateOf<List<Pengajuan>>(emptyList()) }
-
 
     LaunchedEffect(Unit) {
         // Fetching the data when the Composable is first launched
         val fetchedPengajuanList = fetchPengajuanList("accepted") // Fetch the data
         pengajuanList = fetchedPengajuanList // Updating the state
-//        println("Pengajuan List View :${pengajuanList}")
     }
 
     Column(
@@ -85,11 +83,14 @@ fun ListPengajuanScreenAdmin3(navController: NavController) {
             rencanaAnggaran = selectedDetail.rencanaAnggaran,
             masalahSistem = selectedDetail.masalahSistem,
             outputHasil = selectedDetail.outputHasil,
-            status = selectedDetail.status,  // Gunakan status yang dipilih secara dinamis
+            status = selectedDetail.status, // Gunakan status yang dipilih secara dinamis
             alasan = if (selectedDetail.status == "Pengajuan ditolak") "Output kurang jelas" else null, // Alasan hanya muncul jika status ditolak
             isAdmin = true, // Menambahkan parameter isAdmin yang bisa ditentukan sesuai pengguna
             onAcceptClick = {
-                // Aksi terima (ubah status atau lakukan tindakan lainnya)
+                // Jika status adalah accepted, navigasi ke Add Schedule
+                if (selectedDetail.status == "accepted") {
+                    navController.navigate("addSchedule?id=${selectedDetail.id}&namaSistem=${selectedDetail.namaSistem}")
+                }
             },
             onRejectClick = { alasan ->
                 // Aksi tolak dengan alasan yang dimasukkan
@@ -98,3 +99,4 @@ fun ListPengajuanScreenAdmin3(navController: NavController) {
         )
     }
 }
+
