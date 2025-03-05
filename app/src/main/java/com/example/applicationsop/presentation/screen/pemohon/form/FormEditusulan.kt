@@ -124,6 +124,8 @@ fun FormEditUsulan(
                 }
             } catch (e: Exception) {
                 responseMessage = "Error: ${e.message}"
+            }finally {
+                isLoading = false
             }
         }
     }
