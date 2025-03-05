@@ -394,10 +394,33 @@ fun DetailPopupUsulanAdmin(
                             // Button to submit the rejection reason
                             Button(
                                 onClick = {
+//                                    if (inputAlasan.isNotEmpty()) {
+//                                        // Call the onRejectClick function with the inputAlasan value
+//                                        onRejectClick(inputAlasan)
+//                                        onDismiss()
+//                                    }
                                     if (inputAlasan.isNotEmpty()) {
-                                        // Call the onRejectClick function with the inputAlasan value
-                                        onRejectClick(inputAlasan)
-                                        onDismiss()
+                                        // Prepare the PengajuanRequest for rejection with the reason
+                                        val pengajuanRequest = PengajuanRequest(
+                                            status = "rejected",  // Set status to rejected
+                                            alasan_penolakan = inputAlasan  // Add the rejection reason
+                                        )
+
+                                        // Call updatePengajuan API to update the status to rejected
+                                        coroutineScope.launch {
+                                            try {
+                                                val response = updatePengajuan(id, pengajuanRequest)
+                                                if (response.status.value in 200..299) {
+                                                    onRejectClick(inputAlasan)  // Execute the callback after rejection success
+                                                    println("response success update alasan$response")
+                                                    onDismiss()
+                                                } else {
+                                                    println("Failed to update status")
+                                                }
+                                            } catch (e: Exception) {
+                                                println("Error: ${e.message}")
+                                            }
+                                        }
                                     }
                                 },
                                 modifier = Modifier.align(Alignment.CenterHorizontally),
