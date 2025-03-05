@@ -1,5 +1,7 @@
 package com.example.applicationsop.presentation.screen.admin.form
 
+import android.app.Activity
+import android.content.Context
 import android.graphics.Bitmap
 import android.graphics.Rect
 import androidx.compose.foundation.Canvas
@@ -25,6 +27,7 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.ExperimentalComposeUiApi
@@ -40,6 +43,8 @@ import androidx.compose.ui.unit.sp
 import androidx.media3.common.util.Log
 import androidx.media3.common.util.UnstableApi
 import androidx.navigation.NavController
+import com.example.applicationsop.Api.postPengujian
+import com.example.applicationsop.models.PengujianRequest
 import com.example.applicationsop.presentation.component.ActionButton
 import com.example.applicationsop.presentation.component.DatePickerField
 import com.example.applicationsop.presentation.component.FormField
@@ -50,16 +55,47 @@ import com.example.applicationsop.ui.theme.Maroon
 import com.example.applicationsop.ui.theme.PinkTua
 import com.example.applicationsop.ui.theme.Putih
 import java.util.Calendar
+import androidx.compose.runtime.rememberCoroutineScope
+import kotlinx.coroutines.launch
+import kotlinx.serialization.json.Json
+import java.text.SimpleDateFormat
+import java.util.*
+
+fun getUserData(context: Context): Map<String, String?> {
+    val sharedPreferences = context.getSharedPreferences("MyPrefs", Activity.MODE_PRIVATE)
+    val token = sharedPreferences.getString("TOKEN", null)
+    val userId = sharedPreferences.getString("USER_ID", null)
+    val role = sharedPreferences.getString("ROLE", null)
+    val name = sharedPreferences.getString("NAME", null)
+    val email = sharedPreferences.getString("EMAIL", null)
+    val devisi = sharedPreferences.getString("DEVISI", null)
+
+    return mapOf(
+        "token" to token,
+        "userId" to userId,
+        "role" to role,
+        "name" to name,
+        "email" to email,
+        "devisi" to devisi
+    )
+}
 
 @androidx.annotation.OptIn(UnstableApi::class)
 @OptIn(ExperimentalComposeUiApi::class)
 @Composable
-fun FormPengujianAdmin(navController: NavController, namaSistem: String)  {
+fun FormPengujianAdmin(navController: NavController, idPengembangan: String?, namaSistem: String?) {
     var versiPerangkat by remember { mutableStateOf("") }
     var tujuanPengujian by remember { mutableStateOf("") }
     var metodePengujian by remember { mutableStateOf("") }
     var tanggalPengujian by remember { mutableStateOf("") }
-    var pelaksanaPengujian by remember { mutableStateOf("") }
+//    var pelaksanaPengujian by remember { mutableStateOf("") }
+    // Date formatting
+    val dateFormat = SimpleDateFormat("yyyy-MM-dd", Locale.getDefault())
+    // When a date is selected, format it to yyyy-MM-dd
+    val onDateSelected: (String) -> Unit = { date ->
+        val parsedDate = SimpleDateFormat("dd/MM/yyyy", Locale.getDefault()).parse(date)
+        tanggalPengujian = parsedDate?.let { dateFormat.format(it) } ?: ""
+    }
 
     // Signature Pad state
     val paths = remember { mutableStateOf(mutableListOf<PathState>()) }
@@ -70,8 +106,17 @@ fun FormPengujianAdmin(navController: NavController, namaSistem: String)  {
     val drawBrush = remember { mutableStateOf(5f) }
     val usedColors = remember { mutableStateOf(mutableSetOf(Color.Black, Color.White, Color.Gray)) }
 
+    val coroutineScope = rememberCoroutineScope()
+
     // Membuat scrollable column
     val scrollState = rememberScrollState()
+
+    // Get user data (userId)
+    val context = navController.context
+    val userData = getUserData(context)
+    val userId = userData["userId"]
+
+    println("UserId pebgujian$userId")
 
     paths.value.add(PathState(Path(), drawColor.value, drawBrush.value))
 
@@ -124,26 +169,38 @@ fun FormPengujianAdmin(navController: NavController, namaSistem: String)  {
                 }
             }
 
-            FormField(label = "Versi perangkat lunak", placeholder = "Isi versi perangkat lunak", value = versiPerangkat, onValueChange = { versiPerangkat = it })
-            FormField(label = "Tujuan Pengujian", placeholder = "Isi tujuan pengujian", value = tujuanPengujian, onValueChange = { tujuanPengujian = it })
-            FormField(label = "Metode Pengujian", placeholder = "Isi metode pengujian", value = metodePengujian, onValueChange = { metodePengujian = it })
+            FormField(
+                label = "Versi perangkat lunak",
+                placeholder = "Isi versi perangkat lunak",
+                value = versiPerangkat,
+                onValueChange = { versiPerangkat = it })
+            FormField(
+                label = "Tujuan Pengujian",
+                placeholder = "Isi tujuan pengujian",
+                value = tujuanPengujian,
+                onValueChange = { tujuanPengujian = it })
+            FormField(
+                label = "Metode Pengujian",
+                placeholder = "Isi metode pengujian",
+                value = metodePengujian,
+                onValueChange = { metodePengujian = it })
 
             DatePickerField(
                 label = "Tanggal Pengujian",
                 selectedDate = tanggalPengujian,
-                onDateSelected = { tanggalPengujian = it },
+                onDateSelected = onDateSelected,
                 showLabel = false // Hide the label
             )
 
-            FormField(label = "Pelaksana Pengujian", placeholder = "Isi pelaksana pengujian", value = pelaksanaPengujian, onValueChange = { pelaksanaPengujian = it })
+//            FormField(label = "Pelaksana Pengujian", placeholder = "Isi pelaksana pengujian", value = pelaksanaPengujian, onValueChange = { pelaksanaPengujian = it })
 
             // Penguji Section
-            Text(
-                text = "Penguji:",
-                fontSize = 16.sp,
-                fontWeight = FontWeight.Bold,
-                color = Maroon
-            )
+//            Text(
+//                text = "Penguji:",
+//                fontSize = 16.sp,
+//                fontWeight = FontWeight.Bold,
+//                color = Maroon
+//            )
 
             Button(
                 onClick = {
@@ -240,7 +297,23 @@ fun FormPengujianAdmin(navController: NavController, namaSistem: String)  {
 
                 // Submit Button
                 Button(
-                    onClick = { /* Handle submit action */ },
+                    onClick = {
+                        val pengujianRequest = PengujianRequest(
+                            pengembangan_id = idPengembangan,
+                            perangkat_lunak = namaSistem,
+                            versi = versiPerangkat, // Update version as needed
+                            tujuan = tujuanPengujian,
+                            metode = metodePengujian,
+                            tanggal = tanggalPengujian,
+                            pelaksana_id = userId // Using userId from getUserData
+                        )
+                        val jsonPayload = Json.encodeToString(pengujianRequest)
+                        println("Request payload: $jsonPayload")
+                        // Call the API to post the Pengujian data
+                        coroutineScope.launch {
+                            postPengujian(pengujianRequest)
+                        }
+                    },
                     modifier = Modifier
                         .width(115.dp) // Width for the Submit button
                         .shadow(4.dp, RoundedCornerShape(16.dp)), // Apply shadow to Submit button

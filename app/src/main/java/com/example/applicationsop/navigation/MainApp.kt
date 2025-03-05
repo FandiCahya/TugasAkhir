@@ -169,10 +169,13 @@ fun MainApp(navController: NavController, token: String?, userId: String?, role:
         }
 
         // Halaman Form Pengujian
-        composable("formPengujian") {
+        composable("formPengujian?id={id}&taskName={taskName}") {backStackEntry ->
+            val id = backStackEntry.arguments?.getString("id")
+            val taskName = backStackEntry.arguments?.getString("taskName")
             FormPengujianAdmin(
                 navController = navController,
-                namaSistem = "Nama Sistem" // Pastikan Anda mengirimkan parameter yang diperlukan
+                idPengembangan = id,
+                namaSistem = taskName, // Pastikan Anda mengirimkan parameter yang diperlukan
             )
         }
 
