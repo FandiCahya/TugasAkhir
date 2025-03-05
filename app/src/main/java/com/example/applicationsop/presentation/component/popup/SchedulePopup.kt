@@ -287,7 +287,7 @@ fun SchedulePopup(
                             // Tombol Form Pengujian di kiri
                             Button(
                                 onClick = {
-                                    navController.navigate("formPengujian") // Navigate to FormPengujianAdmin screen
+                                    navController.navigate("formPengujian?id=$id&taskName=$taskName") // Navigate to FormPengujianAdmin screen
                                 },
                                 modifier = Modifier
                                     .width(180.dp)

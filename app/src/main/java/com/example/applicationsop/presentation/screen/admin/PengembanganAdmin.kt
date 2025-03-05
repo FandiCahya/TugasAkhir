@@ -147,7 +147,7 @@ fun ListPengembanganAdminScreen(navController: NavController) {
 
                 // Pass actual schedule data to the ListPengembangan composable
                 ListPengembangan(
-                    namaSistem = scheduleItem.task,
+                    namaSistem = pengembangan.pengajuan.nama_sistem,
                     status = pengembangan.status, // Status from Pengembangan
                     scheduleItem = scheduleItem,
                     onClick = { clickedSchedule ->
