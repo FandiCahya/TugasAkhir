@@ -12,6 +12,7 @@ data class Pengajuan(
     val masalah: String,
     val output: String,
     val status: String,
+    val alasan_penolakan: String? = null,
     val user: User
 )
 

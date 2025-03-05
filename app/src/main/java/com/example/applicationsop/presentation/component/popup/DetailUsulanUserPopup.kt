@@ -279,31 +279,40 @@ fun DetailPopupUsulanUser(
                 if (status == "rejected" && alasan != null) {
                     Spacer(modifier = Modifier.height(16.dp))
                     Divider()
-                    Text("Alasan: $alasan", color = Color.Black, fontWeight = FontWeight.Bold)
+                    Text(
+                        "Alasan: $alasan",
+                        color = Color.Black,
+                        fontWeight = FontWeight.Bold,
+                        modifier = Modifier.fillMaxWidth().align(Alignment.CenterHorizontally)  // Center the text
+                    )
                 }
 
-                // Close Button
-                Spacer(modifier = Modifier.height(16.dp))
-                Row(
-                    modifier = Modifier.fillMaxWidth(), // Take the full width
-                    horizontalArrangement = Arrangement.End // Align to the right
-                ) {
-                    Button(
-                        onClick = onDismiss,
-                        modifier = Modifier
-                            .padding(end = 16.dp) // Optional padding to give some space from the edge
-                            .width(100.dp) // Set the width of the button to a smaller size
-                            .shadow(4.dp, RoundedCornerShape(16.dp)), // Add shadow to the button
-                        colors = ButtonDefaults.buttonColors(containerColor = Maroon),
-                        shape = RoundedCornerShape(16.dp)
+                if(status == "pending" || status == "accepted"){
+                    // Close Button
+                    Spacer(modifier = Modifier.height(16.dp))
+                    Row(
+                        modifier = Modifier.fillMaxWidth(), // Take the full width
+                        horizontalArrangement = Arrangement.End // Align to the right
                     ) {
-                        Text(
-                            text = "Tutup",
-                            fontWeight = FontWeight.Bold,
-                            color = Color.White
-                        )
+                        Button(
+                            onClick = onDismiss,
+                            modifier = Modifier
+                                .padding(end = 16.dp) // Optional padding to give some space from the edge
+                                .width(100.dp) // Set the width of the button to a smaller size
+                                .shadow(4.dp, RoundedCornerShape(16.dp)), // Add shadow to the button
+                            colors = ButtonDefaults.buttonColors(containerColor = Maroon),
+                            shape = RoundedCornerShape(16.dp)
+                        ) {
+                            Text(
+                                text = "Tutup",
+                                fontWeight = FontWeight.Bold,
+                                color = Color.White
+                            )
+                        }
                     }
                 }
+
+
 
                 // Button for Edit (only shows when status is "Ditolak")
                 if (status == "rejected") {

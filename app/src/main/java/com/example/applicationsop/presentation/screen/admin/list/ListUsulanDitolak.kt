@@ -66,6 +66,7 @@ fun ListPengajuanScreenAdmin2(navController: NavController) {
                     masalahSistem = pengajuan.masalah,
                     outputHasil = pengajuan.output,
                     status = pengajuan.status,
+                    alasan_penolakan = pengajuan.alasan_penolakan ?: "null",
                     onClick = {
                         selectedDetail = DetailInfo(
                             id = pengajuan.id,
@@ -75,7 +76,8 @@ fun ListPengajuanScreenAdmin2(navController: NavController) {
                             rencanaAnggaran = pengajuan.rencana_anggaran,
                             masalahSistem = pengajuan.masalah,
                             outputHasil = pengajuan.output,
-                            status = pengajuan.status
+                            status = pengajuan.status,
+                            alasan_penolakan = pengajuan.alasan_penolakan ?: "null"
                         )
                         showPopup = true
                     }
