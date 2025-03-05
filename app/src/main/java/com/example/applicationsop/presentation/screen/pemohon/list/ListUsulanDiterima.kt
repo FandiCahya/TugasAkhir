@@ -56,6 +56,7 @@ fun ListPengajuanScreenDiterima(navController: NavController, role: String?, dev
                     masalahSistem = pengajuan.masalah,
                     outputHasil = pengajuan.output,
                     status = pengajuan.status,
+                    alasan_penolakan = pengajuan.alasan_penolakan ?: "null",  // Use the dynamically selected alasan
                     onClick = {
                         selectedDetail = DetailInfo(
                             id = pengajuan.id,
@@ -65,7 +66,8 @@ fun ListPengajuanScreenDiterima(navController: NavController, role: String?, dev
                             rencanaAnggaran = pengajuan.rencana_anggaran,
                             masalahSistem = pengajuan.masalah,
                             outputHasil = pengajuan.output,
-                            status = pengajuan.status
+                            status = pengajuan.status,
+                            alasan_penolakan = pengajuan.alasan_penolakan ?: "null"
                         )
                         showPopup = true
                     }
@@ -85,7 +87,7 @@ fun ListPengajuanScreenDiterima(navController: NavController, role: String?, dev
             masalahSistem = selectedDetail.masalahSistem,
             outputHasil = selectedDetail.outputHasil,
             status = selectedDetail.status,  // Use the dynamically selected status
-            alasan = if (selectedDetail.status == "Pengajuan ditolak") "Output kurang jelas" else null, // Alasan hanya muncul jika status ditolak
+            alasan = selectedDetail.alasan_penolakan, // Alasan hanya muncul jika status ditolak
             onEditClick = {
                 navController.navigate("form_usulan") // Ganti dengan rute yang sesuai
             }

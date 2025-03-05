@@ -40,7 +40,8 @@ data class DetailInfo(
     val rencanaAnggaran: String = "",
     val masalahSistem: String = "",
     val outputHasil: String = "",
-    var status: String = ""
+    var status: String = "",
+    var alasan_penolakan: String = ""
 )
 
 // Data model for the schedule
@@ -75,6 +76,7 @@ fun ListPengajuanItem(
     masalahSistem: String,
     outputHasil: String,
     status: String,
+    alasan_penolakan: String,
     onClick: () -> Unit // Fungsi untuk menangani klik
 ) {
     Row(
