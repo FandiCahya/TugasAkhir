@@ -22,9 +22,13 @@ import com.example.applicationsop.presentation.component.header.HeaderWithSearch
 import com.example.applicationsop.presentation.component.popup.DetailPopupUsulanUser
 
 @Composable
-fun ListPengajuanScreenButuhKonfirmasi(navController: NavController,role: String?, devisi: String?) {
+fun ListPengajuanScreenButuhKonfirmasi(
+    navController: NavController,
+    role: String?,
+    devisi: String?
+) {
     var showPopup by remember { mutableStateOf(false) }
-    var selectedDetail by remember { mutableStateOf(DetailInfo(id="")) }
+    var selectedDetail by remember { mutableStateOf(DetailInfo(id = "")) }
     var pengajuanList by remember { mutableStateOf<List<Pengajuan>>(emptyList()) }
 
 
@@ -56,7 +60,8 @@ fun ListPengajuanScreenButuhKonfirmasi(navController: NavController,role: String
                     masalahSistem = pengajuan.masalah,
                     outputHasil = pengajuan.output,
                     status = pengajuan.status,
-                    alasan_penolakan = pengajuan.alasan_penolakan ?: "null",  // Use the dynamically selected alasan
+                    alasan_penolakan = pengajuan.alasan_penolakan
+                        ?: "null",  // Use the dynamically selected alasan
                     onClick = {
                         selectedDetail = DetailInfo(
                             id = pengajuan.id,

@@ -94,8 +94,17 @@ fun MainApp(navController: NavController, token: String?, userId: String?, role:
         }
 
         // Pengembangaan user
-        composable("form_edit_usulan") {
-            FormEditUsulan(navController = navController, userId = userId)
+        composable("form_edit_usulan?id={id}&hariTanggal={hariTanggal}&namaSistem={namaSistem}&jenisSistem={jenisSistem}&rencanaAnggaran={rencanaAnggaran}&masalahSistem={masalahSistem}&outputHasil={outputHasil}&status={status}&alasan={alasan}") {  backStackEntry ->
+            val id = backStackEntry.arguments?.getString("id")
+            val namaSistem = backStackEntry.arguments?.getString("namaSistem")
+            val hariTanggal = backStackEntry.arguments?.getString("hariTanggal")
+            val jenisSistem = backStackEntry.arguments?.getString("jenisSistem")
+            val rencanaAnggaran = backStackEntry.arguments?.getString("rencanaAnggaran")
+            val masalahSistem = backStackEntry.arguments?.getString("masalahSistem")
+            val outputHasil = backStackEntry.arguments?.getString("outputHasil")
+            val status = backStackEntry.arguments?.getString("status")
+            val alasan = backStackEntry.arguments?.getString("alasan")
+            FormEditUsulan(navController = navController, id = id, nama_Sistem = namaSistem, hari_Tanggal = hariTanggal, jenis_Sistem = jenisSistem,rencana_Anggaran = rencanaAnggaran,masalah_Sistem=masalahSistem,output_Hasil=outputHasil,status=status, alasan_penolakan = alasan)
         }
 
 

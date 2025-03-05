@@ -3,6 +3,7 @@ package com.example.applicationsop.presentation.screen.pemohon.form
 import android.graphics.Bitmap
 import android.graphics.Rect
 import android.util.Log
+import android.widget.Toast
 import androidx.compose.foundation.Canvas
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
@@ -37,6 +38,7 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.navigation.NavController
 import com.example.applicationsop.Api.postPengajuan
+import com.example.applicationsop.Api.updatePengajuan
 import com.example.applicationsop.models.PengajuanRequest
 import com.example.applicationsop.presentation.component.ActionButton
 import com.example.applicationsop.presentation.component.DatePickerField
@@ -51,30 +53,27 @@ import kotlinx.coroutines.launch
 import java.io.File
 
 
-//fun convertDateToApiFormat(date: String): String {
-//    // Format tanggal yang diterima dalam format dd/MM/yyyy menjadi yyyy-MM-dd
-//    val parts = date.split("/")
-//    return if (parts.size == 3) {
-//        val day = parts[0].padStart(2, '0')
-//        val month = parts[1].padStart(2, '0')
-//        val year = parts[2]
-//        "$year-$month-$day"
-//    } else {
-//        ""  // Return empty string if date format is not valid
-//    }
-//}
-
 @OptIn(ExperimentalComposeUiApi::class)
 @Composable
-fun FormEditUsulan(navController: NavController, userId: String?) {
-
+fun FormEditUsulan(
+    navController: NavController,
+    id: String?,
+    nama_Sistem: String?,
+    hari_Tanggal: String?,
+    jenis_Sistem: String?,
+    rencana_Anggaran: String?,
+    masalah_Sistem: String?,
+    output_Hasil: String?,
+    status: String?,
+    alasan_penolakan: String?
+) {
     // State untuk menyimpan inputan form
-    var namaSistem by remember { mutableStateOf("") }
-    var jenisSistem by remember { mutableStateOf("") }
-    var rencanaAnggaran by remember { mutableStateOf("") }
-    var masalahSistem by remember { mutableStateOf("") }
-    var outputSistem by remember { mutableStateOf("") }
-    var selectedDate by remember { mutableStateOf("") }
+    var namaSistem by remember { mutableStateOf(nama_Sistem ?: "") }
+    var jenisSistem by remember { mutableStateOf(jenis_Sistem ?: "") }
+    var rencanaAnggaran by remember { mutableStateOf(rencana_Anggaran ?: "") }
+    var masalahSistem by remember { mutableStateOf(masalah_Sistem ?: "") }
+    var outputSistem by remember { mutableStateOf(output_Hasil ?: "") }
+    var selectedDate by remember { mutableStateOf(hari_Tanggal ?: "") }
 
     // To show success or error messages
     var isLoading by remember { mutableStateOf(false) }
@@ -82,12 +81,8 @@ fun FormEditUsulan(navController: NavController, userId: String?) {
 
     // Signature Pad
     val paths = remember { mutableStateOf(mutableListOf<PathState>()) }
-    val capturingViewBounds = remember { mutableStateOf<Rect?>(null) }
-    val image = remember { mutableStateOf<Bitmap?>(null) }
-    val isDialogOpen = remember { mutableStateOf(false) }
     val drawColor = remember { mutableStateOf(Color.Black) }
     val drawBrush = remember { mutableStateOf(5f) }
-    val usedColors = remember { mutableStateOf(mutableSetOf(Color.Black, Color.White, Color.Gray)) }
 
     val coroutineScope = rememberCoroutineScope()
 
@@ -95,51 +90,41 @@ fun FormEditUsulan(navController: NavController, userId: String?) {
 
     // Function to handle form submission
     suspend fun handleFormSubmit() {
-        if (userId != null) {
+        if (id != null) {
             isLoading = true
             try {
-                val formattedDate = convertDateToApiFormat(selectedDate)
 
                 val pengajuanRequest = PengajuanRequest(
-                    tgl = formattedDate,
                     nama_sistem = namaSistem,
                     jenis = jenisSistem,
                     rencana_anggaran = rencanaAnggaran,
                     masalah = masalahSistem,
                     output = outputSistem,
-                    status = "pending",  // or set based on other conditions
-                    user_id = userId
+                    status = "pending",
+                    alasan_penolakan = null
+
                 )
+                // Call the API to update the Pengajuan data
+                coroutineScope.launch {
+                    try {
+                        val response = updatePengajuan(id, pengajuanRequest)
 
-                // Convert the signature image to a file if available
-                val signatureFile = image.value?.let { bitmap ->
-                    val file = File(navController.context.cacheDir, "signature.png")
-                    file.outputStream().use { out ->
-                        bitmap.compress(Bitmap.CompressFormat.PNG, 100, out)
+                        // Check if the response was successful
+                        if (response.status.value in 200..299) {
+                            Toast.makeText(navController.context, "Edit Pengajuan berhasil diperbarui!", Toast.LENGTH_SHORT).show()
+//                            onDismiss()
+                        } else {
+                            Toast.makeText(navController.context, "Gagal memperbarui. Coba lagi!", Toast.LENGTH_SHORT).show()
+                        }
+                    } catch (e: Exception) {
+                        Toast.makeText(navController.context, "Error: ${e.message}", Toast.LENGTH_SHORT).show()
+                    } finally {
+                        isLoading = false
                     }
-                    file
-                }
-
-                if (signatureFile != null) {
-                    // Make the API call to post the form data with signature file
-                    val response = postPengajuan(pengajuanRequest, signatureFile)
-
-                    // Check if the response was successful
-                    if (response.status.value in 200..299) {
-                        responseMessage = "Pengajuan berhasil dikirim!"
-                    } else {
-                        responseMessage = "Gagal mengirim. Coba lagi!"
-                    }
-                } else {
-                    responseMessage = "Tanda tangan diperlukan."
                 }
             } catch (e: Exception) {
                 responseMessage = "Error: ${e.message}"
-            } finally {
-                isLoading = false
             }
-        } else {
-            responseMessage = "User ID is missing."
         }
     }
 
@@ -159,12 +144,13 @@ fun FormEditUsulan(navController: NavController, userId: String?) {
                 .padding(16.dp),
             verticalArrangement = Arrangement.spacedBy(16.dp)
         ) {
-            // Date Picker
-            DatePickerField(
+            // Date Picker (Read-only version)
+            DatePickerField2(
                 label = "Hari/Tanggal",
                 selectedDate = selectedDate,
                 onDateSelected = { selectedDate = it }
             )
+
 
             // Nama Sistem
             FormField(
@@ -206,57 +192,15 @@ fun FormEditUsulan(navController: NavController, userId: String?) {
                 onValueChange = { outputSistem = it }
             )
 
-            // Pemohon Section
-            Text(
-                text = "Pemohon:",
-                fontSize = 16.sp,
-                fontWeight = FontWeight.Bold,
-                color = Maroon
-            )
-
-            // Tombol untuk menambahkan tanda tangan
-            Button(
-                onClick = { isDialogOpen.value = true },
-                modifier = Modifier
-                    .width(150.dp),
-                colors = ButtonDefaults.buttonColors(containerColor = Maroon),
-                shape = RoundedCornerShape(15.dp) // Mengatur sudut membulat lebih kecil
-            ) {
-                Text(
-                    text = "Insert TTD",
-                    color = Putih,
-                    fontWeight = FontWeight.Bold,
-                    fontSize = 16.sp
-                )
-            }
-
-            SignatureDialog(
-                isDialogOpen = isDialogOpen,
-                capturingViewBound = capturingViewBounds,
-                drawColor = drawColor,
-                drawBrush = drawBrush,
-                usedColors = usedColors,
-                paths = paths,
-                image = image
-            )
-
-            if (image.value != null) {
-                Image(
-                    bitmap = image.value!!.asImageBitmap(),
-                    contentDescription = "Capture Image"
-                )
-            }
-
-            // Menampilkan hasil tanda tangan yang sudah dipilih
-            if (!paths.value.isEmpty()) {
-                Text("Tanda Tangan Anda:", color = Maroon)
-            }
-
             // Submit Button
             Row(
                 modifier = Modifier
                     .fillMaxWidth() // Memastikan Row memanfaatkan lebar penuh
-                    .padding(start = 16.dp, bottom = 16.dp, end = 16.dp), // Padding agar tombol tidak menempel pada tepi layar
+                    .padding(
+                        start = 16.dp,
+                        bottom = 16.dp,
+                        end = 16.dp
+                    ), // Padding agar tombol tidak menempel pada tepi layar
                 horizontalArrangement = Arrangement.End // Mengatur agar tombol berada di kanan
             ) {
                 ActionButton(
@@ -283,5 +227,36 @@ fun FormEditUsulan(navController: NavController, userId: String?) {
         }
     }
 }
+
+@Composable
+fun DatePickerField2(
+    label: String,
+    selectedDate: String,
+    onDateSelected: (String) -> Unit
+) {
+    Column(modifier = Modifier.fillMaxWidth()) {
+        Text(
+            text = label,
+            fontSize = 16.sp,
+            fontWeight = FontWeight.Bold,
+            color = Color.Black,
+            modifier = Modifier.padding(bottom = 8.dp)
+        )
+
+        // Display the selected date as a Text view
+        Text(
+            text = selectedDate,
+            fontSize = 14.sp,
+            color = Color.Gray,
+            modifier = Modifier
+                .background(Color.LightGray)
+                .padding(16.dp)
+                .fillMaxWidth()
+        )
+
+        // Optionally, add a visual indicator that this field is not editable (e.g., a "view-only" tag)
+    }
+}
+
 
 

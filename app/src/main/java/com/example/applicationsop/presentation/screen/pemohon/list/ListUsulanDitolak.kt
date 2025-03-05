@@ -89,7 +89,7 @@ fun ListPengajuanScreenDitolak(navController: NavController, role: String?, devi
             status = selectedDetail.status,  // Use the dynamically selected status
             alasan = selectedDetail.alasan_penolakan, // Alasan hanya muncul jika status ditolak
             onEditClick = {
-                navController.navigate("form_edit_usulan")
+                navController.navigate("form_edit_usulan?id=${selectedDetail.id}&hariTanggal=${selectedDetail.tanggal}&namaSistem=${selectedDetail.namaSistem}&jenisSistem=${selectedDetail.jenisSistem}&rencanaAnggaran=${selectedDetail.rencanaAnggaran}&masalahSistem=${selectedDetail.masalahSistem}&outputHasil=${selectedDetail.outputHasil}&status=${selectedDetail.status}&alasan=${selectedDetail.alasan_penolakan}") // Ganti dengan rute yang sesuai
             }
         )
     }
