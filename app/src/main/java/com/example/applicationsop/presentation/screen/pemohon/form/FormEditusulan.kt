@@ -51,23 +51,22 @@ import kotlinx.coroutines.launch
 import java.io.File
 
 
-fun convertDateToApiFormat(date: String): String {
-    // Format tanggal yang diterima dalam format dd/MM/yyyy menjadi yyyy-MM-dd
-    val parts = date.split("/")
-    return if (parts.size == 3) {
-        val day = parts[0].padStart(2, '0')
-        val month = parts[1].padStart(2, '0')
-        val year = parts[2]
-        "$year-$month-$day"
-    } else {
-        ""  // Return empty string if date format is not valid
-    }
-}
+//fun convertDateToApiFormat(date: String): String {
+//    // Format tanggal yang diterima dalam format dd/MM/yyyy menjadi yyyy-MM-dd
+//    val parts = date.split("/")
+//    return if (parts.size == 3) {
+//        val day = parts[0].padStart(2, '0')
+//        val month = parts[1].padStart(2, '0')
+//        val year = parts[2]
+//        "$year-$month-$day"
+//    } else {
+//        ""  // Return empty string if date format is not valid
+//    }
+//}
 
 @OptIn(ExperimentalComposeUiApi::class)
 @Composable
-fun FormUsulanScreen(navController: NavController, userId: String?) {
-    Log.d("FormUsulanScreen", "userId: $userId")
+fun FormEditUsulan(navController: NavController, userId: String?) {
 
     // State untuk menyimpan inputan form
     var namaSistem by remember { mutableStateOf("") }
@@ -151,7 +150,7 @@ fun FormUsulanScreen(navController: NavController, userId: String?) {
             .verticalScroll(rememberScrollState())
     ) {
         // Header
-        HeaderForm("Form Pembuatan Perangkat Lunak", navController)
+        HeaderForm("Form Update Permohonan Perangkat Lunak", navController)
 
         // Form Fields
         Column(

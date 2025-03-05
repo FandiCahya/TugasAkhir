@@ -246,16 +246,6 @@ fun FormPengujianAdmin(navController: NavController, idPengembangan: String?, na
 
             if (!paths.value.isEmpty()) {
                 Text("Tanda Tangan Penguji:", color = Maroon)
-                Canvas(
-                    modifier = Modifier
-                        .fillMaxWidth(),
-                ) {
-                    drawPath(
-                        path = paths.value.last().path, // Mengambil path terakhir yang digambar
-                        color = Color.Black,
-                        style = Stroke(width = 4.dp.toPx())
-                    )
-                }
             }
 
             // Submit Button with Catatan and Uraian buttons to the left
