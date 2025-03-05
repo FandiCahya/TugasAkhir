@@ -27,14 +27,22 @@ fun ListPengajuanScreenDitolak(navController: NavController, role: String?, devi
     var selectedDetail by remember { mutableStateOf(DetailInfo(id="")) }
     var pengajuanList by remember { mutableStateOf<List<Pengajuan>>(emptyList()) }
 
+//
 
-    LaunchedEffect(role,devisi) {
-        if (role != null && devisi != null) {
-            val fetchedPengajuanList = fetchPengajuanList("rejected", role, devisi)
+
+    // Function to fetch data
+    @Composable
+    fun refreshList() {
+        LaunchedEffect(role,devisi) {
+            if (role != null && devisi != null) {
+                val fetchedPengajuanList = fetchPengajuanList("rejected", role, devisi)
 //            println("Role: $role, Devisi: $devisi")
-            pengajuanList = fetchedPengajuanList // Updating the state with fetched data
+                pengajuanList = fetchedPengajuanList // Updating the state with fetched data
+            }
         }
     }
+
+    refreshList()
 
     Column(
         modifier = Modifier
@@ -94,3 +102,4 @@ fun ListPengajuanScreenDitolak(navController: NavController, role: String?, devi
         )
     }
 }
+
