@@ -142,8 +142,8 @@ fun ProgressSection(navController: NavController) {
             .padding(horizontal = 16.dp) // Memberikan padding horizontal pada ProgressSection
     ) {
         // Menampilkan beberapa ProgressCard
-        ProgressCard("PengembanganAdmin", Icons.Filled.Timer, Maroon, navController)
-        ProgressCard("PengujianAdmin", Icons.Filled.History, Maroon, navController)
+        ProgressCard("Pengembangan Admin", Icons.Filled.Timer, Maroon, navController)
+        ProgressCard("Pengujian Admin", Icons.Filled.History, Maroon, navController)
 
         // Garis tengah
         Divider(
