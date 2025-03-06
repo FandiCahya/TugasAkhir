@@ -29,6 +29,8 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.shadow
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.graphics.Color.Companion.Blue
+import androidx.compose.ui.graphics.Color.Companion.Green
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.text.style.TextOverflow
@@ -106,10 +108,19 @@ fun DetailPopupPengujian(
                         horizontalArrangement = Arrangement.SpaceBetween // Menggunakan SpaceBetween untuk jarak antar elemen
                     ) {
                         Column(modifier = Modifier.weight(1f)) {
-                            Text("Nama Perangkat", fontWeight = FontWeight.Bold, color = Color.Black)
+                            Text(
+                                "Nama Perangkat",
+                                fontWeight = FontWeight.Bold,
+                                color = Color.Black
+                            )
                         }
                         Column(modifier = Modifier.weight(2f)) {
-                            Text(": $namaSistem", color = Color.Black, maxLines = 1, overflow = TextOverflow.Ellipsis)
+                            Text(
+                                ": $namaSistem",
+                                color = Color.Black,
+                                maxLines = 1,
+                                overflow = TextOverflow.Ellipsis
+                            )
                         }
                     }
 
@@ -122,7 +133,12 @@ fun DetailPopupPengujian(
                             Text("Versi", fontWeight = FontWeight.Bold, color = Color.Black)
                         }
                         Column(modifier = Modifier.weight(2f)) {
-                            Text(": $versiPerangkat", color = Color.Black, maxLines = 1, overflow = TextOverflow.Ellipsis)
+                            Text(
+                                ": $versiPerangkat",
+                                color = Color.Black,
+                                maxLines = 1,
+                                overflow = TextOverflow.Ellipsis
+                            )
                         }
                     }
 
@@ -135,7 +151,12 @@ fun DetailPopupPengujian(
                             Text("Tujuan", fontWeight = FontWeight.Bold, color = Color.Black)
                         }
                         Column(modifier = Modifier.weight(2f)) {
-                            Text(": $tujuanPengujian", color = Color.Black, maxLines = 2, overflow = TextOverflow.Ellipsis)
+                            Text(
+                                ": $tujuanPengujian",
+                                color = Color.Black,
+                                maxLines = 2,
+                                overflow = TextOverflow.Ellipsis
+                            )
                         }
                     }
 
@@ -148,7 +169,12 @@ fun DetailPopupPengujian(
                             Text("Metode", fontWeight = FontWeight.Bold, color = Color.Black)
                         }
                         Column(modifier = Modifier.weight(2f)) {
-                            Text(": $metodePengujian", color = Color.Black, maxLines = 2, overflow = TextOverflow.Ellipsis)
+                            Text(
+                                ": $metodePengujian",
+                                color = Color.Black,
+                                maxLines = 2,
+                                overflow = TextOverflow.Ellipsis
+                            )
                         }
                     }
 
@@ -161,7 +187,12 @@ fun DetailPopupPengujian(
                             Text("Tanggal", fontWeight = FontWeight.Bold, color = Color.Black)
                         }
                         Column(modifier = Modifier.weight(2f)) {
-                            Text(": $tanggalPengujian", color = Color.Black, maxLines = 1, overflow = TextOverflow.Ellipsis)
+                            Text(
+                                ": $tanggalPengujian",
+                                color = Color.Black,
+                                maxLines = 1,
+                                overflow = TextOverflow.Ellipsis
+                            )
                         }
                     }
 
@@ -174,7 +205,12 @@ fun DetailPopupPengujian(
                             Text("Pelaksana", fontWeight = FontWeight.Bold, color = Color.Black)
                         }
                         Column(modifier = Modifier.weight(2f)) {
-                            Text(": $pelaksanaPengujian", color = Color.Black, maxLines = 1, overflow = TextOverflow.Ellipsis)
+                            Text(
+                                ": $pelaksanaPengujian",
+                                color = Color.Black,
+                                maxLines = 1,
+                                overflow = TextOverflow.Ellipsis
+                            )
                         }
                     }
 
@@ -195,22 +231,53 @@ fun DetailPopupPengujian(
 
                     Spacer(modifier = Modifier.height(10.dp))
 
+                    Spacer(modifier = Modifier.height(10.dp))
+
                     Row(
                         modifier = Modifier
                             .fillMaxWidth()
                             .padding(top = 15.dp),
-                        horizontalArrangement = Arrangement.End // Menempatkan tombol di sebelah kanan
+                        horizontalArrangement = Arrangement.spacedBy(10.dp, Alignment.CenterHorizontally) // Menyebar tombol dengan jarak yang sama
                     ) {
+                        // Tombol See All
                         Button(
-                            onClick = {
-                            },
+                            onClick = { /* Tindakan tombol See All */ },
                             modifier = Modifier
+                                .height(50.dp) // Menambah tinggi tombol agar seragam
                                 .width(130.dp)
                                 .shadow(4.dp, RoundedCornerShape(16.dp)),
                             colors = ButtonDefaults.buttonColors(containerColor = Maroon),
                             shape = RoundedCornerShape(16.dp)
                         ) {
                             Text("See All", color = Color.White)
+                        }
+
+                        // Tombol Uraian
+                        Button(
+                            onClick = {
+                                navController.navigate("UraianPengujian")
+                            },
+                            modifier = Modifier
+                                .height(50.dp) // Menambah tinggi tombol agar seragam
+                                .width(130.dp)
+                                .shadow(4.dp, RoundedCornerShape(16.dp)),
+                            colors = ButtonDefaults.buttonColors(containerColor = Blue),
+                            shape = RoundedCornerShape(16.dp)
+                        ) {
+                            Text("Uraian", color = Color.White)
+                        }
+
+                        // Tombol Approval
+                        Button(
+                            onClick = { /* Tindakan tombol Approval */ },
+                            modifier = Modifier
+                                .height(50.dp) // Menambah tinggi tombol agar seragam
+                                .width(130.dp)
+                                .shadow(4.dp, RoundedCornerShape(16.dp)),
+                            colors = ButtonDefaults.buttonColors(containerColor = Green),
+                            shape = RoundedCornerShape(16.dp)
+                        ) {
+                            Text("Approval", color = Color.White)
                         }
                     }
                 }

@@ -16,6 +16,7 @@ import com.example.applicationsop.presentation.screen.admin.list.ListPengajuanSc
 import com.example.applicationsop.presentation.screen.admin.list.ListPengajuanScreenAdmin3
 import com.example.applicationsop.presentation.screen.admin.ListPengembanganAdminScreen
 import com.example.applicationsop.presentation.screen.admin.ListPengujianScreenAdmin
+import com.example.applicationsop.presentation.screen.admin.form.FormUraianPengujianAdmin
 import com.example.applicationsop.presentation.screen.admin.form.ScheduleForm
 import com.example.applicationsop.presentation.screen.pemohon.form.FormUsulanScreen
 import com.example.applicationsop.presentation.screen.pemohon.HomeUserScreen
@@ -156,31 +157,36 @@ fun MainApp(navController: NavController, token: String?, userId: String?, role:
             ListPengembanganScreen(navController = navController)
         }
 
+        ////////////////////////// ADMIN ///////////////////////
 
-
-        // List Pengajuan
+        // List Pengajuan Admin
         composable("list_pengajuanAdmin1") {
             ListPengajuanScreenAdmin1(navController = navController )
         }
 
-        // List Pengajuan
+        // List Pengajuan Admin
         composable("list_pengajuanAdmin2") {
             ListPengajuanScreenAdmin2(navController = navController )
         }
 
-        // List Pengajuan
+        // List Pengajuan Admin
         composable("list_pengajuanAdmin3") {
             ListPengajuanScreenAdmin3(navController = navController )
         }
 
-        // Pengembangaan user
+        // Pengembangaan Admin
         composable("pengembanganAdmin") {
             ListPengembanganAdminScreen(navController = navController)
         }
 
-        // Pengujian user
+        // Pengujian Admin
         composable("pengujianAdmin") {
             ListPengujianScreenAdmin(navController = navController)
+        }
+
+        // Pengujian Admin
+        composable("Uraianpengujian") {
+            FormUraianPengujianAdmin(navController = navController)
         }
 
         // Halaman Form Pengujian

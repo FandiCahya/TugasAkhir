@@ -28,6 +28,14 @@ fun ProgressCard(
     color: Color,
     navController: NavController
 ) {
+
+    // Mapping untuk menampilkan "Pengembangan" atau "Pengujian"
+    val displayTitle = when (title) {
+        "PengembanganAdmin" -> "Pengembangan" // Menampilkan hanya "Pengembangan"
+        "PengujianAdmin" -> "Pengujian" // Menampilkan hanya "Pengujian"
+        else -> title // Jika tidak ditemukan, tampilkan title apa adanya
+    }
+
     Card(
         modifier = Modifier
             .fillMaxWidth()
