@@ -47,7 +47,7 @@ fun HeaderForm(title: String, navController: NavController) {
                 colorVersion = "w"
             )  // Back Button on the left
 
-            Spacer(modifier = Modifier.padding(horizontal = 30.dp))
+            Spacer(modifier = Modifier.padding(horizontal = 10.dp))
 
             Text(
                 text = title,

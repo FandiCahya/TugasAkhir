@@ -1,5 +1,6 @@
 package com.example.applicationsop.presentation.screen.admin.form
 
+import android.widget.Toast
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
 import androidx.compose.foundation.layout.*
@@ -193,7 +194,6 @@ fun ScheduleForm(
 
         Spacer(modifier = Modifier.height(16.dp))
 
-        // Submit Button with shadow
         Box(
             modifier = Modifier
                 .fillMaxSize()
@@ -202,7 +202,6 @@ fun ScheduleForm(
         ) {
             Button(
                 onClick = {
-                    // Set the trigger for the API call
                     triggerApiCall.value = true
                 },
                 modifier = Modifier
@@ -215,7 +214,6 @@ fun ScheduleForm(
             }
         }
 
-        // Loading or Response Message
         if (isLoading) {
             Text("Mengirim data...", color = Maroon, fontSize = 18.sp)
         }
@@ -232,8 +230,6 @@ fun ScheduleForm(
     val formattedStartDate = convertDateToApiFormat(startDate)
     val formattedEndDate = convertDateToApiFormat(endDate)
 
-
-    // Launch the API call when triggerApiCall is set to true
     if (triggerApiCall.value) {
         val pengembanganRequest = PengembanganRequest(
             pengajuan_id = id ?: "",
@@ -251,7 +247,10 @@ fun ScheduleForm(
                 val response = postPengembangan(pengembanganRequest)
                 if (response.status.value in 200..299) {
                     responseMessage = "Pengembangan berhasil disubmit!"
-                    navController.popBackStack()
+                    // Show a Toast after successful submission
+                    Toast.makeText(navController.context, "Pengembangan berhasil!", Toast.LENGTH_SHORT).show()
+                    // Navigate to the pengembanganAdmin screen
+                    navController.navigate("pengembanganAdmin")
                 } else {
                     responseMessage = "Gagal mengirim Pengembangan!"
                 }
