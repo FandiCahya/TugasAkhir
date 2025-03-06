@@ -316,6 +316,7 @@ fun DetailPopupUsulanUser(
 
                 // Button for Edit (only shows when status is "Ditolak")
                 if (status == "rejected") {
+
                     Spacer(modifier = Modifier.height(16.dp))
                     Button(
                         onClick = onEditClick,

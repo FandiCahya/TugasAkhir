@@ -39,12 +39,14 @@ fun ListPengajuanScreenButuhKonfirmasi(
     var selectedDetail by remember { mutableStateOf(DetailInfo(id = "")) }
     var pengajuanList by remember { mutableStateOf<List<Pengajuan>>(emptyList()) }
 
-
-    LaunchedEffect(role, devisi) {
-        if (role != null && devisi != null) {
-            val fetchedPengajuanList = fetchPengajuanList("pending", role, devisi)
+    @Composable
+    fun refreshList() {
+        LaunchedEffect(role, devisi) {
+            if (role != null && devisi != null) {
+                val fetchedPengajuanList = fetchPengajuanList("pending", role, devisi)
 //            println("Role: $role, Devisi: $devisi")
-            pengajuanList = fetchedPengajuanList // Updating the state with fetched data
+                pengajuanList = fetchedPengajuanList // Updating the state with fetched data
+            }
         }
     }
     val dateFormat = SimpleDateFormat("yyyy-MM-dd", Locale.getDefault()) // Parsing the date format
@@ -60,6 +62,8 @@ fun ListPengajuanScreenButuhKonfirmasi(
             Date()
         }
     }
+
+    refreshList()
 
     Column(
         modifier = Modifier

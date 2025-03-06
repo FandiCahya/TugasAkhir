@@ -1,10 +1,13 @@
 package com.example.applicationsop.presentation.screen.pemohon
 
+import android.app.Activity
+import android.content.Context
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
+import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
@@ -12,6 +15,7 @@ import androidx.compose.material.icons.filled.Person
 import androidx.compose.material.icons.filled.Timer
 import androidx.compose.material3.*
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
@@ -20,17 +24,25 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.shadow
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.navigation.NavController
+import com.example.applicationsop.Api.fetchPengajuanList
+import com.example.applicationsop.Api.fetchPengembanganList
+import com.example.applicationsop.Api.fetchPengembanganSortList
+import com.example.applicationsop.models.Pengembangan
 import com.example.applicationsop.presentation.component.BackButton
 import com.example.applicationsop.presentation.component.header.HeaderWithSearch
 import com.example.applicationsop.ui.theme.Maroon
 import com.example.applicationsop.ui.theme.abang
 import com.example.applicationsop.ui.theme.ijo
 import com.example.applicationsop.ui.theme.kuning
+import java.text.SimpleDateFormat
+import java.util.Date
+import java.util.Locale
 
 // Data model for the schedule
 data class ScheduleItem(
@@ -43,6 +55,24 @@ data class ScheduleItem(
     val progressPercentage: Int,
     val status: String
 )
+fun getUserData(context: Context): Map<String, String?> {
+    val sharedPreferences = context.getSharedPreferences("MyPrefs", Activity.MODE_PRIVATE)
+    val token = sharedPreferences.getString("TOKEN", null)
+    val userId = sharedPreferences.getString("USER_ID", null)
+    val role = sharedPreferences.getString("ROLE", null)
+    val name = sharedPreferences.getString("NAME", null)
+    val email = sharedPreferences.getString("EMAIL", null)
+    val devisi = sharedPreferences.getString("DEVISI", null)
+
+    return mapOf(
+        "token" to token,
+        "userId" to userId,
+        "role" to role,
+        "name" to name,
+        "email" to email,
+        "devisi" to devisi
+    )
+}
 
 @Composable
 fun ListPengembangan(
@@ -100,15 +130,19 @@ fun ListPengembangan(
                 modifier = Modifier.padding(vertical = 4.dp)
             )
 
+            val statusText = when (status) {
+                "developed" -> "Sedang Dikembangkan"
+                "finished" -> "Pengembangan Selesai"
+                else -> "Status Tidak Dikenali" // Default for other statuses
+            }
+
             Text(
-                text = status,
+                text = statusText,
                 fontSize = 14.sp,
                 color = when (status) {
-                    "Menunggu konfirmasi" -> kuning // Ganti dengan warna Maroon dari tema Anda
-                    "Pengujian ditolak" -> abang // Ganti dengan warna abang
-                    "Pengajuan Diterima" -> ijo // Ganti dengan warna hijau dari tema Anda
-                    "Pengembangan" -> ijo
-                    else -> Color.Black // Default jika status tidak dikenali
+                    "developed" -> kuning
+                    "finished" -> ijo
+                    else -> Color.Black
                 }
             )
         }
@@ -120,7 +154,38 @@ fun ListPengembangan(
 fun ListPengembanganScreen(navController: NavController) {
     var showPopup by remember { mutableStateOf(false) }
     var selectedScheduleItem by remember { mutableStateOf<ScheduleItem?>(null) }
+    var pengembanganList by remember { mutableStateOf<List<Pengembangan>>(emptyList()) }
 
+    // Mengambil data dari SharedPreferences
+    val context = LocalContext.current
+    val userData = getUserData(context)
+
+    // Menyimpan role, devisi, dan userId ke dalam variabel
+    val role = userData["role"]
+    val devisi = userData["devisi"]
+    val userId = userData["userId"]
+
+    LaunchedEffect(Unit) {
+
+        if (role != null && devisi != null) {
+            val fetchedPengembanganList = fetchPengembanganSortList(role,devisi,userId) // Fetch the data
+            pengembanganList = fetchedPengembanganList // Updating the state
+            println("Pengembangan List View :${pengembanganList}")
+        }
+
+    }
+    val dateFormat = SimpleDateFormat("yyyy-MM-dd", Locale.getDefault()) // Parsing the date format
+    val todayDate = dateFormat.format(Date()) // Current date for fallback
+    // Sort pengajuanList by tanggal
+    val sortedPengembanganList = pengembanganList.sortedByDescending { pengembangan ->
+        try {
+            // Try to parse the date string to Date object
+            dateFormat.parse(pengembangan.tanggal_mulai) ?: Date() // Return Date() if parsing fails
+        } catch (e: Exception) {
+            // If parsing fails, use the current date as fallback
+            Date()
+        }
+    }
     Column(
         modifier = Modifier
             .fillMaxSize()
@@ -131,26 +196,74 @@ fun ListPengembanganScreen(navController: NavController) {
 
         Spacer(modifier = Modifier.height(20.dp))
 
+        var currentDate: String? = null
+
         // List of submissions
         LazyColumn(modifier = Modifier.fillMaxSize()) {
-            items(2) { index ->
-                // Sample schedule data
-                val scheduleItem = ScheduleItem(
-                    task = "Task 1",
-                    id = "1",
-                    startDate = "2025-03-01",
-                    endDate = "2025-03-10",
-                    description = "Task Description",
-                    stage = "Desain UI/UX",
-                    progressPercentage = 50,
-                    status = "developed" // Set status here
-                )
+            items(sortedPengembanganList) { pengembangan ->
+                var formattedDate: String
+                try {
+                    // Try to parse the date string and format it
+                    val parsedDate = dateFormat.parse(pengembangan.tanggal_mulai)
+                    formattedDate = dateFormat.format(parsedDate ?: Date()) // If parsing fails, fallback to current date
+                } catch (e: Exception) {
+                    // If parsing fails, fallback to current date
+                    formattedDate = todayDate
+                }
 
+                // Only display a header for a new date
+                if (currentDate != formattedDate) {
+                    currentDate = formattedDate
+
+                    // Create a row with dividers and the date text in the middle
+                    Row(
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .padding(horizontal = 20.dp, vertical = 8.dp)
+                    ) {
+                        // Left divider
+                        Divider(
+                            color = Color.Gray,
+                            modifier = Modifier
+                                .weight(1f)
+                                .align(Alignment.CenterVertically)
+                        )
+
+                        // Text in the middle
+                        Text(
+                            text = "$formattedDate",
+                            fontWeight = FontWeight.Bold,
+                            fontSize = 16.sp,
+                            color = Color.Black,
+                            modifier = Modifier
+                                .padding(horizontal = 8.dp) // Padding kiri dan kanan pada teks
+                        )
+
+                        // Right divider
+                        Divider(
+                            color = Color.Gray,
+                            modifier = Modifier
+                                .weight(1f)
+                                .align(Alignment.CenterVertically)
+                        )
+                    }
+                }
+                // Create a ScheduleItem from Pengembangan data
+                val scheduleItem = ScheduleItem(
+                    task = pengembangan.pengajuan.nama_sistem, // Nama sistem from Pengajuan
+                    id = pengembangan.id, // ID from Pengembangan
+                    startDate = pengembangan.tanggal_mulai, // Start date
+                    endDate = pengembangan.tanggal_selesai, // End date
+                    description = pengembangan.keterangan, // Description from Pengembangan
+                    stage = pengembangan.tahap, // Stage from Pengembangan
+                    progressPercentage = pengembangan.persentase, // Progress from Pengembangan
+                    status = if (pengembangan.persentase == 100) "finished" else "developed" // Logic for status based on progress
+                )
 
                 // Pass actual schedule data to the ListPengembangan composable
                 ListPengembangan(
-                    namaSistem = scheduleItem.task,
-                    status = "Pengembangan",
+                    namaSistem = pengembangan.pengajuan.nama_sistem,
+                    status = pengembangan.status, // Status from Pengembangan
                     scheduleItem = scheduleItem,
                     onClick = { clickedSchedule ->
                         selectedScheduleItem = clickedSchedule // Set the selected schedule
@@ -239,7 +352,7 @@ fun SchedulePopup(
                         Column(
                             modifier = Modifier.weight(1f)
                         ) {
-                            Text("Perangkat yang dikembangkan", fontWeight = FontWeight.Bold, color = Color.Black)
+                            Text("Nama Perangkat", fontWeight = FontWeight.Bold, color = Color.Black)
                         }
 
                         // Kolom 2 (Isi)
@@ -355,41 +468,23 @@ fun SchedulePopup(
                         Column(
                             modifier = Modifier.weight(2f)
                         ) {
-                            Text(": ${scheduleItem.progressPercentage}", color = Color.Black)
+                            Text(": ${scheduleItem.progressPercentage}%", color = Color.Black)
                         }
                     }
-                    Spacer(modifier = Modifier.height(8.dp))
-
-                    // Row for Persentase (Progress Bar)
+                    Spacer(modifier = Modifier.height(10.dp))
                     Row(
-                        modifier = Modifier.fillMaxWidth(),
-                        horizontalArrangement = Arrangement.Start
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .padding(horizontal = 8.dp), // Padding untuk row kedua
+                        horizontalArrangement = Arrangement.Center // Menempatkan Circular Progress Bar di tengah
                     ) {
-                        Row(modifier = Modifier.fillMaxWidth()) {
-                            // Kolom 1 (Judul)
-                            Column(modifier = Modifier.weight(1f)) {
-                                Text(
-                                    "Persentase",
-                                    fontWeight = FontWeight.Bold,
-                                    color = Color.Black
-                                )
-                            }
-
-                            // Kolom 2 (Isi)
-                            Column(modifier = Modifier.weight(2f)) {
-                                // Circular Progress Indicator
-                                CircularProgressIndicator(
-                                    progress = scheduleItem.progressPercentage.toFloat() / 100f,
-                                    modifier = Modifier
-                                        .size(50.dp) // Adjust size
-                                        .align(Alignment.CenterHorizontally),
-                                    color = Maroon,
-                                    strokeWidth = 8.dp // Adjust stroke width
-                                )
-                                Spacer(modifier = Modifier.height(8.dp))
-                                Text(": ${scheduleItem.progressPercentage}%", color = Color.Black)
-                            }
-                        }
+                        // Circular Progress Bar berada di tengah bawah
+                        CircularProgressIndicator(
+                            progress = scheduleItem.progressPercentage.toFloat() / 100f, // Menyesuaikan nilai progress
+                            modifier = Modifier.size(50.dp), // Ukuran progress bar
+                            color = Maroon, // Warna progress bar
+                            strokeWidth = 8.dp // Ketebalan garis progress bar
+                        )
                     }
 
 

@@ -46,4 +46,34 @@ suspend fun fetchPengembanganList(): List<Pengembangan> {
     }
 }
 
+suspend fun fetchPengembanganSortList(role: String? = null, devisi: String? = null,userId: String? = null): List<Pengembangan> {
+    return try {
+        val url = buildString {
+            append("${ApiConfig.BASE_URL}pengembangan?")
+            if (role != null) append("role=$role&")
+            if (devisi != null) append("devisi=$devisi&")
+            if (userId != null) append("userId=$userId&")
 
+            // Remove the trailing '&' if any query parameters were added
+            if (endsWith("&")) deleteCharAt(length - 1)
+        }
+
+        // Make the GET request with the built URL
+        val response: HttpResponse = GetPengembangan.get(url) {
+            contentType(ContentType.Application.Json)
+        }
+
+        if (response.status.value in 200..299) {
+            println("Successful response Pengembangan!")
+        }
+
+        // Deserialize the response body into ResponsePengajuan
+        val responsePengembangan: ResponsePengembangan = response.body()
+        println("Pengembangan List: ${responsePengembangan.payload}")
+
+        responsePengembangan.payload // Return the list of Pengembangan
+    } catch (e: Exception) {
+        e.printStackTrace()  // Log the exception
+        emptyList()  // Return an empty list on error
+    }
+}
