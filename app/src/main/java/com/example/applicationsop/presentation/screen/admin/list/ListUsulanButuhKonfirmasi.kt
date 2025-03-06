@@ -1,5 +1,6 @@
 package com.example.applicationsop.presentation.screen.admin.list
 
+import android.util.Log
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
@@ -17,9 +18,16 @@ import androidx.compose.runtime.LaunchedEffect
 import com.example.applicationsop.Api.fetchPengajuanList
 import com.example.applicationsop.models.Pengajuan
 import androidx.compose.foundation.lazy.items
+import androidx.compose.material3.Divider
+import androidx.compose.material3.Text
+import androidx.compose.ui.Alignment
+import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.unit.sp
 import com.example.applicationsop.data.ListPengajuanItem
 import com.example.applicationsop.presentation.component.header.HeaderWithSearch
 import com.example.applicationsop.presentation.component.popup.DetailPopupUsulanAdmin
+import java.text.SimpleDateFormat
+import java.util.*
 
 
 @Composable
@@ -28,10 +36,27 @@ fun ListPengajuanScreenAdmin1(navController: NavController) {
     var selectedDetail by remember { mutableStateOf(DetailInfo(id="")) }
     var pengajuanList by remember { mutableStateOf<List<Pengajuan>>(emptyList()) }
 
-
     LaunchedEffect(Unit) {
         val fetchedPengajuanList = fetchPengajuanList("pending")
+        Log.d("PengajuanList", "Fetched Pengajuan List: $fetchedPengajuanList")
+        if (fetchedPengajuanList.isEmpty()) {
+            Log.d("PengajuanList", "No data available")
+        }
         pengajuanList = fetchedPengajuanList // Updating the state
+    }
+
+    val dateFormat = SimpleDateFormat("yyyy-MM-dd", Locale.getDefault()) // Parsing the date format
+    val todayDate = dateFormat.format(Date()) // Current date for fallback
+
+    // Sort pengajuanList by tanggal
+    val sortedPengajuanList = pengajuanList.sortedByDescending { pengajuan ->
+        try {
+            // Try to parse the date string to Date object
+            dateFormat.parse(pengajuan.tgl) ?: Date() // Return Date() if parsing fails
+        } catch (e: Exception) {
+            // If parsing fails, use the current date as fallback
+            Date()
+        }
     }
 
     Column(
@@ -43,8 +68,58 @@ fun ListPengajuanScreenAdmin1(navController: NavController) {
 
         Spacer(modifier = Modifier.height(20.dp))
 
+        var currentDate: String? = null
+
         LazyColumn(modifier = Modifier.fillMaxSize()) {
-            items(pengajuanList) { pengajuan ->
+            items(sortedPengajuanList) { pengajuan ->
+                var formattedDate: String
+                try {
+                    // Try to parse the date string and format it
+                    val parsedDate = dateFormat.parse(pengajuan.tgl)
+                    formattedDate = dateFormat.format(parsedDate ?: Date()) // If parsing fails, fallback to current date
+                } catch (e: Exception) {
+                    // If parsing fails, fallback to current date
+                    formattedDate = todayDate
+                }
+
+                // Only display a header for a new date
+                if (currentDate != formattedDate) {
+                    currentDate = formattedDate
+
+                    // Create a row with dividers and the date text in the middle
+                    Row(
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .padding(horizontal = 20.dp, vertical = 8.dp)
+                    ) {
+                        // Left divider
+                        Divider(
+                            color = Color.Gray,
+                            modifier = Modifier
+                                .weight(1f)
+                                .align(Alignment.CenterVertically)
+                        )
+
+                        // Text in the middle
+                        Text(
+                            text = "$formattedDate",
+                            fontWeight = FontWeight.Bold,
+                            fontSize = 16.sp,
+                            color = Color.Black,
+                            modifier = Modifier
+                                .padding(horizontal = 8.dp) // Padding kiri dan kanan pada teks
+                        )
+
+                        // Right divider
+                        Divider(
+                            color = Color.Gray,
+                            modifier = Modifier
+                                .weight(1f)
+                                .align(Alignment.CenterVertically)
+                        )
+                    }
+                }
+
                 ListPengajuanItem(
                     namaSistem = pengajuan.nama_sistem,
                     tanggal = pengajuan.tgl,
@@ -83,17 +158,18 @@ fun ListPengajuanScreenAdmin1(navController: NavController) {
             rencanaAnggaran = selectedDetail.rencanaAnggaran,
             masalahSistem = selectedDetail.masalahSistem,
             outputHasil = selectedDetail.outputHasil,
-            status = selectedDetail.status,  // Gunakan status yang dipilih secara dinamis
-            alasan = if (selectedDetail.status == "Pengajuan ditolak") "Output kurang jelas" else null, // Alasan hanya muncul jika status ditolak
-            isAdmin = true, // Menambahkan parameter isAdmin yang bisa ditentukan sesuai pengguna
+            status = selectedDetail.status,  // Use the dynamically selected status
+            alasan = if (selectedDetail.status == "Pengajuan ditolak") "Output kurang jelas" else null, // Reason only appears if the status is rejected
+            isAdmin = true, // Adds the isAdmin parameter, which can be adjusted based on the user
             onAcceptClick = {
-                // Aksi terima (ubah status atau lakukan tindakan lainnya)
+                // Action on accept (change status or perform other actions)
             },
             onRejectClick = { alasan ->
-                // Aksi tolak dengan alasan yang dimasukkan
+                // Action on reject with the given reason
             },
             navController = navController
         )
     }
 }
+
 
