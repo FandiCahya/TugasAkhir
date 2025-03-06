@@ -1,25 +1,15 @@
 package com.example.applicationsop.presentation.screen.pemohon.form
 
-import android.graphics.Bitmap
-import android.graphics.Rect
-import android.util.Log
 import android.widget.Toast
-import androidx.compose.foundation.Canvas
-import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
-import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.rememberScrollState
-import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.verticalScroll
-import androidx.compose.material3.Button
-import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
@@ -31,26 +21,20 @@ import androidx.compose.ui.ExperimentalComposeUiApi
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.Path
-import androidx.compose.ui.graphics.asImageBitmap
-import androidx.compose.ui.graphics.drawscope.Stroke
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.navigation.NavController
-import com.example.applicationsop.Api.postPengajuan
 import com.example.applicationsop.Api.updatePengajuan
 import com.example.applicationsop.models.PengajuanRequest
 import com.example.applicationsop.presentation.component.ActionButton
-import com.example.applicationsop.presentation.component.DatePickerField
 import com.example.applicationsop.presentation.component.DropdownField
 import com.example.applicationsop.presentation.component.FormField
 import com.example.applicationsop.presentation.component.header.HeaderForm
 import com.example.applicationsop.presentation.component.signaturepad.PathState
-import com.example.applicationsop.presentation.component.signaturepad.SignatureDialog
 import com.example.applicationsop.ui.theme.Maroon
 import com.example.applicationsop.ui.theme.Putih
 import kotlinx.coroutines.launch
-import java.io.File
 
 
 @OptIn(ExperimentalComposeUiApi::class)
@@ -77,7 +61,6 @@ fun FormEditUsulan(
 
     // To show success or error messages
     var isLoading by remember { mutableStateOf(false) }
-    var responseMessage by remember { mutableStateOf("") }
 
     // Signature Pad
     val paths = remember { mutableStateOf(mutableListOf<PathState>()) }
@@ -102,7 +85,6 @@ fun FormEditUsulan(
                     output = outputSistem,
                     status = "pending",
                     alasan_penolakan = null
-
                 )
                 // Call the API to update the Pengajuan data
                 coroutineScope.launch {
@@ -111,20 +93,26 @@ fun FormEditUsulan(
 
                         // Check if the response was successful
                         if (response.status.value in 200..299) {
+                            // Show success message using Toast
                             Toast.makeText(navController.context, "Edit Pengajuan berhasil diperbarui!", Toast.LENGTH_SHORT).show()
-//                            onDismiss()
+
+                            // Navigate back to the previous screen
+                            navController.popBackStack()
                         } else {
+                            // Show failure message using Toast
                             Toast.makeText(navController.context, "Gagal memperbarui. Coba lagi!", Toast.LENGTH_SHORT).show()
                         }
                     } catch (e: Exception) {
+                        // Show error message using Toast
                         Toast.makeText(navController.context, "Error: ${e.message}", Toast.LENGTH_SHORT).show()
                     } finally {
                         isLoading = false
                     }
                 }
             } catch (e: Exception) {
-                responseMessage = "Error: ${e.message}"
-            }finally {
+                // Show error message using Toast
+                Toast.makeText(navController.context, "Error: ${e.message}", Toast.LENGTH_SHORT).show()
+            } finally {
                 isLoading = false
             }
         }
@@ -137,7 +125,7 @@ fun FormEditUsulan(
             .verticalScroll(rememberScrollState())
     ) {
         // Header
-        HeaderForm("Form Update Permohonan Perangkat Lunak", navController)
+        HeaderForm("Formulir Permohonan", navController)
 
         // Form Fields
         Column(
@@ -152,7 +140,6 @@ fun FormEditUsulan(
                 selectedDate = selectedDate,
                 onDateSelected = { selectedDate = it }
             )
-
 
             // Nama Sistem
             FormField(
@@ -214,21 +201,15 @@ fun FormEditUsulan(
                     buttonType = "submit" // This will create a "Submit" button
                 )
             }
+
             if (isLoading) {
                 // Show loading indicator
                 Text("Submitting...", fontSize = 18.sp, color = Maroon)
             }
-
-            if (responseMessage.isNotEmpty()) {
-                Text(
-                    responseMessage,
-                    fontSize = 18.sp,
-                    color = if (responseMessage.contains("success")) Color.Green else Color.Red
-                )
-            }
         }
     }
 }
+
 
 @Composable
 fun DatePickerField2(
@@ -255,8 +236,6 @@ fun DatePickerField2(
                 .padding(16.dp)
                 .fillMaxWidth()
         )
-
-        // Optionally, add a visual indicator that this field is not editable (e.g., a "view-only" tag)
     }
 }
 

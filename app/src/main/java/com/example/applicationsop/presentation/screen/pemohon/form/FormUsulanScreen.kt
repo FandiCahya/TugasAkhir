@@ -3,6 +3,7 @@ package com.example.applicationsop.presentation.screen.pemohon.form
 import android.graphics.Bitmap
 import android.graphics.Rect
 import android.util.Log
+import android.widget.Toast
 import androidx.compose.foundation.Canvas
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
@@ -79,7 +80,6 @@ fun FormUsulanScreen(navController: NavController, userId: String?) {
 
     // To show success or error messages
     var isLoading by remember { mutableStateOf(false) }
-    var responseMessage by remember { mutableStateOf("") }
 
     // Signature Pad
     val paths = remember { mutableStateOf(mutableListOf<PathState>()) }
@@ -127,20 +127,28 @@ fun FormUsulanScreen(navController: NavController, userId: String?) {
 
                     // Check if the response was successful
                     if (response.status.value in 200..299) {
-                        responseMessage = "Pengajuan berhasil dikirim!"
+                        // Show Toast message on success
+                        Toast.makeText(navController.context, "Pengajuan berhasil dikirim!", Toast.LENGTH_LONG).show()
+
+                        // Navigate back to previous screen
+                        navController.popBackStack()
                     } else {
-                        responseMessage = "Gagal mengirim. Coba lagi!"
+                        // Show Toast message on failure
+                        Toast.makeText(navController.context, "Gagal mengirim. Coba lagi!", Toast.LENGTH_LONG).show()
                     }
                 } else {
-                    responseMessage = "Tanda tangan diperlukan."
+                    // Show Toast message if signature is missing
+                    Toast.makeText(navController.context, "Tanda tangan diperlukan.", Toast.LENGTH_LONG).show()
                 }
             } catch (e: Exception) {
-                responseMessage = "Error: ${e.message}"
+                // Show error message in case of failure
+                Toast.makeText(navController.context, "Error: ${e.message}", Toast.LENGTH_LONG).show()
             } finally {
                 isLoading = false
             }
         } else {
-            responseMessage = "User ID is missing."
+            // Show error message if userId is missing
+            Toast.makeText(navController.context, "User ID is missing.", Toast.LENGTH_LONG).show()
         }
     }
 
@@ -273,16 +281,9 @@ fun FormUsulanScreen(navController: NavController, userId: String?) {
                 // Show loading indicator
                 Text("Submitting...", fontSize = 18.sp, color = Maroon)
             }
-
-            if (responseMessage.isNotEmpty()) {
-                Text(
-                    responseMessage,
-                    fontSize = 18.sp,
-                    color = if (responseMessage.contains("success")) Color.Green else Color.Red
-                )
-            }
         }
     }
 }
+
 
 

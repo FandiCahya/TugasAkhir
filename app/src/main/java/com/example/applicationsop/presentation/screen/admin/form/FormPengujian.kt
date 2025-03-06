@@ -4,6 +4,7 @@ import android.app.Activity
 import android.content.Context
 import android.graphics.Bitmap
 import android.graphics.Rect
+import android.widget.Toast
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
@@ -328,8 +329,9 @@ fun FormPengujianAdmin(navController: NavController, idPengembangan: String?, na
                 Text("Tanda Tangan Penguji:", color = Maroon)
             }
 
+            // Submit Button
             Row(
-                modifier = Modifier.fillMaxWidth() .padding(end = 10.dp),
+                modifier = Modifier.fillMaxWidth().padding(end = 10.dp),
                 horizontalArrangement = Arrangement.End
             ) {
                 Button(
@@ -337,7 +339,7 @@ fun FormPengujianAdmin(navController: NavController, idPengembangan: String?, na
                         val pengujianRequest = PengujianRequest(
                             pengembangan_id = idPengembangan,
                             perangkat_lunak = namaSistem,
-                            versi = versiPerangkat, // Update version as needed
+                            versi = versiPerangkat,
                             tujuan = tujuanPengujian,
                             metode = metodePengujian,
                             tanggal = tanggalPengujian,
@@ -347,12 +349,21 @@ fun FormPengujianAdmin(navController: NavController, idPengembangan: String?, na
                         println("Request payload: $jsonPayload")
                         // Call the API to post the Pengujian data
                         coroutineScope.launch {
-                            postPengujian(pengujianRequest)
+                            try {
+                                postPengujian(pengujianRequest)
+                                // Show success Toast
+                                Toast.makeText(context, "Pengujian berhasil disubmit!", Toast.LENGTH_SHORT).show()
+                                // Navigate back after successful submission
+                                navController.popBackStack()
+                            } catch (e: Exception) {
+                                // Show error Toast
+                                Toast.makeText(context, "Terjadi kesalahan: ${e.message}", Toast.LENGTH_SHORT).show()
+                            }
                         }
                     },
                     modifier = Modifier
                         .width(115.dp) // Width for the Submit button
-                        .shadow(4.dp, RoundedCornerShape(16.dp)), // Apply shadow to Submit button
+                        .shadow(4.dp, RoundedCornerShape(16.dp)),
                     colors = ButtonDefaults.buttonColors(containerColor = Maroon),
                     shape = RoundedCornerShape(16.dp)
                 ) {
