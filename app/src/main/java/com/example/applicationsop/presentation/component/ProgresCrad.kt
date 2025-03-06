@@ -33,10 +33,12 @@ fun ProgressCard(
             .fillMaxWidth()
             .padding(vertical = 10.dp)
             .clickable { // Menambahkan aksi klik untuk navigasi
-                if (title == "Pengembangan") {
+                if (title == "PengembanganAdmin") {
                     navController.navigate("pengembanganAdmin") // Arahkan ke halaman pengembangan
-                } else if (title == "Pengujian") {
+                } else if (title == "PengujianAdmin") {
                     navController.navigate("pengujianAdmin") // Arahkan ke halaman pengujian
+                } else if (title == "PengembanganUser") {
+                    navController.navigate("pengembanganUser") // Arahkan ke halaman pengembangan
                 }
             },
         colors = CardDefaults.cardColors(

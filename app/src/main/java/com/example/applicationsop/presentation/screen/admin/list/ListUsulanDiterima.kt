@@ -18,9 +18,14 @@ import androidx.compose.runtime.LaunchedEffect
 import com.example.applicationsop.Api.fetchPengajuanList
 import com.example.applicationsop.models.Pengajuan
 import androidx.compose.foundation.lazy.items
+import androidx.compose.ui.Alignment
+import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.unit.sp
 import com.example.applicationsop.data.ListPengajuanItem
 import com.example.applicationsop.presentation.component.header.HeaderWithSearch
 import com.example.applicationsop.presentation.component.popup.DetailPopupUsulanAdmin
+import java.text.SimpleDateFormat
+import java.util.*
 
 @Composable
 fun ListPengajuanScreenAdmin3(navController: NavController) {
@@ -34,6 +39,20 @@ fun ListPengajuanScreenAdmin3(navController: NavController) {
         pengajuanList = fetchedPengajuanList // Updating the state
     }
 
+    val dateFormat = SimpleDateFormat("yyyy-MM-dd", Locale.getDefault()) // Parsing the date format
+    val todayDate = dateFormat.format(Date()) // Current date for fallback
+
+    // Sort pengajuanList by tanggal
+    val sortedPengajuanList = pengajuanList.sortedByDescending { pengajuan ->
+        try {
+            // Try to parse the date string to Date object
+            dateFormat.parse(pengajuan.tgl) ?: Date() // Return Date() if parsing fails
+        } catch (e: Exception) {
+            // If parsing fails, use the current date as fallback
+            Date()
+        }
+    }
+
     Column(
         modifier = Modifier
             .fillMaxSize()
@@ -42,10 +61,57 @@ fun ListPengajuanScreenAdmin3(navController: NavController) {
         // Header with back button and search icon
         HeaderWithSearch(navController = navController, title = "Pengajuan")
         Spacer(modifier = Modifier.height(20.dp))
-
+        var currentDate: String? = null
         // List of submissions
         LazyColumn(modifier = Modifier.fillMaxSize()) {
-            items(pengajuanList) { pengajuan ->
+            items(sortedPengajuanList) { pengajuan ->
+                var formattedDate: String
+                try {
+                    // Try to parse the date string and format it
+                    val parsedDate = dateFormat.parse(pengajuan.tgl)
+                    formattedDate = dateFormat.format(parsedDate ?: Date()) // If parsing fails, fallback to current date
+                } catch (e: Exception) {
+                    // If parsing fails, fallback to current date
+                    formattedDate = todayDate
+                }
+
+                // Only display a header for a new date
+                if (currentDate != formattedDate) {
+                    currentDate = formattedDate
+
+                    // Create a row with dividers and the date text in the middle
+                    Row(
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .padding(horizontal = 20.dp, vertical = 8.dp)
+                    ) {
+                        // Left divider
+                        Divider(
+                            color = Color.Gray,
+                            modifier = Modifier
+                                .weight(1f)
+                                .align(Alignment.CenterVertically)
+                        )
+
+                        // Text in the middle
+                        Text(
+                            text = "$formattedDate",
+                            fontWeight = FontWeight.Bold,
+                            fontSize = 16.sp,
+                            color = Color.Black,
+                            modifier = Modifier
+                                .padding(horizontal = 8.dp) // Padding kiri dan kanan pada teks
+                        )
+
+                        // Right divider
+                        Divider(
+                            color = Color.Gray,
+                            modifier = Modifier
+                                .weight(1f)
+                                .align(Alignment.CenterVertically)
+                        )
+                    }
+                }
                 // Using data from the API response dynamically
                 ListPengajuanItem(
                     namaSistem = pengajuan.nama_sistem,

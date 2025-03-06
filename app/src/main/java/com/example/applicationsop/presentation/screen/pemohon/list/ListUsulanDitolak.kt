@@ -4,6 +4,8 @@ import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
+import androidx.compose.material3.Divider
+import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.ui.Modifier
@@ -13,6 +15,9 @@ import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
+import androidx.compose.ui.Alignment
+import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.unit.sp
 import androidx.navigation.NavController
 import com.example.applicationsop.Api.fetchPengajuanList
 import com.example.applicationsop.data.DetailInfo
@@ -20,6 +25,9 @@ import com.example.applicationsop.data.ListPengajuanItem
 import com.example.applicationsop.models.Pengajuan
 import com.example.applicationsop.presentation.component.header.HeaderWithSearch
 import com.example.applicationsop.presentation.component.popup.DetailPopupUsulanUser
+import java.text.SimpleDateFormat
+import java.util.Date
+import java.util.Locale
 
 @Composable
 fun ListPengajuanScreenDitolak(navController: NavController, role: String?, devisi: String?) {
@@ -42,6 +50,20 @@ fun ListPengajuanScreenDitolak(navController: NavController, role: String?, devi
         }
     }
 
+    val dateFormat = SimpleDateFormat("yyyy-MM-dd", Locale.getDefault()) // Parsing the date format
+    val todayDate = dateFormat.format(Date()) // Current date for fallback
+
+    // Sort pengajuanList by tanggal
+    val sortedPengajuanList = pengajuanList.sortedByDescending { pengajuan ->
+        try {
+            // Try to parse the date string to Date object
+            dateFormat.parse(pengajuan.tgl) ?: Date() // Return Date() if parsing fails
+        } catch (e: Exception) {
+            // If parsing fails, use the current date as fallback
+            Date()
+        }
+    }
+
     refreshList()
 
     Column(
@@ -54,8 +76,57 @@ fun ListPengajuanScreenDitolak(navController: NavController, role: String?, devi
 
         Spacer(modifier = Modifier.height(20.dp))
 
+        var currentDate: String? = null
+
         LazyColumn(modifier = Modifier.fillMaxSize()) {
-            items(pengajuanList) { pengajuan ->
+            items(sortedPengajuanList) { pengajuan ->
+                var formattedDate: String
+                try {
+                    // Try to parse the date string and format it
+                    val parsedDate = dateFormat.parse(pengajuan.tgl)
+                    formattedDate = dateFormat.format(parsedDate ?: Date()) // If parsing fails, fallback to current date
+                } catch (e: Exception) {
+                    // If parsing fails, fallback to current date
+                    formattedDate = todayDate
+                }
+
+                // Only display a header for a new date
+                if (currentDate != formattedDate) {
+                    currentDate = formattedDate
+
+                    // Create a row with dividers and the date text in the middle
+                    Row(
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .padding(horizontal = 20.dp, vertical = 8.dp)
+                    ) {
+                        // Left divider
+                        Divider(
+                            color = Color.Gray,
+                            modifier = Modifier
+                                .weight(1f)
+                                .align(Alignment.CenterVertically)
+                        )
+
+                        // Text in the middle
+                        Text(
+                            text = "$formattedDate",
+                            fontWeight = FontWeight.Bold,
+                            fontSize = 16.sp,
+                            color = Color.Black,
+                            modifier = Modifier
+                                .padding(horizontal = 8.dp) // Padding kiri dan kanan pada teks
+                        )
+
+                        // Right divider
+                        Divider(
+                            color = Color.Gray,
+                            modifier = Modifier
+                                .weight(1f)
+                                .align(Alignment.CenterVertically)
+                        )
+                    }
+                }
                 ListPengajuanItem(
                     namaSistem = pengajuan.nama_sistem,
                     tanggal = pengajuan.tgl,
