@@ -1,7 +1,5 @@
 package com.example.applicationsop.presentation.screen.admin.form
 
-import android.app.Activity
-import android.content.Context
 import android.graphics.Bitmap
 import android.graphics.Rect
 import androidx.compose.foundation.Image
@@ -34,7 +32,6 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.ExperimentalComposeUiApi
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.shadow
-import androidx.compose.ui.focus.focusModifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.Path
 import androidx.compose.ui.graphics.asImageBitmap
@@ -58,41 +55,40 @@ import kotlinx.serialization.json.Json
 import java.text.SimpleDateFormat
 import java.util.*
 
-fun getUserData(context: Context): Map<String, String?> {
-    val sharedPreferences = context.getSharedPreferences("MyPrefs", Activity.MODE_PRIVATE)
-    val token = sharedPreferences.getString("TOKEN", null)
-    val userId = sharedPreferences.getString("USER_ID", null)
-    val role = sharedPreferences.getString("ROLE", null)
-    val name = sharedPreferences.getString("NAME", null)
-    val email = sharedPreferences.getString("EMAIL", null)
-    val devisi = sharedPreferences.getString("DEVISI", null)
-
-    return mapOf(
-        "token" to token,
-        "userId" to userId,
-        "role" to role,
-        "name" to name,
-        "email" to email,
-        "devisi" to devisi
-    )
-}
+//fun getUserData(context: Context): Map<String, String?> {
+//    val sharedPreferences = context.getSharedPreferences("MyPrefs", Activity.MODE_PRIVATE)
+//    val token = sharedPreferences.getString("TOKEN", null)
+//    val userId = sharedPreferences.getString("USER_ID", null)
+//    val role = sharedPreferences.getString("ROLE", null)
+//    val name = sharedPreferences.getString("NAME", null)
+//    val email = sharedPreferences.getString("EMAIL", null)
+//    val devisi = sharedPreferences.getString("DEVISI", null)
+//
+//    return mapOf(
+//        "token" to token,
+//        "userId" to userId,
+//        "role" to role,
+//        "name" to name,
+//        "email" to email,
+//        "devisi" to devisi
+//    )
+//}
 
 @androidx.annotation.OptIn(UnstableApi::class)
 @OptIn(ExperimentalComposeUiApi::class)
 @Composable
-fun FormPengujianAdmin(navController: NavController, idPengembangan: String?, namaSistem: String?) {
+fun FormUraianPengujianAdmin(navController: NavController) {
     // Informasi Pengujian
     var versiPerangkat by remember { mutableStateOf("") }
     var tujuanPengujian by remember { mutableStateOf("") }
     var metodePengujian by remember { mutableStateOf("") }
     var tanggalPengujian by remember { mutableStateOf("") }
-//    var pelaksanaPengujian by remember { mutableStateOf("") }
 
+    // Detail Pengujian
+    var nama_uji by remember { mutableStateOf("") }
 
     // Date formatting
     val dateFormat = SimpleDateFormat("yyyy-MM-dd", Locale.getDefault())
-
-    // When a date is selected, format it to yyyy-MM-dd
     val onDateSelected: (String) -> Unit = { date ->
         val parsedDate = SimpleDateFormat("dd/MM/yyyy", Locale.getDefault()).parse(date)
         tanggalPengujian = parsedDate?.let { dateFormat.format(it) } ?: ""
@@ -107,7 +103,7 @@ fun FormPengujianAdmin(navController: NavController, idPengembangan: String?, na
     val drawBrush = remember { mutableStateOf(5f) }
     val usedColors = remember { mutableStateOf(mutableSetOf(Color.Black, Color.White, Color.Gray)) }
 
-    // catatan
+    // Catatan
     var showCatatan by remember { mutableStateOf(false) }
 
     val coroutineScope = rememberCoroutineScope()
@@ -115,15 +111,12 @@ fun FormPengujianAdmin(navController: NavController, idPengembangan: String?, na
     // Membuat scrollable column
     val scrollState = rememberScrollState()
 
-    // Get user data (userId)
-    val context = navController.context
-    val userData = getUserData(context)
-    val userId = userData["userId"]
-
-    println("UserId pebgujian$userId")
+    // Data statis (mengganti pengambilan data dari API)
+    val idPengembanganStatic = "12345" // Static id for testing
+    val namaSistemStatic = "Sistem ABC" // Static name for testing
+    val userIdStatic = "user123" // Static user ID for testing
 
     paths.value.add(PathState(Path(), drawColor.value, drawBrush.value))
-
 
     Column(
         modifier = Modifier
@@ -132,8 +125,7 @@ fun FormPengujianAdmin(navController: NavController, idPengembangan: String?, na
             .verticalScroll(scrollState)
     ) {
         // Header Section
-        HeaderForm(title = "Formulir Pengujian", navController        )
-
+        HeaderForm(title = "Formulir Pengujian", navController)
 
         // Form Fields Section
         Column(
@@ -142,77 +134,6 @@ fun FormPengujianAdmin(navController: NavController, idPengembangan: String?, na
                 .padding(16.dp),
             verticalArrangement = Arrangement.spacedBy(16.dp)
         ) {
-            // Judul Form Informasi Pengujian
-            Text(
-                text = "Informasi Pengujian",
-                fontSize = 18.sp,
-                fontWeight = FontWeight.Bold,
-                color = Color.Black
-            )
-
-            // Garis Pemisah untuk Membantu Visualisasi
-            Divider(color = Color.Gray, thickness = 1.dp)
-
-            Column(modifier = Modifier.fillMaxWidth()) {
-                // Label
-                Text(
-                    text = "Perangkat yang dikembangkan:",
-                    fontSize = 16.sp,
-                    fontWeight = FontWeight.Bold,
-                    color = Color.Gray,
-                    modifier = Modifier.padding(bottom = 4.dp)
-                )
-
-                // Box to display the device name
-                Box(
-                    modifier = Modifier
-                        .fillMaxWidth()
-                        .height(56.dp) // Ensure consistent height for the box
-                        .border(
-                            width = 1.dp,
-                            color = Color.LightGray, // Border color
-                            shape = RoundedCornerShape(8.dp) // Rounded corners for a softer look
-                        )
-                        .padding(horizontal = 8.dp) // Horizontal padding for the text inside
-                ) {
-                    Text(
-                        text = "$namaSistem", // Display the device name
-                        fontSize = 16.sp,
-                        color = Color.Black, // Text color
-                        modifier = Modifier
-                            .align(Alignment.CenterStart) // Align text to the left
-                            .padding(8.dp) // Padding for the text inside the box
-                    )
-                }
-            }
-
-            FormField(
-                label = "Versi perangkat lunak",
-                placeholder = "Isi versi perangkat lunak",
-                value = versiPerangkat,
-                onValueChange = { versiPerangkat = it })
-            FormField(
-                label = "Tujuan Pengujian",
-                placeholder = "Isi tujuan pengujian",
-                value = tujuanPengujian,
-                onValueChange = { tujuanPengujian = it })
-            FormField(
-                label = "Metode Pengujian",
-                placeholder = "Isi metode pengujian",
-                value = metodePengujian,
-                onValueChange = { metodePengujian = it })
-
-            DatePickerField(
-                label = "Tanggal Pengujian",
-                selectedDate = tanggalPengujian,
-                onDateSelected = onDateSelected,
-                showLabel = false // Hide the label
-            )
-
-//           FormField(label = "Pelaksana Pengujian", placeholder = "Isi pelaksana pengujian", value = pelaksanaPengujian, onValueChange = { pelaksanaPengujian = it })
-
-            Spacer(modifier = Modifier.height(0.dp))
-
             // Judul Form Informasi Pengujian
             Text(
                 text = "Uraian Pengujian",
@@ -329,30 +250,26 @@ fun FormPengujianAdmin(navController: NavController, idPengembangan: String?, na
             }
 
             Row(
-                modifier = Modifier.fillMaxWidth() .padding(end = 10.dp),
+                modifier = Modifier.fillMaxWidth().padding(end = 10.dp),
                 horizontalArrangement = Arrangement.End
             ) {
                 Button(
                     onClick = {
+                        // Hanya menggunakan data statis untuk pengujian
                         val pengujianRequest = PengujianRequest(
-                            pengembangan_id = idPengembangan,
-                            perangkat_lunak = namaSistem,
-                            versi = versiPerangkat, // Update version as needed
+                            pengembangan_id = idPengembanganStatic,
+                            perangkat_lunak = namaSistemStatic,
+                            versi = versiPerangkat,
                             tujuan = tujuanPengujian,
                             metode = metodePengujian,
                             tanggal = tanggalPengujian,
-                            pelaksana_id = userId // Using userId from getUserData
+                            pelaksana_id = userIdStatic // Menggunakan data statis
                         )
-                        val jsonPayload = Json.encodeToString(pengujianRequest)
-                        println("Request payload: $jsonPayload")
-                        // Call the API to post the Pengujian data
-                        coroutineScope.launch {
-                            postPengujian(pengujianRequest)
-                        }
+                        println("Request payload (Static Data): $pengujianRequest")
                     },
                     modifier = Modifier
-                        .width(115.dp) // Width for the Submit button
-                        .shadow(4.dp, RoundedCornerShape(16.dp)), // Apply shadow to Submit button
+                        .width(115.dp)
+                        .shadow(4.dp, RoundedCornerShape(16.dp)),
                     colors = ButtonDefaults.buttonColors(containerColor = Maroon),
                     shape = RoundedCornerShape(16.dp)
                 ) {
