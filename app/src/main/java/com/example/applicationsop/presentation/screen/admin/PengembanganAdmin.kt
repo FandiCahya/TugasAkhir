@@ -1,115 +1,28 @@
 package com.example.applicationsop.presentation.screen.admin
 
 import androidx.compose.foundation.background
-import androidx.compose.foundation.border
-import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
-import androidx.compose.foundation.shape.CircleShape
-import androidx.compose.foundation.shape.RoundedCornerShape
-import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.Person
-import androidx.compose.material3.*
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
-import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
-import androidx.compose.ui.unit.sp
 import androidx.navigation.NavController
 import com.example.applicationsop.Api.fetchPengembanganList
 import com.example.applicationsop.models.Pengembangan
 import com.example.applicationsop.presentation.screen.pemohon.ScheduleItem
-import com.example.applicationsop.ui.theme.ijo
-import com.example.applicationsop.ui.theme.kuning
 import androidx.compose.foundation.lazy.items
 import com.example.applicationsop.presentation.component.header.HeaderWithSearch
+import com.example.applicationsop.presentation.component.listitem.ListPengembangan
 import com.example.applicationsop.presentation.component.popup.SchedulePopupAdmin
 import java.text.SimpleDateFormat
 import java.util.Date
 import java.util.Locale
-
-@Composable
-fun ListPengembangan(
-    namaSistem: String,
-    status: String,
-    scheduleItem: ScheduleItem, // Add scheduleItem to pass the details
-    onClick: (ScheduleItem) -> Unit // Function to handle the click
-) {
-    Row(
-        modifier = Modifier
-            .fillMaxWidth()
-            .padding(horizontal = 30.dp, vertical = 10.dp)
-            .background(
-                Color(0xFFF6F6F6),
-                RoundedCornerShape(20.dp)
-            ) // Set the background to light gray
-            .padding(16.dp)
-            .clickable { onClick(scheduleItem) }, // Handle click
-        verticalAlignment = Alignment.CenterVertically
-    ) {
-        // Circular icon (human icon) with border
-        Box(
-            modifier = Modifier
-                .size(40.dp)
-                .background(
-                    kuning,
-                    shape = CircleShape
-                ) // Yellow background for the circle
-                .border(2.dp, Color.Black, shape = CircleShape) // Border around the circle
-        ) {
-            // Replace image with Android's default Person Icon
-            Icon(
-                imageVector = Icons.Filled.Person,
-                contentDescription = "Profile Icon",
-                modifier = Modifier.fillMaxSize(),
-                tint = Color.Black // Adjust the color if needed
-            )
-        }
-
-        Spacer(modifier = Modifier.width(16.dp))
-
-        Column(
-            modifier = Modifier.weight(1f) // Allow column to take remaining space
-        ) {
-            Text(
-                text = namaSistem,
-                fontSize = 16.sp,
-                fontWeight = FontWeight.Bold,
-                color = Color.Black
-            )
-            Spacer(modifier = Modifier.height(4.dp)) // Small space between the texts
-
-            Divider(
-                color = Color.Gray,
-                modifier = Modifier.padding(vertical = 4.dp)
-            )
-
-            val statusText = when (status) {
-                "developed" -> "Pengembangan"
-                "finished" -> "Pengembangan Selesai"
-                else -> "Status Tidak Dikenali" // Default for other statuses
-            }
-
-            Text(
-                text = statusText,
-                fontSize = 14.sp,
-                color = when (status) {
-                    "developed" -> kuning
-                    "finished" -> ijo
-                    else -> Color.Black
-                }
-            )
-        }
-    }
-}
-
 
 @Composable
 fun ListPengembanganAdminScreen(navController: NavController) {
@@ -143,7 +56,6 @@ fun ListPengembanganAdminScreen(navController: NavController) {
         // Header with back button and search icon
         HeaderWithSearch(navController = navController, title = "Pengembangan")
         Spacer(modifier = Modifier.height(20.dp))
-        var currentDate: String? = null
 
         // List of submissions
         LazyColumn(modifier = Modifier.fillMaxSize()) {
@@ -174,7 +86,8 @@ fun ListPengembanganAdminScreen(navController: NavController) {
                 // Pass actual schedule data to the ListPengembangan composable
                 ListPengembangan(
                     namaSistem = pengembangan.pengajuan.nama_sistem,
-                    status = pengembangan.status, // Status from Pengembangan
+                    status = pengembangan.status,
+                    startDate = pengembangan.tanggal_mulai,
                     scheduleItem = scheduleItem,
                     onClick = { clickedSchedule ->
                         selectedScheduleItem = clickedSchedule // Set the selected schedule
