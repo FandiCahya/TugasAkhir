@@ -121,7 +121,7 @@ fun FormPengujianAdmin(navController: NavController, idPengembangan: String?, na
     val userData = getUserData(context)
     val userId = userData["userId"]
 
-    println("UserId pebgujian$userId")
+    println("UserId pengujian$userId")
 
     paths.value.add(PathState(Path(), drawColor.value, drawBrush.value))
 

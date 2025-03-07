@@ -18,11 +18,6 @@ import androidx.compose.runtime.LaunchedEffect
 import com.example.applicationsop.Api.fetchPengajuanList
 import com.example.applicationsop.models.Pengajuan
 import androidx.compose.foundation.lazy.items
-import androidx.compose.material3.Divider
-import androidx.compose.material3.Text
-import androidx.compose.ui.Alignment
-import androidx.compose.ui.text.font.FontWeight
-import androidx.compose.ui.unit.sp
 import com.example.applicationsop.presentation.component.listitem.ListPengajuanItem
 import com.example.applicationsop.presentation.component.header.HeaderWithSearch
 import com.example.applicationsop.presentation.component.popup.DetailPopupUsulanAdmin
@@ -68,19 +63,9 @@ fun ListPengajuanScreenAdmin1(navController: NavController) {
 
         Spacer(modifier = Modifier.height(20.dp))
 
-        var currentDate: String? = null
 
         LazyColumn(modifier = Modifier.fillMaxSize()) {
             items(sortedPengajuanList) { pengajuan ->
-                var formattedDate: String
-                try {
-                    // Try to parse the date string and format it
-                    val parsedDate = dateFormat.parse(pengajuan.tgl)
-                    formattedDate = dateFormat.format(parsedDate ?: Date()) // If parsing fails, fallback to current date
-                } catch (e: Exception) {
-                    // If parsing fails, fallback to current date
-                    formattedDate = todayDate
-                }
 
                 ListPengajuanItem(
                     namaSistem = pengajuan.nama_sistem,

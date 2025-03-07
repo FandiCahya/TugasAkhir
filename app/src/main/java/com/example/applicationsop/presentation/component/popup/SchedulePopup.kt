@@ -172,7 +172,7 @@ fun SchedulePopupAdmin(
 
                     // Tahap Pengerjaan
                     Text(
-                        if (status == "finished") "Tahap Pengerjaan" else "Pilih Tahap Pengerjaan",
+                        if (status == "testing") "Tahap Pengerjaan" else "Pilih Tahap Pengerjaan",
                         fontWeight = FontWeight.Bold,
                         color = Color.Black,
                     )
@@ -206,7 +206,7 @@ fun SchedulePopupAdmin(
                                             disabledCheckedColor = Maroon,
                                             disabledUncheckedColor = Color.LightGray
                                         ),
-                                        enabled = status != "finished" // Disable the checkbox when status is "finished"
+                                        enabled = status != "testing" // Disable the checkbox when status is "finished"
                                     )
                                     Text(stage, modifier = Modifier.padding(start = 8.dp), color = Maroon)
                                 }
@@ -235,7 +235,7 @@ fun SchedulePopupAdmin(
                                             disabledCheckedColor = Maroon,
                                             disabledUncheckedColor = Color.LightGray
                                         ),
-                                        enabled = status != "finished" // Disable the checkbox when status is "finished"
+                                        enabled = status != "testing" // Disable the checkbox when status is "finished"
                                     )
                                     Text(stage, modifier = Modifier.padding(start = 8.dp), color = Maroon)
                                 }
@@ -272,7 +272,7 @@ fun SchedulePopupAdmin(
                                         val updatedPengembangan = UpdatePengembangan(
                                             tahap = selectedStagesState.joinToString(", "),
                                             persentase = progressPercentageState,
-                                            status = if (progressPercentageState == 100) "finished" else "developed"
+                                            status = if (progressPercentageState == 100) "testing" else "developed"
                                         )
                                         updatePengembangan(idState, updatedPengembangan) // Call the update API
                                         onDismiss() // Close the popup
@@ -286,7 +286,7 @@ fun SchedulePopupAdmin(
                             ) {
                                 Text("Update", color = Color.White)
                             }
-                        } else if (status == "finished") {
+                        } else if (status == "testing") {
                             // Tombol Form Pengujian di kiri
                             Button(
                                 onClick = {
