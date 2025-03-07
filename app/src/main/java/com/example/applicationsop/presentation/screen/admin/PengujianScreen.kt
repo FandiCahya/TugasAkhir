@@ -28,90 +28,13 @@ import com.example.applicationsop.Api.fetchPengujianList
 import com.example.applicationsop.data.DetailPengujian
 import com.example.applicationsop.models.Pengujian
 import com.example.applicationsop.presentation.component.header.HeaderWithSearch
+import com.example.applicationsop.presentation.component.listitem.ListPengujianItem
 import com.example.applicationsop.presentation.component.popup.DetailPopupPengujian
 import com.example.applicationsop.ui.theme.ijo
 import com.example.applicationsop.ui.theme.kuning
 import java.text.SimpleDateFormat
 import java.util.Date
 import java.util.Locale
-
-@Composable
-fun ListPengujianItem(
-    perangkat_lunak: String,
-    versiPerangkat: String,
-    tujuanPengujian: String,
-    metodePengujian: String,
-    tanggalPengujian: String,
-    pelaksanaPengujian: String,
-    status: String,
-    onClick: () -> Unit // Fungsi untuk menangani klik
-) {
-    Row(
-        modifier = Modifier
-            .fillMaxWidth()
-            .padding(horizontal = 30.dp, vertical = 10.dp)
-            .background(
-                Color(0xFFF6F6F6),
-                RoundedCornerShape(20.dp)
-            )
-            .padding(16.dp)
-            .clickable { onClick() }, // Menambahkan aksi klik pada seluruh item
-        verticalAlignment = Alignment.CenterVertically
-    ) {
-        // Circular icon (human icon) with border
-        Box(
-            modifier = Modifier
-                .size(40.dp)
-                .background(
-                    kuning,
-                    shape = CircleShape
-                )
-                .border(2.dp, Color.Black, shape = CircleShape)
-        ) {
-            Icon(
-                imageVector = Icons.Filled.Person,
-                contentDescription = "Profile Icon",
-                modifier = Modifier.fillMaxSize(),
-                tint = Color.Black
-            )
-        }
-
-        Spacer(modifier = Modifier.width(16.dp))
-
-        Column(
-            modifier = Modifier.weight(1f)
-        ) {
-            Text(
-                text = perangkat_lunak,
-                fontSize = 16.sp,
-                fontWeight = FontWeight.Bold,
-                color = Color.Black
-            )
-            Spacer(modifier = Modifier.height(4.dp))
-
-            Divider(
-                color = Color.Gray,
-                modifier = Modifier.padding(vertical = 4.dp)
-            )
-
-            // Handling status change for testing and finished states
-            Text(
-                text = when (status) {
-                    "testing" -> "Sedang di uji"
-                    "finished" -> "Pengujian Selesai"
-                    else -> status // Default fallback in case of other statuses
-                },
-                fontSize = 14.sp,
-                color = when (status) {
-                    "testing" -> kuning  // Yellow color for testing status
-                    "finished" -> ijo  // Green color for finished status
-                    else -> Color.Black
-                }
-            )
-        }
-    }
-}
-
 
 @Composable
 fun ListPengujianScreenAdmin(navController: NavController) {

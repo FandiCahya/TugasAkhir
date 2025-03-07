@@ -243,8 +243,7 @@ fun DetailPopupPengujian(
                         Button(
                             onClick = { /* Tindakan tombol See All */ },
                             modifier = Modifier
-                                .height(50.dp) // Menambah tinggi tombol agar seragam
-                                .width(130.dp)
+                                .width(100.dp)
                                 .shadow(4.dp, RoundedCornerShape(16.dp)),
                             colors = ButtonDefaults.buttonColors(containerColor = Maroon),
                             shape = RoundedCornerShape(16.dp)
@@ -252,27 +251,11 @@ fun DetailPopupPengujian(
                             Text("See All", color = Color.White)
                         }
 
-                        // Tombol Uraian
-                        Button(
-                            onClick = {
-                                navController.navigate("UraianPengujian")
-                            },
-                            modifier = Modifier
-                                .height(50.dp) // Menambah tinggi tombol agar seragam
-                                .width(130.dp)
-                                .shadow(4.dp, RoundedCornerShape(16.dp)),
-                            colors = ButtonDefaults.buttonColors(containerColor = Blue),
-                            shape = RoundedCornerShape(16.dp)
-                        ) {
-                            Text("Uraian", color = Color.White)
-                        }
-
                         // Tombol Approval
                         Button(
                             onClick = { /* Tindakan tombol Approval */ },
                             modifier = Modifier
-                                .height(50.dp) // Menambah tinggi tombol agar seragam
-                                .width(130.dp)
+                                .width(100.dp)
                                 .shadow(4.dp, RoundedCornerShape(16.dp)),
                             colors = ButtonDefaults.buttonColors(containerColor = Green),
                             shape = RoundedCornerShape(16.dp)

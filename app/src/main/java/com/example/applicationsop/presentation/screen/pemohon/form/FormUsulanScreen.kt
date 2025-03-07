@@ -227,7 +227,7 @@ fun FormUsulanScreen(navController: NavController, userId: String?) {
             Button(
                 onClick = { isDialogOpen.value = true },
                 modifier = Modifier
-                    .width(150.dp),
+                    .width(125.dp),
                 colors = ButtonDefaults.buttonColors(containerColor = Maroon),
                 shape = RoundedCornerShape(15.dp) // Mengatur sudut membulat lebih kecil
             ) {

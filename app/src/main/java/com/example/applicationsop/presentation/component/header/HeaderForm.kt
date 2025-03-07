@@ -39,15 +39,15 @@ fun HeaderForm(title: String, navController: NavController) {
         // Header with Back Button and Title
         Row(
             modifier = Modifier.fillMaxWidth(),
-            verticalAlignment = Alignment.CenterVertically, // Vertically align the items
-            horizontalArrangement = Arrangement.Start // Align items to the start (left)
+            verticalAlignment = Alignment.CenterVertically,
+            horizontalArrangement = Arrangement.Start
         ) {
             BackButton(
                 navController = navController,
                 colorVersion = "w"
-            )  // Back Button on the left
+            )
 
-            Spacer(modifier = Modifier.padding(horizontal = 10.dp))
+            Spacer(modifier = Modifier.padding(horizontal = 30.dp))
 
             Text(
                 text = title,
