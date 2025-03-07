@@ -1,4 +1,4 @@
-package com.example.applicationsop.presentation.component
+package com.example.applicationsop.presentation.component.listitem
 
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
@@ -15,7 +15,6 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.shape.CircleShape
-import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Person
 import androidx.compose.material3.Divider
@@ -28,6 +27,7 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import com.example.applicationsop.presentation.screen.pemohon.ScheduleItem
 import com.example.applicationsop.ui.theme.abang
 import com.example.applicationsop.ui.theme.ijo
 import com.example.applicationsop.ui.theme.kuning
@@ -35,21 +35,17 @@ import java.text.SimpleDateFormat
 import java.util.Locale
 
 @Composable
-fun ListPengajuanItem(
+fun ListPengembangan(
     namaSistem: String,
-    tanggal: String,
-    jenisSistem: String,
-    rencanaAnggaran: String,
-    masalahSistem: String,
-    outputHasil: String,
     status: String,
-    alasan_penolakan: String,
-    onClick: () -> Unit // Fungsi untuk menangani klik
+    startDate: String, // Menambahkan startDate
+    scheduleItem: ScheduleItem,
+    onClick: (ScheduleItem) -> Unit
 ) {
-    // Format tanggal
+    // Format tanggal mulai
     val dateFormat = SimpleDateFormat("yyyy-MM-dd", Locale.getDefault()) // Parsing the date format
     val parsedDate = try {
-        dateFormat.parse(tanggal)
+        dateFormat.parse(startDate)
     } catch (e: Exception) {
         null
     }
@@ -65,21 +61,20 @@ fun ListPengajuanItem(
             .fillMaxWidth()
             .padding(vertical = 10.dp)
             .background(
-                Color(0xFFF6F6F6)
+                Color(0xFFF6F6F6),
             )
             .padding(16.dp)
-            .clickable { onClick() }, // Menambahkan aksi klik pada seluruh item
+            .clickable { onClick(scheduleItem) },
         verticalAlignment = Alignment.CenterVertically
     ) {
-        // Circular icon (human icon) with border
         Box(
             modifier = Modifier
                 .size(40.dp)
                 .background(
                     kuning,
                     shape = CircleShape
-                )
-                .border(2.dp, Color.Black, shape = CircleShape)
+                ) // Yellow background for the circle
+                .border(2.dp, Color.Black, shape = CircleShape) // Border around the circle
         ) {
             Icon(
                 imageVector = Icons.Filled.Person,
@@ -92,7 +87,7 @@ fun ListPengajuanItem(
         Spacer(modifier = Modifier.width(16.dp))
 
         Column(
-            modifier = Modifier.weight(1f)
+            modifier = Modifier.weight(1f) // Allow column to take remaining space
         ) {
             Text(
                 text = namaSistem,
@@ -100,12 +95,18 @@ fun ListPengajuanItem(
                 fontWeight = FontWeight.Bold,
                 color = Color.Black
             )
-            Spacer(modifier = Modifier.height(4.dp))
+            Spacer(modifier = Modifier.height(4.dp)) // Small space between the texts
 
             Divider(
                 color = Color.Gray,
                 modifier = Modifier.padding(vertical = 4.dp)
             )
+
+            val statusText = when (status) {
+                "developed" -> "Pengembangan"
+                "finished" -> "Pengembangan Selesai"
+                else -> "Status Tidak Dikenali" // Default for other statuses
+            }
 
             // Row to place Status and Date side by side
             Row(
@@ -114,17 +115,16 @@ fun ListPengajuanItem(
                 verticalAlignment = Alignment.CenterVertically
             ) {
                 Text(
-                    text = status,
+                    text = statusText,
                     fontSize = 14.sp,
                     color = when (status) {
-                        "pending" -> kuning
-                        "rejected" -> abang
-                        "accepted" -> ijo
+                        "developed" -> kuning
+                        "finished" -> ijo
                         else -> Color.Black
                     }
                 )
                 Text(
-                    text = formattedDate,
+                    text = " $formattedDate",
                     fontSize = 12.sp,
                     color = Color.Gray
                 )

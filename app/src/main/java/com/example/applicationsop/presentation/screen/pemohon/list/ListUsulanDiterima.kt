@@ -4,8 +4,6 @@ import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
-import androidx.compose.material3.Divider
-import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.ui.Modifier
@@ -15,14 +13,11 @@ import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
-import androidx.compose.ui.Alignment
-import androidx.compose.ui.text.font.FontWeight
-import androidx.compose.ui.unit.sp
 import androidx.navigation.NavController
 import com.example.applicationsop.Api.fetchPengajuanList
 import com.example.applicationsop.data.DetailInfo
 import com.example.applicationsop.models.Pengajuan
-import com.example.applicationsop.presentation.component.ListPengajuanItem
+import com.example.applicationsop.presentation.component.listitem.ListPengajuanItem
 import com.example.applicationsop.presentation.component.header.HeaderWithSearch
 import com.example.applicationsop.presentation.component.popup.DetailPopupUsulanUser
 import java.text.SimpleDateFormat
