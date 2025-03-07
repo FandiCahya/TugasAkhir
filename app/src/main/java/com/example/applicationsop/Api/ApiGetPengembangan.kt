@@ -39,7 +39,14 @@ suspend fun fetchPengembanganList(): List<Pengembangan> {
         val responsePengembangan: ResponsePengembangan = response.body()
         println("Pengembangan List: ${responsePengembangan.payload}")
 
-        responsePengembangan.payload // Return the list of Pengembangan
+        // Filter the payload to exclude items with the status 'finished'
+        val filteredPengembanganList = responsePengembangan.payload.filter { pengembangan ->
+            pengembangan.status != "finished"  // Filter out 'finished' status
+        }
+
+
+// Return the list of Pengembangan
+        filteredPengembanganList
     } catch (e: Exception) {
         e.printStackTrace()  // Log the exception
         emptyList()  // Return an empty list on error

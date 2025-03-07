@@ -29,7 +29,6 @@ import com.example.applicationsop.data.DetailPengujian
 import com.example.applicationsop.models.Pengujian
 import com.example.applicationsop.presentation.component.header.HeaderWithSearch
 import com.example.applicationsop.presentation.component.popup.DetailPopupPengujian
-import com.example.applicationsop.ui.theme.abang
 import com.example.applicationsop.ui.theme.ijo
 import com.example.applicationsop.ui.theme.kuning
 import java.text.SimpleDateFormat
@@ -153,54 +152,6 @@ fun ListPengujianScreenAdmin(navController: NavController) {
                     "finished" -> "Pengembangan Selesai"
                     else -> "Pengembangan Belum Selesai"
                 }
-                var formattedDate: String
-                try {
-                    // Try to parse the date string and format it
-                    val parsedDate = dateFormat.parse(pengujian.tanggal)
-                    formattedDate = dateFormat.format(parsedDate ?: Date()) // If parsing fails, fallback to current date
-                } catch (e: Exception) {
-                    // If parsing fails, fallback to current date
-                    formattedDate = todayDate
-                }
-
-                // Only display a header for a new date
-                if (currentDate != formattedDate) {
-                    currentDate = formattedDate
-
-                    // Create a row with dividers and the date text in the middle
-                    Row(
-                        modifier = Modifier
-                            .fillMaxWidth()
-                            .padding(horizontal = 20.dp, vertical = 8.dp)
-                    ) {
-                        // Left divider
-                        Divider(
-                            color = Color.Gray,
-                            modifier = Modifier
-                                .weight(1f)
-                                .align(Alignment.CenterVertically)
-                        )
-
-                        // Text in the middle
-                        Text(
-                            text = "$formattedDate",
-                            fontWeight = FontWeight.Bold,
-                            fontSize = 16.sp,
-                            color = Color.Black,
-                            modifier = Modifier
-                                .padding(horizontal = 8.dp) // Padding kiri dan kanan pada teks
-                        )
-
-                        // Right divider
-                        Divider(
-                            color = Color.Gray,
-                            modifier = Modifier
-                                .weight(1f)
-                                .align(Alignment.CenterVertically)
-                        )
-                    }
-                }
-
                 // Passing the data to ListPengujianItem composable
                 ListPengujianItem(
                     perangkat_lunak = pengujian.perangkat_lunak,  // System name from Pengujian object

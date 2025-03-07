@@ -43,7 +43,7 @@ fun ListPengembanganAdminScreen(navController: NavController) {
         try {
             // Try to parse the date string to Date object
             dateFormat.parse(pengembangan.tanggal_mulai) ?: Date() // Return Date() if parsing fails
-        } catch (e: Exception) {33
+        } catch (e: Exception) {
             // If parsing fails, use the current date as fallback
             Date()
         }
@@ -61,15 +61,6 @@ fun ListPengembanganAdminScreen(navController: NavController) {
         LazyColumn(modifier = Modifier.fillMaxSize()) {
             // Use `items` to iterate over the list of `pengembanganList`
             items(sortedPengembanganList) { pengembangan ->
-                var formattedDate: String
-                try {
-                    // Try to parse the date string and format it
-                    val parsedDate = dateFormat.parse(pengembangan.tanggal_mulai)
-                    formattedDate = dateFormat.format(parsedDate ?: Date()) // If parsing fails, fallback to current date
-                } catch (e: Exception) {
-                    // If parsing fails, fallback to current date
-                    formattedDate = todayDate
-                }
 
                 // Create a ScheduleItem from Pengembangan data
                 val scheduleItem = ScheduleItem(
@@ -80,7 +71,7 @@ fun ListPengembanganAdminScreen(navController: NavController) {
                     description = pengembangan.keterangan, // Description from Pengembangan
                     stage = pengembangan.tahap, // Stage from Pengembangan
                     progressPercentage = pengembangan.persentase, // Progress from Pengembangan
-                    status = if (pengembangan.persentase == 100) "finished" else "developed" // Logic for status based on progress
+                    status = if (pengembangan.persentase == 100) "testing" else "developed" // Logic for status based on progress
                 )
 
                 // Pass actual schedule data to the ListPengembangan composable
@@ -119,4 +110,3 @@ fun ListPengembanganAdminScreen(navController: NavController) {
         }
     }
 }
-

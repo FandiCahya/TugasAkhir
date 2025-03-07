@@ -104,7 +104,8 @@ fun ListPengembangan(
 
             val statusText = when (status) {
                 "developed" -> "Pengembangan"
-                "finished" -> "Pengembangan Selesai"
+                "testing" -> "Pengembangan Selesai"
+                "finished" -> "Tahap Pengujian"
                 else -> "Status Tidak Dikenali" // Default for other statuses
             }
 
@@ -119,7 +120,7 @@ fun ListPengembangan(
                     fontSize = 14.sp,
                     color = when (status) {
                         "developed" -> kuning
-                        "finished" -> ijo
+                        "testing" -> ijo
                         else -> Color.Black
                     }
                 )
