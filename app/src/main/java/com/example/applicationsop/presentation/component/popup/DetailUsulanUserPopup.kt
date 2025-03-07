@@ -48,8 +48,16 @@ fun DetailPopupUsulanUser(
     alasan: String? = null, // Alasan hanya ada jika status ditolak
     onEditClick: () -> Unit // Fungsi untuk navigasi ke form edit
 ) {
+    val displayNames = mapOf(
+        "sistem_baru" to "Sistem Baru",
+        "pengembangan" to "Pengembangan",
+        "termasuk_dalam_perencanaan" to "Termasuk Anggaran",
+        "tidak_termasuk_perencanaan" to "Tidak Termasuk Anggaran"
+    )
 
-//    println("Idnya Adalah: $id")
+    val jenisSistemDisplay = displayNames[jenisSistem] ?: jenisSistem
+    val rencanaAnggaranDisplay = displayNames[rencanaAnggaran] ?: rencanaAnggaran
+
     Box(modifier = Modifier.fillMaxSize()) {
         // Gelap di latar belakang
         Box(
@@ -173,7 +181,7 @@ fun DetailPopupUsulanUser(
                             Column(
                                 modifier = Modifier.weight(2f)
                             ) {
-                                Text(": $jenisSistem", color = Color.Black)
+                                Text(": $jenisSistemDisplay", color = Color.Black)
                             }
                         }
                         Spacer(modifier = Modifier.height(8.dp))
@@ -198,7 +206,7 @@ fun DetailPopupUsulanUser(
                             Column(
                                 modifier = Modifier.weight(2f)
                             ) {
-                                Text(": $rencanaAnggaran", color = Color.Black)
+                                Text(": $rencanaAnggaranDisplay", color = Color.Black)
                             }
                         }
                         Spacer(modifier = Modifier.height(8.dp))

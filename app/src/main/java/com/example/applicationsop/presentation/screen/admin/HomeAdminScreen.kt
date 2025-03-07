@@ -86,53 +86,37 @@ fun SubmissionSection(navController: NavController) {
         modifier = Modifier
             .fillMaxWidth()
             .padding(horizontal = 30.dp),
-        horizontalArrangement = Arrangement.SpaceBetween
+        horizontalArrangement = Arrangement.SpaceBetween // Jarak antar kartu
     ) {
-        // Kolom pertama - Card Butuh Konfirmasi (kuning) dengan ukuran lebih besar
-        Column(
-            modifier = Modifier
-                .weight(1f) // Membuat kolom pertama lebih besar
-        ) {
-            SubmissionCard(
-                "Butuh Konfirmasi",
-                color = kuning,
-                icon = Icons.Filled.Timer,
-                modifier = Modifier.height(180.dp),
-                onClick = {
-                    navController.navigate("list_pengajuanAdmin1")
-                }
-            )
-        }
+        // Card Butuh Konfirmasi (kuning)
+        SubmissionCard(
+            color = kuning,
+            icon = Icons.Filled.Timer,
+            onClick = {
+                navController.navigate("list_pengajuanAdmin1")
+            }
+        )
 
-        // Kolom kedua - Card Ditolak (merah) dan Card Dikembangkan (hijau)
-        Column(
-            modifier = Modifier
-                .weight(1f) // Membuat kolom kedua lebih besar dan seimbang
-        ) {
-            // Card "Ditolak" (merah)
-            SubmissionCard(
-                "Ditolak",
-                color = abang,
-                icon = Icons.Filled.Close,
-                onClick = {
-                    navController.navigate("list_pengajuanAdmin2")
-                }
-            )
+        // Card Ditolak (merah)
+        SubmissionCard(
+            color = abang,
+            icon = Icons.Filled.Close,
+            onClick = {
+                navController.navigate("list_pengajuanAdmin2")
+            }
+        )
 
-            Spacer(modifier = Modifier.height(16.dp)) // Memberikan jarak antara card
-
-            // Card "Dikembangkan" (hijau) di bawah
-            SubmissionCard(
-                "Dikembangkan",
-                color = ijo,
-                icon = Icons.Filled.Verified,
-                onClick = {
-                    navController.navigate("list_pengajuanAdmin3")
-                }
-            )
-        }
+        // Card Dikembangkan (hijau)
+        SubmissionCard(
+            color = ijo,
+            icon = Icons.Filled.Verified,
+            onClick = {
+                navController.navigate("list_pengajuanAdmin3")
+            }
+        )
     }
 }
+
 
 @Composable
 fun ProgressSection(navController: NavController) {

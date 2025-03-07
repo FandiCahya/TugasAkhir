@@ -34,7 +34,6 @@ fun DropdownField(
     onOptionSelected: (String) -> Unit,
     isError: Boolean = false
 ) {
-    // Create a map for user-friendly display names
     val displayNames = mapOf(
         "sistem_baru" to "Sistem Baru",
         "pengembangan" to "Pengembangan",

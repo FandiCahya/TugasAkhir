@@ -30,7 +30,7 @@ import com.example.applicationsop.ui.theme.ijo
 import com.example.applicationsop.ui.theme.kuning
 import androidx.compose.foundation.lazy.items
 import com.example.applicationsop.presentation.component.header.HeaderWithSearch
-import com.example.applicationsop.presentation.component.popup.SchedulePopup
+import com.example.applicationsop.presentation.component.popup.SchedulePopupAdmin
 import java.text.SimpleDateFormat
 import java.util.Date
 import java.util.Locale
@@ -130,7 +130,7 @@ fun ListPengembanganAdminScreen(navController: NavController) {
         try {
             // Try to parse the date string to Date object
             dateFormat.parse(pengembangan.tanggal_mulai) ?: Date() // Return Date() if parsing fails
-        } catch (e: Exception) {
+        } catch (e: Exception) {33
             // If parsing fails, use the current date as fallback
             Date()
         }
@@ -159,43 +159,6 @@ fun ListPengembanganAdminScreen(navController: NavController) {
                     formattedDate = todayDate
                 }
 
-                // Only display a header for a new date
-                if (currentDate != formattedDate) {
-                    currentDate = formattedDate
-
-                    // Create a row with dividers and the date text in the middle
-                    Row(
-                        modifier = Modifier
-                            .fillMaxWidth()
-                            .padding(horizontal = 20.dp, vertical = 8.dp)
-                    ) {
-                        // Left divider
-                        Divider(
-                            color = Color.Gray,
-                            modifier = Modifier
-                                .weight(1f)
-                                .align(Alignment.CenterVertically)
-                        )
-
-                        // Text in the middle
-                        Text(
-                            text = "$formattedDate",
-                            fontWeight = FontWeight.Bold,
-                            fontSize = 16.sp,
-                            color = Color.Black,
-                            modifier = Modifier
-                                .padding(horizontal = 8.dp) // Padding kiri dan kanan pada teks
-                        )
-
-                        // Right divider
-                        Divider(
-                            color = Color.Gray,
-                            modifier = Modifier
-                                .weight(1f)
-                                .align(Alignment.CenterVertically)
-                        )
-                    }
-                }
                 // Create a ScheduleItem from Pengembangan data
                 val scheduleItem = ScheduleItem(
                     task = pengembangan.pengajuan.nama_sistem, // Nama sistem from Pengajuan
@@ -224,7 +187,7 @@ fun ListPengembanganAdminScreen(navController: NavController) {
 
     selectedScheduleItem?.let { scheduleItem ->
         if (showPopup) {
-            SchedulePopup(
+            SchedulePopupAdmin(
                 onDismiss = { showPopup = false },
                 onSave = { newSchedule ->
                     selectedScheduleItem = newSchedule
