@@ -8,6 +8,7 @@ import android.widget.Toast
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -23,6 +24,8 @@ import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
+import androidx.compose.material3.Checkbox
+import androidx.compose.material3.CheckboxDefaults
 import androidx.compose.material3.Divider
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
@@ -133,7 +136,7 @@ fun FormPengujianAdmin(navController: NavController, idPengembangan: String?, na
             .verticalScroll(scrollState)
     ) {
         // Header Section
-        HeaderForm(title = "Formulir Pengujian", navController        )
+        HeaderForm(title = "Formulir Pengujian", navController)
 
 
         // Form Fields Section
@@ -246,12 +249,29 @@ fun FormPengujianAdmin(navController: NavController, idPengembangan: String?, na
                 value = metodePengujian,
                 onValueChange = { metodePengujian = it })
 
-            // Tombol untuk menampilkan/menghilangkan catatan
-            Button(
-                onClick = { showCatatan = !showCatatan }, // Toggle state saat diklik
-                modifier = Modifier.fillMaxWidth()
+            Row(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .padding(end = 10.dp),
+                horizontalArrangement = Arrangement.Start
             ) {
-                Text(if (showCatatan) "Sembunyikan Catatan" else "Tambah Catatan")
+                Text(
+                    text = if (showCatatan) "Sembunyikan" else "Tambah Catatan",
+                    color = Color.Blue, // Menggunakan warna biru agar terlihat interaktif
+                    fontSize = 16.sp,
+                    fontWeight = FontWeight.Bold,
+                    modifier = Modifier
+                        .clickable { showCatatan = !showCatatan } // Toggle state saat diklik
+                        .padding(8.dp) // Padding agar tidak terlalu dekat dengan teks
+                        .background(
+                            color = Color.LightGray.copy(alpha = 0.2f), // Background ringan yang memberi efek interaktif
+                            shape = RoundedCornerShape(8.dp) // Sudut membulat
+                        )
+                        .padding(
+                            horizontal = 16.dp,
+                            vertical = 8.dp
+                        ) // Padding untuk memberi ruang pada teks
+                )
             }
 
             // Tampilkan hanya jika showCatatan bernilai true
@@ -292,7 +312,7 @@ fun FormPengujianAdmin(navController: NavController, idPengembangan: String?, na
                     }
                 },
                 modifier = Modifier
-                    .width(150.dp)
+                    .width(125.dp)
                     .shadow(4.dp, RoundedCornerShape(16.dp)),
                 colors = ButtonDefaults.buttonColors(containerColor = Maroon),
                 shape = RoundedCornerShape(15.dp)
@@ -329,9 +349,93 @@ fun FormPengujianAdmin(navController: NavController, idPengembangan: String?, na
                 Text("Tanda Tangan Penguji:", color = Maroon)
             }
 
+            // Approval Section
+            Text(
+                text = "Approval",
+                fontSize = 18.sp,
+                fontWeight = FontWeight.Bold,
+                color = Color.Black
+            )
+
+            Divider(modifier = Modifier.padding(bottom = 0.dp))
+
+            // Checkbox Options
+            val roles = listOf("Admin", "Pemohon", "QMR", "Kacab")
+            val checkedStates = remember { mutableStateOf(mapOf<String, Boolean>()) }
+
+            Column(modifier = Modifier.fillMaxWidth()) {
+                // First Row with two columns
+                Row(
+                    horizontalArrangement = Arrangement.spacedBy(18.dp), // More space between columns
+                    verticalAlignment = Alignment.CenterVertically,
+                    modifier = Modifier.fillMaxWidth()
+                ) {
+                    // First column: Admin and Pemohon
+                    roles.take(2).forEach { role ->
+                        Row(
+                            verticalAlignment = Alignment.CenterVertically,
+                            modifier = Modifier.weight(1f) // Ensure equal spacing between columns
+                        ) {
+                            Checkbox(
+                                checked = checkedStates.value[role] == true,
+                                onCheckedChange = { isChecked ->
+                                    checkedStates.value = checkedStates.value + (role to isChecked)
+                                },
+                                colors = CheckboxDefaults.colors(
+                                    checkedColor = Maroon, // Warna centang Maroon
+                                    uncheckedColor = Color.LightGray, // Warna checkbox saat tidak dicentang
+                                    checkmarkColor = Color.White // Warna tanda centang itu sendiri
+                                )
+                            )
+                            Text(
+                                text = role,
+                                fontSize = 16.sp,
+                                modifier = Modifier.padding(start = 8.dp),
+                                color = Maroon
+                            )
+                        }
+                    }
+                }
+
+                // Second Row with two columns
+                Row(
+                    horizontalArrangement = Arrangement.spacedBy(18.dp), // More space between columns
+                    verticalAlignment = Alignment.CenterVertically,
+                    modifier = Modifier.fillMaxWidth()
+                ) {
+                    // Second column: QMR and Kacab
+                    roles.drop(2).forEach { role ->
+                        Row(
+                            verticalAlignment = Alignment.CenterVertically,
+                            modifier = Modifier.weight(1f) // Ensure equal spacing between columns
+                        ) {
+                            Checkbox(
+                                checked = checkedStates.value[role] == true,
+                                onCheckedChange = { isChecked ->
+                                    checkedStates.value = checkedStates.value + (role to isChecked)
+                                },
+                                colors = CheckboxDefaults.colors(
+                                    checkedColor = Maroon, // Warna centang Maroon
+                                    uncheckedColor = Color.LightGray, // Warna checkbox saat tidak dicentang
+                                    checkmarkColor = Color.White // Warna tanda centang itu sendiri
+                                )
+                            )
+                            Text(
+                                text = role,
+                                fontSize = 16.sp,
+                                modifier = Modifier.padding(start = 8.dp),
+                                color = Maroon
+                            )
+                        }
+                    }
+                }
+            }
+
             // Submit Button
             Row(
-                modifier = Modifier.fillMaxWidth().padding(end = 10.dp),
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .padding(end = 10.dp),
                 horizontalArrangement = Arrangement.End
             ) {
                 Button(
@@ -352,12 +456,20 @@ fun FormPengujianAdmin(navController: NavController, idPengembangan: String?, na
                             try {
                                 postPengujian(pengujianRequest)
                                 // Show success Toast
-                                Toast.makeText(context, "Pengujian berhasil disubmit!", Toast.LENGTH_SHORT).show()
+                                Toast.makeText(
+                                    context,
+                                    "Pengujian berhasil disubmit!",
+                                    Toast.LENGTH_SHORT
+                                ).show()
                                 // Navigate back after successful submission
                                 navController.popBackStack()
                             } catch (e: Exception) {
                                 // Show error Toast
-                                Toast.makeText(context, "Terjadi kesalahan: ${e.message}", Toast.LENGTH_SHORT).show()
+                                Toast.makeText(
+                                    context,
+                                    "Terjadi kesalahan: ${e.message}",
+                                    Toast.LENGTH_SHORT
+                                ).show()
                             }
                         }
                     },

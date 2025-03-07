@@ -2,6 +2,12 @@ package com.example.applicationsop.presentation.screen.pemohon
 
 import android.os.Build
 import androidx.annotation.RequiresApi
+import androidx.compose.animation.AnimatedVisibility
+import androidx.compose.animation.core.tween
+import androidx.compose.animation.fadeIn
+import androidx.compose.animation.fadeOut
+import androidx.compose.animation.slideIn
+import androidx.compose.animation.slideOut
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.*
 import androidx.compose.material3.*
@@ -18,6 +24,10 @@ import androidx.compose.material.icons.filled.Close
 import androidx.compose.material.icons.filled.History
 import androidx.compose.material.icons.filled.Timer
 import androidx.compose.material.icons.filled.Verified
+import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.ui.unit.IntOffset
 import androidx.compose.ui.zIndex
 import com.example.applicationsop.ui.theme.Maroon
 import com.example.applicationsop.ui.theme.PinkPudar
@@ -28,6 +38,7 @@ import com.example.applicationsop.ui.theme.kuning
 import androidx.navigation.NavController
 import com.example.applicationsop.presentation.component.ProgressCard
 import com.example.applicationsop.presentation.component.ProgressCardRiwayat
+import com.example.applicationsop.presentation.component.SectionTitle
 import com.example.applicationsop.presentation.component.SubmissionCard
 import com.example.applicationsop.presentation.component.header.HeaderHomeUser
 import java.time.LocalTime
@@ -43,16 +54,25 @@ fun HomeUserScreen(
     email: String?,
     devisi: String?
 ) {
+    // State for controlling visibility and offset for FAB
+    val isVisible = remember { mutableStateOf(false) }
+    val fabOffset = remember { mutableStateOf(1000) } // Initial offset for FAB sliding
+
+    // Trigger visibility change after the composable is first shown
+    LaunchedEffect(true) {
+        isVisible.value = true
+    }
+
     Box(
         modifier = Modifier
             .fillMaxSize()
             .background(Putih)
     ) {
-        // Konten utama, termasuk Header, Sections, dan lainnya
+        // Main content (including header, sections, etc.)
         Column(
             modifier = Modifier
                 .fillMaxSize()
-                .padding(bottom = 80.dp) // Memberikan ruang bawah agar FAB tidak tertutup
+                .padding(bottom = 80.dp) // To ensure FAB is not covered
         ) {
             // Header
             HeaderHomeUser(
@@ -83,36 +103,37 @@ fun HomeUserScreen(
             ProgressSection(navController = navController)
         }
 
-        // Floating Action Button (FAB)
-        FloatingActionButton(
-            onClick = {
-                // Navigate to FormUsulanScreen when FAB is clicked
-                navController.navigate("form_usulan?userId=$userId")
-            },
-            modifier = Modifier
-                .align(Alignment.BottomEnd) // Letakkan FAB di bawah kanan
-                .padding(30.dp)
-                .zIndex(1f), // Pastikan FAB selalu berada di atas
-            containerColor = PinkPudar
+        // Animated FAB with sliding and fading animation
+        AnimatedVisibility(
+            visible = isVisible.value,
+            enter = slideIn(initialOffset = { IntOffset(0, 1000) }, animationSpec = tween(durationMillis = 300)),
+            exit = slideOut(targetOffset = { IntOffset(0, fabOffset.value) }, animationSpec = tween(durationMillis = 300))
         ) {
-            Icon(
-                imageVector = Icons.Filled.Add, // Ikon "Add"
-                contentDescription = "Add",
-                tint = Putih
-            )
+            AnimatedVisibility(
+                visible = isVisible.value,
+                enter = fadeIn(animationSpec = tween(durationMillis = 300)),
+                exit = fadeOut(animationSpec = tween(durationMillis = 300))
+            ) {
+                FloatingActionButton(
+                    onClick = {
+                        // Navigate to FormUsulanScreen when FAB is clicked
+                        navController.navigate("form_usulan?userId=$userId")
+                    },
+                    modifier = Modifier
+                        .align(Alignment.BottomEnd) // Position FAB at the bottom right
+                        .padding(top = 700.dp, start = 300.dp)
+                        .zIndex(1f),
+                    containerColor = PinkPudar // FAB background color
+                ) {
+                    Icon(
+                        imageVector = Icons.Filled.Add, // "Add" icon
+                        contentDescription = "Add",
+                        tint = Putih
+                    )
+                }
+            }
         }
     }
-}
-
-@Composable
-fun SectionTitle(title: String) {
-    Text(
-        text = title,
-        fontSize = 18.sp,
-        fontWeight = FontWeight.Bold,
-        modifier = Modifier.padding(horizontal = 25.dp, vertical = 8.dp),
-        color = Color.Black
-    )
 }
 
 @Composable
