@@ -31,16 +31,18 @@ fun ProgressCard(
 
     // Mapping untuk menampilkan "Pengembangan" atau "Pengujian"
     val displayTitle = when (title) {
-        "PengembanganAdmin" -> "Pengembangan" // Menampilkan hanya "Pengembangan"
-        "PengujianAdmin" -> "Pengujian" // Menampilkan hanya "Pengujian"
-        else -> title // Jika tidak ditemukan, tampilkan title apa adanya
+        "Pengembangan Admin" -> "Pengembangan"
+        "Pengujian Admin" -> "Pengujian"
+        "Pengembangan User" -> "Pengembangan"
+        "Pengujian User" -> "Pengujian"
+        else -> title
     }
 
     Card(
         modifier = Modifier
             .fillMaxWidth()
             .padding(vertical = 10.dp)
-            .clickable { // Menambahkan aksi klik untuk navigasi
+            .clickable {
                 if (title == "Pengembangan Admin") {
                     navController.navigate("pengembanganAdmin") // Arahkan ke halaman pengembangan
                 } else if (title == "Pengujian Admin") {
@@ -63,13 +65,13 @@ fun ProgressCard(
         ) {
             Icon(
                 imageVector = icon,
-                contentDescription = title,
+                contentDescription = displayTitle,
                 modifier = Modifier.size(40.dp),
                 tint = Color.White // Mengatur warna ikon menjadi putih
             )
             Spacer(modifier = Modifier.width(16.dp)) // Memberikan jarak antara ikon dan teks
             Text(
-                text = title,
+                text = displayTitle,
                 fontSize = 16.sp,
                 fontWeight = FontWeight.Bold,
                 color = Color.White // Mengatur warna teks menjadi putih
