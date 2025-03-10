@@ -27,6 +27,8 @@ import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.Checkbox
 import androidx.compose.material3.CheckboxDefaults
 import androidx.compose.material3.Divider
+import androidx.compose.material3.RadioButton
+import androidx.compose.material3.RadioButtonDefaults
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
@@ -38,7 +40,6 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.ExperimentalComposeUiApi
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.shadow
-import androidx.compose.ui.focus.focusModifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.Path
 import androidx.compose.ui.graphics.asImageBitmap
@@ -92,7 +93,6 @@ fun FormPengujianAdmin(navController: NavController, idPengembangan: String?, na
     var tanggalPengujian by remember { mutableStateOf("") }
 //    var pelaksanaPengujian by remember { mutableStateOf("") }
 
-
     // Date formatting
     val dateFormat = SimpleDateFormat("yyyy-MM-dd", Locale.getDefault())
 
@@ -119,6 +119,17 @@ fun FormPengujianAdmin(navController: NavController, idPengembangan: String?, na
     // Membuat scrollable column
     val scrollState = rememberScrollState()
 
+    // Validation state
+    var validationErrors by remember { mutableStateOf<Map<String, String>>(emptyMap()) }
+
+    // State untuk input uraian
+    var selectedTestType by remember { mutableStateOf("positif") } // Pilihan uji default adalah "positif"
+    var namaUji by remember { mutableStateOf("") }
+    var kasusUji by remember { mutableStateOf("") }
+    var hasilYangDiharapkan by remember { mutableStateOf("") }
+    var hasilPengujian by remember { mutableStateOf("") }
+    var keterangan by remember { mutableStateOf("Ok") }
+
     // Get user data (userId)
     val context = navController.context
     val userData = getUserData(context)
@@ -128,6 +139,38 @@ fun FormPengujianAdmin(navController: NavController, idPengembangan: String?, na
 
     paths.value.add(PathState(Path(), drawColor.value, drawBrush.value))
 
+    fun validateForm(): Boolean {
+        val errors = mutableMapOf<String, String>()
+
+        // Validasi Versi perangkat
+        if (versiPerangkat.isEmpty()) {
+            errors["versiPerangkat"] = "Versi perangkat tidak boleh kosong"
+        }
+        // Validasi Tujuan pengujian
+        if (tujuanPengujian.isEmpty()) {
+            errors["tujuanPengujian"] = "Tujuan pengujian tidak boleh kosong"
+        }
+        // Validasi Metode pengujian
+        if (metodePengujian.isEmpty()) {
+            errors["metodePengujian"] = "Metode pengujian tidak boleh kosong"
+        }
+        // Validasi Tanggal pengujian
+        if (tanggalPengujian.isEmpty()) {
+            errors["tanggalPengujian"] = "Tanggal pengujian tidak boleh kosong"
+        }
+        // Validasi input uraian
+        if (namaUji.isEmpty()) errors["namaUji"] = "Nama uji tidak boleh kosong"
+        if (kasusUji.isEmpty()) errors["kasusUji"] = "Kasus uji tidak boleh kosong"
+        if (hasilYangDiharapkan.isEmpty()) errors["hasilYangDiharapkan"] =
+            "Hasil yang diharapkan tidak boleh kosong"
+        if (hasilPengujian.isEmpty()) errors["hasilPengujian"] =
+            "Hasil pengujian tidak boleh kosong"
+        if (keterangan.isEmpty()) errors["keterangan"] = "Keterangan tidak boleh kosong"
+
+        // Perbarui pesan error
+        validationErrors = errors
+        return errors.isEmpty()  // Jika tidak ada error, form valid
+    }
 
     Column(
         modifier = Modifier
@@ -195,23 +238,34 @@ fun FormPengujianAdmin(navController: NavController, idPengembangan: String?, na
                 placeholder = "Isi versi perangkat lunak",
                 value = versiPerangkat,
                 onValueChange = { versiPerangkat = it })
+            validationErrors["versiPerangkat"]?.let {
+                Text(text = it, color = Color.Red, fontSize = 12.sp)
+            }
             FormField(
                 label = "Tujuan Pengujian",
                 placeholder = "Isi tujuan pengujian",
                 value = tujuanPengujian,
                 onValueChange = { tujuanPengujian = it })
+            validationErrors["tujuanPengujian"]?.let {
+                Text(text = it, color = Color.Red, fontSize = 12.sp)
+            }
             FormField(
                 label = "Metode Pengujian",
                 placeholder = "Isi metode pengujian",
                 value = metodePengujian,
                 onValueChange = { metodePengujian = it })
-
+            validationErrors["metodePengujian"]?.let {
+                Text(text = it, color = Color.Red, fontSize = 12.sp)
+            }
             DatePickerField(
                 label = "Tanggal Pengujian",
                 selectedDate = tanggalPengujian,
                 onDateSelected = onDateSelected,
-                showLabel = false // Hide the label
+                showLabel = false
             )
+            validationErrors["tanggalPengujian"]?.let {
+                Text(text = it, color = Color.Red, fontSize = 12.sp)
+            }
 
 //           FormField(label = "Pelaksana Pengujian", placeholder = "Isi pelaksana pengujian", value = pelaksanaPengujian, onValueChange = { pelaksanaPengujian = it })
 
@@ -228,26 +282,119 @@ fun FormPengujianAdmin(navController: NavController, idPengembangan: String?, na
             // Garis Pemisah untuk Membantu Visualisasi
             Divider(color = Color.Gray, thickness = 1.dp)
 
+            Row(
+                modifier = Modifier.fillMaxWidth(),
+                horizontalArrangement = Arrangement.spacedBy(16.dp), // Menambah jarak antar elemen
+                verticalAlignment = Alignment.CenterVertically
+            ) {
+                // Uji Positif RadioButton
+                Row(verticalAlignment = Alignment.CenterVertically) {
+                    RadioButton(
+                        selected = selectedTestType == "positif",
+                        onClick = { selectedTestType = "positif" },
+                        colors = RadioButtonDefaults.colors(
+                            selectedColor = Maroon,  // Warna centang yang aktif
+                            unselectedColor = Color.LightGray  // Warna checkbox yang tidak aktif
+                        )
+                    )
+                    Text(
+                        "Uji Positif",
+                        modifier = Modifier.padding(start = 8.dp),
+                        color = Color.Black
+                    )
+                }
+
+                // Pemisah
+                Text("|", color = Color.Black, fontSize = 18.sp)
+
+                // Uji Negatif RadioButton
+                Row(verticalAlignment = Alignment.CenterVertically) {
+                    RadioButton(
+                        selected = selectedTestType == "negatif",
+                        onClick = { selectedTestType = "negatif" },
+                        colors = RadioButtonDefaults.colors(
+                            selectedColor = Maroon,  // Warna centang yang aktif
+                            unselectedColor = Color.LightGray  // Warna checkbox yang tidak aktif
+                        )
+                    )
+                    Text(
+                        "Uji Negatif",
+                        modifier = Modifier.padding(start = 8.dp),
+                        color = Color.Black
+                    )
+                }
+            }
+
             FormField(
                 label = "Nama Uji",
                 placeholder = "Isi nama uji",
-                value = versiPerangkat,
-                onValueChange = { versiPerangkat = it })
+                value = namaUji,
+                onValueChange = { namaUji = it })
+            validationErrors["namaUji"]?.let {
+                Text(text = it, color = Color.Red, fontSize = 12.sp)
+            }
             FormField(
                 label = "Kasus Uji",
                 placeholder = "Isi kasus uji",
-                value = tujuanPengujian,
-                onValueChange = { tujuanPengujian = it })
+                value = kasusUji,
+                onValueChange = { kasusUji = it })
+            validationErrors["kasusUji"]?.let {
+                Text(text = it, color = Color.Red, fontSize = 12.sp)
+            }
             FormField(
                 label = "Hasil Yang Diharapkan",
                 placeholder = "Isi hasil yang diharapkan",
-                value = metodePengujian,
-                onValueChange = { metodePengujian = it })
+                value = hasilYangDiharapkan,
+                onValueChange = { hasilYangDiharapkan = it })
+            validationErrors["hasilYangDiharapkan"]?.let {
+                Text(text = it, color = Color.Red, fontSize = 12.sp)
+            }
             FormField(
                 label = "Hasil Pengujian",
                 placeholder = "Isi hasil pengujian",
-                value = metodePengujian,
-                onValueChange = { metodePengujian = it })
+                value = hasilPengujian,
+                onValueChange = { hasilPengujian = it })
+            validationErrors["hasilPengujian"]?.let {
+                Text(text = it, color = Color.Red, fontSize = 12.sp)
+            }
+
+            Row(
+                modifier = Modifier.fillMaxWidth(),
+                horizontalArrangement = Arrangement.spacedBy(16.dp), // Menambah jarak antar elemen
+                verticalAlignment = Alignment.CenterVertically
+            ) {
+                // Uji Positif RadioButton
+                Row(verticalAlignment = Alignment.CenterVertically) {
+                    RadioButton(
+                        selected = keterangan == "Ok",
+                        onClick = { keterangan = "Ok" },
+                        colors = RadioButtonDefaults.colors(
+                            selectedColor = Maroon,  // Warna centang yang aktif
+                            unselectedColor = Color.LightGray  // Warna checkbox yang tidak aktif
+                        )
+                    )
+                    Text("Ok", modifier = Modifier.padding(start = 8.dp), color = Color.Black)
+                }
+
+                // Pemisah
+                Text("|", color = Color.Black, fontSize = 18.sp)
+
+                // Uji Negatif RadioButton
+                Row(verticalAlignment = Alignment.CenterVertically) {
+                    RadioButton(
+                        selected = keterangan == "Ndak Ok",
+                        onClick = { keterangan = "Ndak Ok" },
+                        colors = RadioButtonDefaults.colors(
+                            selectedColor = Maroon,  // Warna centang yang aktif
+                            unselectedColor = Color.LightGray  // Warna checkbox yang tidak aktif
+                        )
+                    )
+                    Text("Not Ok", modifier = Modifier.padding(start = 8.dp), color = Color.Black)
+                }
+            }
+            validationErrors["keterangan"]?.let {
+                Text(text = it, color = Color.Red, fontSize = 12.sp)
+            }
 
             Row(
                 modifier = Modifier
@@ -440,36 +587,44 @@ fun FormPengujianAdmin(navController: NavController, idPengembangan: String?, na
             ) {
                 Button(
                     onClick = {
-                        val pengujianRequest = PengujianRequest(
-                            pengembangan_id = idPengembangan,
-                            perangkat_lunak = namaSistem,
-                            versi = versiPerangkat,
-                            tujuan = tujuanPengujian,
-                            metode = metodePengujian,
-                            tanggal = tanggalPengujian,
-                            pelaksana_id = userId // Using userId from getUserData
-                        )
-                        val jsonPayload = Json.encodeToString(pengujianRequest)
-                        println("Request payload: $jsonPayload")
-                        // Call the API to post the Pengujian data
-                        coroutineScope.launch {
-                            try {
-                                postPengujian(pengujianRequest)
-                                // Show success Toast
-                                Toast.makeText(
-                                    context,
-                                    "Pengujian berhasil disubmit!",
-                                    Toast.LENGTH_SHORT
-                                ).show()
-                                // Navigate back after successful submission
-                                navController.popBackStack()
-                            } catch (e: Exception) {
-                                // Show error Toast
-                                Toast.makeText(
-                                    context,
-                                    "Terjadi kesalahan: ${e.message}",
-                                    Toast.LENGTH_SHORT
-                                ).show()
+                        if (validateForm()) {
+                            val pengujianRequest = PengujianRequest(
+                                pengembangan_id = idPengembangan,
+                                perangkat_lunak = namaSistem,
+                                versi = versiPerangkat,
+                                tujuan = tujuanPengujian,
+                                metode = metodePengujian,
+                                tanggal = tanggalPengujian,
+                                pelaksana_id = userId,
+                                nama_uji = namaUji,
+                                kasus_uji = kasusUji,
+                                hasil_diharapkan = hasilYangDiharapkan,
+                                hasil_pengujian = hasilPengujian,
+                                status = keterangan,
+                                jenis_uji = selectedTestType
+                            )
+                            val jsonPayload = Json.encodeToString(pengujianRequest)
+                            println("Request payload: $jsonPayload")
+                            // Call the API to post the Pengujian data
+                            coroutineScope.launch {
+                                try {
+                                    postPengujian(pengujianRequest)
+                                    // Show success Toast
+                                    Toast.makeText(
+                                        context,
+                                        "Pengujian berhasil disubmit!",
+                                        Toast.LENGTH_SHORT
+                                    ).show()
+                                    // Navigate back after successful submission
+                                    navController.popBackStack()
+                                } catch (e: Exception) {
+                                    // Show error Toast
+                                    Toast.makeText(
+                                        context,
+                                        "Terjadi kesalahan: ${e.message}",
+                                        Toast.LENGTH_SHORT
+                                    ).show()
+                                }
                             }
                         }
                     },
@@ -485,4 +640,3 @@ fun FormPengujianAdmin(navController: NavController, idPengembangan: String?, na
         }
     }
 }
-

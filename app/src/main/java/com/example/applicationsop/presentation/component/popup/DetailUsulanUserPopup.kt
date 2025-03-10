@@ -328,7 +328,10 @@ fun DetailPopupUsulanUser(
                     Spacer(modifier = Modifier.height(16.dp))
                     Button(
                         onClick = onEditClick,
-                        modifier = Modifier.fillMaxWidth(),
+                        modifier = Modifier
+                            .width(100.dp)
+                            .align(Alignment.End)
+                            .shadow(4.dp, RoundedCornerShape(16.dp)),
                         colors = ButtonDefaults.buttonColors(containerColor = Maroon),
                         shape = RoundedCornerShape(16.dp)
                     ) {

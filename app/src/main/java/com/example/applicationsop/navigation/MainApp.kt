@@ -9,6 +9,7 @@ import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
 import com.example.applicationsop.loginScreen.LoginScreen
 import com.example.applicationsop.presentation.screen.ProfileScreen1
+import com.example.applicationsop.presentation.screen.admin.DetailPengujianAdmin
 import com.example.applicationsop.presentation.screen.admin.form.FormPengujianAdmin
 import com.example.applicationsop.presentation.screen.admin.HomeAdminScreen
 import com.example.applicationsop.presentation.screen.admin.list.ListPengajuanScreenAdmin1
@@ -16,7 +17,6 @@ import com.example.applicationsop.presentation.screen.admin.list.ListPengajuanSc
 import com.example.applicationsop.presentation.screen.admin.list.ListPengajuanScreenAdmin3
 import com.example.applicationsop.presentation.screen.admin.ListPengembanganAdminScreen
 import com.example.applicationsop.presentation.screen.admin.ListPengujianScreenAdmin
-import com.example.applicationsop.presentation.screen.admin.form.FormUraianPengujianAdmin
 import com.example.applicationsop.presentation.screen.admin.form.ScheduleForm
 import com.example.applicationsop.presentation.screen.pemohon.form.FormUsulanScreen
 import com.example.applicationsop.presentation.screen.pemohon.HomeUserScreen
@@ -33,7 +33,7 @@ fun MainApp(navController: NavController, token: String?, userId: String?, role:
     NavHost(navController = navController, startDestination = if (token != null) "home" else "login") {
 
         composable("login") {
-            LoginScreen(navController = navController) // Pass navController to LoginScreen
+            LoginScreen(navController = navController)
         }
         composable("home") {
             if (token != null) {
@@ -107,8 +107,6 @@ fun MainApp(navController: NavController, token: String?, userId: String?, role:
             val alasan = backStackEntry.arguments?.getString("alasan")
             FormEditUsulan(navController = navController, id = id, nama_Sistem = namaSistem, hari_Tanggal = hariTanggal, jenis_Sistem = jenisSistem,rencana_Anggaran = rencanaAnggaran,masalah_Sistem=masalahSistem,output_Hasil=outputHasil,status=status, alasan_penolakan = alasan)
         }
-
-
 
         // Profile
         composable("profile?token={token}&userId={userId}&role={role}&name={name}&email={email}&devisi={devisi}") { backStackEntry ->
@@ -184,9 +182,15 @@ fun MainApp(navController: NavController, token: String?, userId: String?, role:
             ListPengujianScreenAdmin(navController = navController)
         }
 
-        // Pengujian Admin
-        composable("Uraianpengujian") {
-            FormUraianPengujianAdmin(navController = navController)
+        // Halaman Detail Pengujian
+        composable("DetailPengujianAdmin?id={id}&taskName={taskName}") {backStackEntry ->
+            val id = backStackEntry.arguments?.getString("id")
+            val taskName = backStackEntry.arguments?.getString("taskName")
+            DetailPengujianAdmin(
+                navController = navController,
+                idPengembangan = id,
+                namaSistem = taskName,
+            )
         }
 
         // Halaman Form Pengujian
@@ -196,7 +200,7 @@ fun MainApp(navController: NavController, token: String?, userId: String?, role:
             FormPengujianAdmin(
                 navController = navController,
                 idPengembangan = id,
-                namaSistem = taskName, // Pastikan Anda mengirimkan parameter yang diperlukan
+                namaSistem = taskName,
             )
         }
 
