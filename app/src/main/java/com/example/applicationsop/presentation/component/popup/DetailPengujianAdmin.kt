@@ -87,7 +87,7 @@ fun DetailPopupPengujian(
                     )
                 }
                 Text(
-                    text = "Detail Usulan",
+                    text = "Informasi Pengujian",
                     fontSize = 18.sp,
                     fontWeight = FontWeight.Bold,
                     color = Color.Black,
@@ -241,7 +241,9 @@ fun DetailPopupPengujian(
                     ) {
                         // Tombol See All
                         Button(
-                            onClick = { /* Tindakan tombol See All */ },
+                            onClick = {
+                                navController.navigate("DetailPengujianAdmin?id=123&taskName=TestTask")
+                            },
                             modifier = Modifier
                                 .width(100.dp)
                                 .shadow(4.dp, RoundedCornerShape(16.dp)),

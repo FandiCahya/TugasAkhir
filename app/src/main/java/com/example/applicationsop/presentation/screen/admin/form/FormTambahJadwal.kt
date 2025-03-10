@@ -45,9 +45,40 @@ fun ScheduleForm(
     val scrollState = rememberScrollState()
     var isLoading by remember { mutableStateOf(false) }
     var responseMessage by remember { mutableStateOf("") }
+    var validationErrors by remember { mutableStateOf<Map<String, String>>(emptyMap()) }
 
     // Create a trigger state to launch the effect
     val triggerApiCall = remember { mutableStateOf(false) }
+
+    // Fungsi validasi
+    fun validateForm(): Boolean {
+        var errors = mutableMapOf<String, String>()
+
+        // Validasi Tanggal Mulai dan Tanggal Selesai
+        if (startDate.isEmpty()) {
+            errors["startDate"] = "Tanggal mulai tidak boleh kosong."
+        }
+        if (endDate.isEmpty()) {
+            errors["endDate"] = "Tanggal selesai tidak boleh kosong."
+        }
+        if (startDate.isNotEmpty() && endDate.isNotEmpty() && startDate > endDate) {
+            errors["dateRange"] = "Tanggal mulai tidak boleh lebih besar dari tanggal selesai."
+        }
+
+        // Validasi Keterangan
+        if (description.isEmpty()) {
+            errors["description"] = "Keterangan tidak boleh kosong."
+        }
+
+        // Validasi Tahap Pengerjaan
+        if (selectedStages.isEmpty()) {
+            errors["stages"] = "Pilih setidaknya satu tahap pengerjaan."
+        }
+
+        // Jika ada error, tampilkan pesan
+        validationErrors = errors
+        return errors.isEmpty()
+    }
 
     // Form fields and layout
     Column(
@@ -107,11 +138,18 @@ fun ScheduleForm(
                 selectedDate = startDate,
                 onDateSelected = { startDate = it }
             )
+            validationErrors["startDate"]?.let {
+                Text(text = it, color = Color.Red, fontSize = 12.sp)
+            }
+
             DatePickerField(
                 label = "Tanggal Selesai",
                 selectedDate = endDate,
                 onDateSelected = { endDate = it }
             )
+            validationErrors["endDate"]?.let {
+                Text(text = it, color = Color.Red, fontSize = 12.sp)
+            }
 
             // Use the imported FormField for Keterangan
             FormField(
@@ -120,6 +158,9 @@ fun ScheduleForm(
                 value = description,
                 onValueChange = { description = it }
             )
+            validationErrors["description"]?.let {
+                Text(text = it, color = Color.Red, fontSize = 12.sp)
+            }
         }
 
         Spacer(modifier = Modifier.height(16.dp))
@@ -192,6 +233,11 @@ fun ScheduleForm(
             }
         }
 
+        // Tampilkan pesan error jika tahap pengerjaan tidak dipilih
+        validationErrors["stages"]?.let {
+            Text(text = it, color = Color.Red, fontSize = 12.sp, modifier = Modifier.padding(start = 20.dp))
+        }
+
         Spacer(modifier = Modifier.height(16.dp))
 
         Box(
@@ -202,7 +248,9 @@ fun ScheduleForm(
         ) {
             Button(
                 onClick = {
-                    triggerApiCall.value = true
+                    if (validateForm()) {
+                        triggerApiCall.value = true
+                    }
                 },
                 modifier = Modifier
                     .size(120.dp, 40.dp)
