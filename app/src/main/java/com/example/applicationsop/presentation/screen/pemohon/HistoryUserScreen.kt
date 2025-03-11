@@ -1,4 +1,4 @@
-package com.example.applicationsop.presentation.screen.admin
+package com.example.applicationsop.presentation.screen.pemohon
 
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.*
@@ -25,7 +25,7 @@ import java.util.Date
 import java.util.Locale
 
 @Composable
-fun HistoryAdmin(navController: NavController) {
+fun HistoryUser(navController: NavController) {
     var showPopup by remember { mutableStateOf(false) }
     var selectedDetail by remember { mutableStateOf(DetailPengujian(id = "")) }
     var pengujianList by remember { mutableStateOf<List<Pengujian>>(emptyList()) }
@@ -70,7 +70,7 @@ fun HistoryAdmin(navController: NavController) {
                     tujuanPengujian = pengujian.tujuan,  // Purpose from Pengujian object
                     metodePengujian = pengujian.metode,  // Testing method from Pengujian object
                     tanggalPengujian = pengujian.tanggal,  // Date of testing
-                    pelaksanaPengujian = pengujian.pelaksana.name,  // Executor's name
+                    pelaksanaPengujian = pengujian.pelaksana.name,
                     status = pengujian.status,
                     onClick = {
                         // Populate selectedDetail with all required data

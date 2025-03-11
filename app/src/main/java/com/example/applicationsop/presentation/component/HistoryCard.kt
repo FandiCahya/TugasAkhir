@@ -1,5 +1,6 @@
 package com.example.applicationsop.presentation.component
 
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxWidth
@@ -16,17 +17,33 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.navigation.NavController
 
 @Composable
 fun ProgressCardRiwayat(
     title: String,
     icon: androidx.compose.ui.graphics.vector.ImageVector,
-    color: Color
+    color: Color,
+    navController: NavController,
 ) {
+    // Mapping untuk menampilkan "Pengembangan" atau "Pengujian"
+    val displayTitle = when (title) {
+        "Riwayat Admin" -> "Riwayat"
+        "Riwayat User" -> "Riwayat"
+        else -> title
+    }
+
     Card(
         modifier = Modifier
             .fillMaxWidth()
-            .padding(vertical = 10.dp), // Padding vertikal antar card
+            .padding(vertical = 10.dp)
+            .clickable{
+                if (title == "Riwayat Admin") {
+                    navController.navigate("historyAdmin")
+                } else if (title == "Riwayat User") {
+                    navController.navigate("historyUser")
+                }
+            },
         colors = CardDefaults.cardColors(
             containerColor = color
         ),
@@ -41,7 +58,7 @@ fun ProgressCardRiwayat(
         ) {
             // Teks di tengah
             Text(
-                text = title,
+                text = displayTitle,
                 fontSize = 16.sp,
                 fontWeight = FontWeight.Bold,
                 color = Color.White // Mengatur warna teks menjadi putih
@@ -50,7 +67,7 @@ fun ProgressCardRiwayat(
             // Ikon diletakkan di sebelah kanan teks
             Icon(
                 imageVector = icon,
-                contentDescription = title,
+                contentDescription = displayTitle,
                 modifier = Modifier
                     .size(40.dp)
                     .padding(start = 5.dp),
