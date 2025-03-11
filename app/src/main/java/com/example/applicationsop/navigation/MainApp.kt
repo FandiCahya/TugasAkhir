@@ -11,6 +11,7 @@ import com.example.applicationsop.loginScreen.LoginScreen
 import com.example.applicationsop.presentation.screen.ProfileScreen1
 import com.example.applicationsop.presentation.screen.admin.DetailApproval
 import com.example.applicationsop.presentation.screen.admin.DetailPengujianAdmin
+import com.example.applicationsop.presentation.screen.admin.HistoryAdmin
 import com.example.applicationsop.presentation.screen.admin.form.FormPengujianAdmin
 import com.example.applicationsop.presentation.screen.admin.HomeAdminScreen
 import com.example.applicationsop.presentation.screen.admin.list.ListPengajuanScreenAdmin1
@@ -19,6 +20,7 @@ import com.example.applicationsop.presentation.screen.admin.list.ListPengajuanSc
 import com.example.applicationsop.presentation.screen.admin.ListPengembanganAdminScreen
 import com.example.applicationsop.presentation.screen.admin.ListPengujianScreenAdmin
 import com.example.applicationsop.presentation.screen.admin.form.ScheduleForm
+import com.example.applicationsop.presentation.screen.pemohon.HistoryUser
 import com.example.applicationsop.presentation.screen.pemohon.form.FormUsulanScreen
 import com.example.applicationsop.presentation.screen.pemohon.HomeUserScreen
 import com.example.applicationsop.presentation.screen.pemohon.ListPengembanganScreen
@@ -160,6 +162,11 @@ fun MainApp(navController: NavController, token: String?, userId: String?, role:
             ListPengujianScreenUser(navController = navController)
         }
 
+        // History User
+        composable("historyUser") {
+            HistoryUser(navController = navController)
+        }
+
         ////////////////////////// ADMIN ///////////////////////
 
         // List Pengajuan Admin
@@ -185,6 +192,11 @@ fun MainApp(navController: NavController, token: String?, userId: String?, role:
         // Pengujian Admin
         composable("pengujianAdmin") {
             ListPengujianScreenAdmin(navController = navController)
+        }
+
+        // History Admin
+        composable("historyAdmin") {
+            HistoryAdmin(navController = navController)
         }
 
         // Halaman Detail Pengujian

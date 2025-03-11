@@ -140,6 +140,6 @@ fun ProgressSection(navController: NavController) {
         )
 
         // Card Riwayat dengan Icon di bawah
-        ProgressCardRiwayat("Riwayat", Icons.Filled.History, Maroon)
+        ProgressCardRiwayat("Riwayat Admin", Icons.Filled.History, Maroon, navController)
     }
 }
