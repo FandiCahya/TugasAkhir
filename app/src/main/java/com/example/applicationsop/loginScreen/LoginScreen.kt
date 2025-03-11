@@ -67,48 +67,49 @@ fun LoginScreen(navController: NavController) {
             // Subtitle Text
             SubtitleTextComposable()
 
-            // email TextField
-            TextInputComposable(
-                label = "email",
-                value = email.value,
-                onValueChange = { email.value = it },
-                iconId = R.drawable.ic_home, // Ganti dengan ikon yang sesuai untuk email
-                isPassword = false // Untuk email, tidak perlu hide/show password
-            )
-
-            Spacer(modifier = Modifier.height(16.dp))
-
-            // Password TextField
-            TextInputComposable(
-                label = "Password",
-                value = password.value,
-                onValueChange = { password.value = it },
-                iconId = R.drawable.ic_key, // Ganti dengan ikon yang sesuai untuk password
-                isPassword = true,
-                isPasswordVisible = passwordVisible.value,
-                onPasswordVisibilityChange = {
-                    passwordVisible.value = it
-                } // Fungsi untuk toggle password visibility
-            )
-
-            Spacer(modifier = Modifier.height(16.dp))
-
-            // Row to make login button and forgot password link inline
-            Row(
-                modifier = Modifier.fillMaxWidth(),
-                horizontalArrangement = Arrangement.SpaceBetween
+            Column(
+                modifier = Modifier.fillMaxSize()
             ) {
-                // Forgot password link
-                ForgotPasswordLinkComposable {
-                    // Handle forgot password click
-                }
-
-                // Login Button
-                LoginButtonComposable(
-                    email = email.value,
-                    password = password.value,
-                    navController = navController
+                // Pindahkan ke sini
+                TextInputComposable(
+                    label = "Email",
+                    value = email.value,
+                    onValueChange = { email.value = it },
+                    iconId = R.drawable.ic_home,
+                    isPassword = false
                 )
+
+                TextInputComposable(
+                    label = "Password",
+                    value = password.value,
+                    onValueChange = { password.value = it },
+                    iconId = R.drawable.ic_key,
+                    isPassword = true,
+                    isPasswordVisible = passwordVisible.value,
+                    onPasswordVisibilityChange = {
+                        passwordVisible.value = it
+                    }
+                )
+
+                Spacer(modifier = Modifier.height(16.dp))
+
+                // Row to make login button and forgot password link inline
+                Row(
+                    modifier = Modifier.fillMaxWidth(),
+                    horizontalArrangement = Arrangement.SpaceBetween
+                ) {
+                    // Forgot password link
+                    ForgotPasswordLinkComposable {
+                        // Handle forgot password click
+                    }
+
+                    // Login Button
+                    LoginButtonComposable(
+                        email = email.value,
+                        password = password.value,
+                        navController = navController
+                    )
+                }
             }
         }
     }
@@ -270,7 +271,11 @@ fun LoginButtonComposable(
 
                 } else {
                     // Jika login gagal, tampilkan pesan error
-                    Toast.makeText(context, "Login failed, please try again.", Toast.LENGTH_SHORT)
+                    Toast.makeText(
+                        context,
+                        "Login failed, please try again.",
+                        Toast.LENGTH_SHORT
+                    )
                         .show()
                 }
             }
@@ -303,7 +308,16 @@ fun saveToken(context: Context, token: String) {
     editor.putString("TOKEN", token)  // Save the token with the key "TOKEN"
     editor.apply()  // Commit changes
 }
-fun saveUserData(context: Context, token: String, userId: String, role: String, name: String, email: String, devisi: String) {
+
+fun saveUserData(
+    context: Context,
+    token: String,
+    userId: String,
+    role: String,
+    name: String,
+    email: String,
+    devisi: String
+) {
     val sharedPreferences = context.getSharedPreferences("MyPrefs", Activity.MODE_PRIVATE)
     val editor = sharedPreferences.edit()
     editor.putString("TOKEN", token)  // Simpan token
