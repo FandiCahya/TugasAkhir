@@ -1,4 +1,4 @@
-package com.example.applicationsop.presentation.screen.admin
+package com.example.applicationsop.presentation.screen.pemohon
 
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.*
@@ -25,7 +25,7 @@ import java.util.Date
 import java.util.Locale
 
 @Composable
-fun ListPengujianScreenAdmin(navController: NavController) {
+fun ListPengujianScreenUser(navController: NavController) {
     var showPopup by remember { mutableStateOf(false) }
     var selectedDetail by remember { mutableStateOf(DetailPengujian(id = "")) }
     var pengujianList by remember { mutableStateOf<List<Pengujian>>(emptyList()) }

@@ -9,6 +9,7 @@ import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
 import com.example.applicationsop.loginScreen.LoginScreen
 import com.example.applicationsop.presentation.screen.ProfileScreen1
+import com.example.applicationsop.presentation.screen.admin.DetailApproval
 import com.example.applicationsop.presentation.screen.admin.DetailPengujianAdmin
 import com.example.applicationsop.presentation.screen.admin.form.FormPengujianAdmin
 import com.example.applicationsop.presentation.screen.admin.HomeAdminScreen
@@ -21,6 +22,7 @@ import com.example.applicationsop.presentation.screen.admin.form.ScheduleForm
 import com.example.applicationsop.presentation.screen.pemohon.form.FormUsulanScreen
 import com.example.applicationsop.presentation.screen.pemohon.HomeUserScreen
 import com.example.applicationsop.presentation.screen.pemohon.ListPengembanganScreen
+import com.example.applicationsop.presentation.screen.pemohon.ListPengujianScreenUser
 import com.example.applicationsop.presentation.screen.pemohon.form.FormEditUsulan
 import com.example.applicationsop.presentation.screen.pemohon.list.ListPengajuanScreenButuhKonfirmasi
 import com.example.applicationsop.presentation.screen.pemohon.list.ListPengajuanScreenDiterima
@@ -85,8 +87,6 @@ fun MainApp(navController: NavController, token: String?, userId: String?, role:
             val devisi = backStackEntry.arguments?.getString("devisi")
             HomeAdminScreen(navController = navController, token = token, userId = userId, role = role, name = name, email = email, devisi = devisi)
         }
-
-
 
         // Halaman FormUsulanScreen User
         composable("form_usulan?userId={userId}") { backStackEntry ->
@@ -155,6 +155,11 @@ fun MainApp(navController: NavController, token: String?, userId: String?, role:
             ListPengembanganScreen(navController = navController)
         }
 
+        // Pengujian User
+        composable("pengujianUser") {
+            ListPengujianScreenUser(navController = navController)
+        }
+
         ////////////////////////// ADMIN ///////////////////////
 
         // List Pengajuan Admin
@@ -193,6 +198,11 @@ fun MainApp(navController: NavController, token: String?, userId: String?, role:
             )
         }
 
+        composable("detail_approval_screen/{idPengujian}") { backStackEntry ->
+            val idPengujian = backStackEntry.arguments?.getString("idPengujian")
+            DetailApproval(navController = navController, idPengujian = idPengujian)
+        }
+
         // Halaman Form Pengujian
         composable("formPengujian?id={id}&taskName={taskName}") {backStackEntry ->
             val id = backStackEntry.arguments?.getString("id")
@@ -211,7 +221,6 @@ fun MainApp(navController: NavController, token: String?, userId: String?, role:
             ScheduleForm(
                 navController = navController, id = id,namaSistem = namaSistem,
                 onSave = { scheduleItem ->
-                    // Misalnya, kamu menyimpan scheduleItem ke database atau state management
                     navController.popBackStack() // Kembali ke halaman sebelumnya setelah menyimpan
                 }
             )

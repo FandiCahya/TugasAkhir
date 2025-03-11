@@ -49,6 +49,8 @@ fun ProgressCard(
                     navController.navigate("pengujianAdmin") // Arahkan ke halaman pengujian
                 } else if (title == "Pengembangan User") {
                     navController.navigate("pengembanganUser") // Arahkan ke halaman pengembangan
+                }else if (title == "Pengujian User") {
+                    navController.navigate("pengujianUser") // Arahkan ke halaman pengembangan
                 }
             },
         colors = CardDefaults.cardColors(

@@ -37,6 +37,7 @@ import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.navigation.NavController
+import com.example.applicationsop.data.DetailPengujian
 import com.example.applicationsop.ui.theme.Maroon
 import com.example.applicationsop.ui.theme.abang
 import com.example.applicationsop.ui.theme.ijo
@@ -255,7 +256,9 @@ fun DetailPopupPengujian(
 
                         // Tombol Approval
                         Button(
-                            onClick = { /* Tindakan tombol Approval */ },
+                            onClick = {  // Example: Navigating to DetailApproval with a mock DetailPengujian object
+                                val detailPengujian = DetailPengujian(id = "1", namaSistem = "Pengujian 1", status = "Approved")
+                                navController.navigate("detail_approval_screen/${detailPengujian.id}") },
                             modifier = Modifier
                                 .width(100.dp)
                                 .shadow(4.dp, RoundedCornerShape(16.dp)),

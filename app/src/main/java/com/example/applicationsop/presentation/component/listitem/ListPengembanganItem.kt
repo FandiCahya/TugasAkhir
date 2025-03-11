@@ -120,6 +120,7 @@ fun ListPengembangan(
                     fontSize = 14.sp,
                     color = when (status) {
                         "developed" -> kuning
+                        "finished" -> ijo
                         "testing" -> ijo
                         else -> Color.Black
                     }
