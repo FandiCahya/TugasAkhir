@@ -40,7 +40,7 @@ fun HeaderWithSearch(
     Box(
         modifier = Modifier
             .fillMaxWidth()
-            .height(160.dp)
+            .height(100.dp)
             .background(
                 brush = Brush.verticalGradient(
                     colors = listOf(Maroon, Color.Transparent), // Gradasi dari Maroon ke Transparan
@@ -73,41 +73,41 @@ fun HeaderWithSearch(
         }
 
         // Search bar positioned below the title and center it vertically
-        Column(
-            modifier = Modifier
-                .fillMaxWidth()
-                .align(Alignment.BottomCenter) // Align the search bar at the bottom and center horizontally
-                .padding(horizontal = 50.dp)
-                .padding(bottom = 30.dp)
-        ) {
-            TextField(
-                value = "",
-                onValueChange = { /* Handle text input here */ },
-                placeholder = {
-                    Text(
-                        text = "Cari",
-                        color = Color.Gray, // Adjust color as needed
-                        style = androidx.compose.ui.text.TextStyle(fontSize = 12.sp)
-                    )
-                },
-                leadingIcon = {
-                    Icon(
-                        imageVector = Icons.Filled.Search,
-                        contentDescription = "Search",
-                        tint = Maroon,
-                        modifier = Modifier.padding(start = 20.dp)
-                    )
-                },
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .height(45.dp),
-                shape = RoundedCornerShape(50.dp),
-//                colors = TextFieldDefaults.textFieldColors(
-//                    containerColor = Color.White,
-//                    focusedIndicatorColor = Color.Transparent,  // Remove the focus indicator line
-//                    unfocusedIndicatorColor = Color.Transparent // Remove the unfocused indicator line
-//                )
-            )
-        }
+//        Column(
+//            modifier = Modifier
+//                .fillMaxWidth()
+//                .align(Alignment.BottomCenter) // Align the search bar at the bottom and center horizontally
+//                .padding(horizontal = 50.dp)
+//                .padding(bottom = 30.dp)
+//        ) {
+//            TextField(
+//                value = "",
+//                onValueChange = { /* Handle text input here */ },
+//                placeholder = {
+//                    Text(
+//                        text = "Cari",
+//                        color = Color.Gray, // Adjust color as needed
+//                        style = androidx.compose.ui.text.TextStyle(fontSize = 12.sp)
+//                    )
+//                },
+//                leadingIcon = {
+//                    Icon(
+//                        imageVector = Icons.Filled.Search,
+//                        contentDescription = "Search",
+//                        tint = Maroon,
+//                        modifier = Modifier.padding(start = 20.dp)
+//                    )
+//                },
+//                modifier = Modifier
+//                    .fillMaxWidth()
+//                    .height(45.dp),
+//                shape = RoundedCornerShape(50.dp),
+////                colors = TextFieldDefaults.textFieldColors(
+////                    containerColor = Color.White,
+////                    focusedIndicatorColor = Color.Transparent,  // Remove the focus indicator line
+////                    unfocusedIndicatorColor = Color.Transparent // Remove the unfocused indicator line
+////                )
+//            )
+//        }
     }
 }
