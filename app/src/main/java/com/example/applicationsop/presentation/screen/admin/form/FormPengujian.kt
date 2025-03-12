@@ -26,11 +26,14 @@ import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.Checkbox
 import androidx.compose.material3.CheckboxDefaults
+import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.Divider
 import androidx.compose.material3.RadioButton
 import androidx.compose.material3.RadioButtonDefaults
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.MutableState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
@@ -49,8 +52,12 @@ import androidx.compose.ui.unit.sp
 import androidx.media3.common.util.Log
 import androidx.media3.common.util.UnstableApi
 import androidx.navigation.NavController
+import com.example.applicationsop.Api.fetchUserList
 import com.example.applicationsop.Api.postPengujian
+import com.example.applicationsop.models.CatatanPengujian
+import com.example.applicationsop.models.PengujianDetail
 import com.example.applicationsop.models.PengujianRequest
+import com.example.applicationsop.models.Users
 import com.example.applicationsop.presentation.component.DatePickerField
 import com.example.applicationsop.presentation.component.FormField
 import com.example.applicationsop.presentation.component.header.HeaderForm
@@ -91,6 +98,10 @@ fun FormPengujianAdmin(navController: NavController, idPengembangan: String?, na
     var tujuanPengujian by remember { mutableStateOf("") }
     var metodePengujian by remember { mutableStateOf("") }
     var tanggalPengujian by remember { mutableStateOf("") }
+    var UraianCatatan by remember { mutableStateOf("") }
+    var rencanacatatan by remember { mutableStateOf("") }
+
+    val checkedUserIds = remember { mutableStateOf(emptyList<String>()) }
 //    var pelaksanaPengujian by remember { mutableStateOf("") }
 
     // Date formatting
@@ -123,19 +134,19 @@ fun FormPengujianAdmin(navController: NavController, idPengembangan: String?, na
     var validationErrors by remember { mutableStateOf<Map<String, String>>(emptyMap()) }
 
     // State untuk input uraian
-    var selectedTestType by remember { mutableStateOf("positif") } // Pilihan uji default adalah "positif"
+    var selectedKeterangan by remember { mutableStateOf("uji_positif") } // Pilihan uji default adalah "positif"
     var namaUji by remember { mutableStateOf("") }
     var kasusUji by remember { mutableStateOf("") }
     var hasilYangDiharapkan by remember { mutableStateOf("") }
     var hasilPengujian by remember { mutableStateOf("") }
-    var keterangan by remember { mutableStateOf("Ok") }
+    var keteranganStatus by remember { mutableStateOf("OK") }
 
     // Get user data (userId)
     val context = navController.context
     val userData = getUserData(context)
     val userId = userData["userId"]
 
-    println("UserId pengujian$userId")
+//    println("UserId pengujian$userId")
 
     paths.value.add(PathState(Path(), drawColor.value, drawBrush.value))
 
@@ -165,11 +176,95 @@ fun FormPengujianAdmin(navController: NavController, idPengembangan: String?, na
             "Hasil yang diharapkan tidak boleh kosong"
         if (hasilPengujian.isEmpty()) errors["hasilPengujian"] =
             "Hasil pengujian tidak boleh kosong"
-        if (keterangan.isEmpty()) errors["keterangan"] = "Keterangan tidak boleh kosong"
+        if (keteranganStatus.isEmpty()) errors["keterangan"] = "Keterangan tidak boleh kosong"
 
         // Perbarui pesan error
         validationErrors = errors
         return errors.isEmpty()  // Jika tidak ada error, form valid
+    }
+
+    @Composable
+    fun UserCheckboxList(checkedUserIds: MutableState<List<String>>) {
+        val coroutineScope = rememberCoroutineScope()
+        var userList by remember { mutableStateOf<List<Users>>(emptyList()) }
+        val checkedStates = remember { mutableStateOf(mapOf<String, Boolean>()) }
+        var isLoading by remember { mutableStateOf(true) }
+
+        // Role yang ingin ditampilkan
+        val filteredRoles = listOf("admin", "user", "qmr", "kepalacabang")
+
+        // Fetch user list from API when the composable is first launched
+        LaunchedEffect(Unit) {
+            coroutineScope.launch {
+                val fetchedUsers = fetchUserList()
+                println("Fetched Users: $fetchedUsers")
+                userList = fetchedUsers.filter { it.role in filteredRoles } // Filter user by role
+                isLoading = false
+            }
+        }
+
+        Column(modifier = Modifier.fillMaxWidth()) {
+            Text(
+                text = "Pilih 4 User :",
+                fontSize = 18.sp,
+                fontWeight = FontWeight.Bold,
+                color = Maroon
+            )
+
+            if (isLoading) {
+                CircularProgressIndicator(modifier = Modifier.padding(16.dp)) // Loading indicator
+            } else {
+                userList.chunked(2).forEach { rowUsers -> // Membagi user ke dalam dua kolom per baris
+                    Row(
+                        horizontalArrangement = Arrangement.spacedBy(18.dp),
+                        verticalAlignment = Alignment.CenterVertically,
+                        modifier = Modifier.fillMaxWidth()
+                    ) {
+                        rowUsers.forEach { user ->
+                            Row(
+                                verticalAlignment = Alignment.CenterVertically,
+                                modifier = Modifier.weight(1f)
+                            ) {
+                                Checkbox(
+                                    checked = checkedStates.value[user.id] == true,
+                                    onCheckedChange = { isChecked ->
+                                        checkedStates.value = checkedStates.value + (user.id to isChecked)
+
+                                        // Update daftar user_id yang dipilih
+                                        checkedUserIds.value = if (isChecked) {
+                                            (checkedUserIds.value + user.id).distinct()
+                                        } else {
+                                            checkedUserIds.value - user.id
+                                        }
+                                    },
+                                    colors = CheckboxDefaults.colors(
+                                        checkedColor = Maroon,
+                                        uncheckedColor = Color.LightGray,
+                                        checkmarkColor = Color.White
+                                    )
+                                )
+                                Text(
+                                    text = user.name,
+                                    fontSize = 16.sp,
+                                    modifier = Modifier.padding(start = 8.dp),
+                                    color = Maroon
+                                )
+                            }
+                        }
+                    }
+                }
+            }
+
+            // Pesan validasi jika kurang dari 4 user yang dipilih
+            if (checkedUserIds.value.size < 4) {
+                Text(
+                    text = "Silakan pilih 4 pengguna.",
+                    color = Color.Red,
+                    fontSize = 14.sp,
+                    modifier = Modifier.padding(top = 8.dp)
+                )
+            }
+        }
     }
 
     Column(
@@ -290,8 +385,8 @@ fun FormPengujianAdmin(navController: NavController, idPengembangan: String?, na
                 // Uji Positif RadioButton
                 Row(verticalAlignment = Alignment.CenterVertically) {
                     RadioButton(
-                        selected = selectedTestType == "positif",
-                        onClick = { selectedTestType = "positif" },
+                        selected = selectedKeterangan == "uji_positif",
+                        onClick = { selectedKeterangan = "uji_positif" },
                         colors = RadioButtonDefaults.colors(
                             selectedColor = Maroon,  // Warna centang yang aktif
                             unselectedColor = Color.LightGray  // Warna checkbox yang tidak aktif
@@ -310,8 +405,8 @@ fun FormPengujianAdmin(navController: NavController, idPengembangan: String?, na
                 // Uji Negatif RadioButton
                 Row(verticalAlignment = Alignment.CenterVertically) {
                     RadioButton(
-                        selected = selectedTestType == "negatif",
-                        onClick = { selectedTestType = "negatif" },
+                        selected = selectedKeterangan == "uji_negatif",
+                        onClick = { selectedKeterangan = "uji_negatif" },
                         colors = RadioButtonDefaults.colors(
                             selectedColor = Maroon,  // Warna centang yang aktif
                             unselectedColor = Color.LightGray  // Warna checkbox yang tidak aktif
@@ -366,8 +461,8 @@ fun FormPengujianAdmin(navController: NavController, idPengembangan: String?, na
                 // Uji Positif RadioButton
                 Row(verticalAlignment = Alignment.CenterVertically) {
                     RadioButton(
-                        selected = keterangan == "Ok",
-                        onClick = { keterangan = "Ok" },
+                        selected = keteranganStatus == "OK",
+                        onClick = { keteranganStatus = "OK" },
                         colors = RadioButtonDefaults.colors(
                             selectedColor = Maroon,  // Warna centang yang aktif
                             unselectedColor = Color.LightGray  // Warna checkbox yang tidak aktif
@@ -382,8 +477,8 @@ fun FormPengujianAdmin(navController: NavController, idPengembangan: String?, na
                 // Uji Negatif RadioButton
                 Row(verticalAlignment = Alignment.CenterVertically) {
                     RadioButton(
-                        selected = keterangan == "Ndak Ok",
-                        onClick = { keterangan = "Ndak Ok" },
+                        selected = keteranganStatus == "Tidak",
+                        onClick = { keteranganStatus = "Tidak" },
                         colors = RadioButtonDefaults.colors(
                             selectedColor = Maroon,  // Warna centang yang aktif
                             unselectedColor = Color.LightGray  // Warna checkbox yang tidak aktif
@@ -392,7 +487,7 @@ fun FormPengujianAdmin(navController: NavController, idPengembangan: String?, na
                     Text("Not Ok", modifier = Modifier.padding(start = 8.dp), color = Color.Black)
                 }
             }
-            validationErrors["keterangan"]?.let {
+            validationErrors["keteranganStatus"]?.let {
                 Text(text = it, color = Color.Red, fontSize = 12.sp)
             }
 
@@ -435,148 +530,21 @@ fun FormPengujianAdmin(navController: NavController, idPengembangan: String?, na
                 FormField(
                     label = "Uraian",
                     placeholder = "Isi uraian",
-                    value = versiPerangkat,
-                    onValueChange = { versiPerangkat = it })
+                    value = UraianCatatan,
+                    onValueChange = { UraianCatatan = it })
                 FormField(
                     label = "Rencana Tindak Lanjut",
                     placeholder = "Isi rencana tindak lanjut",
-                    value = tujuanPengujian,
-                    onValueChange = { tujuanPengujian = it })
-                FormField(
-                    label = "Penanggung Jawab",
-                    placeholder = "Isi penanggung jawab",
-                    value = metodePengujian,
-                    onValueChange = { metodePengujian = it })
+                    value = rencanacatatan,
+                    onValueChange = { rencanacatatan = it })
             }
 
-            // Tanda tangan
-            Button(
-                onClick = {
-                    try {
-                        isDialogOpen.value = true
-                    } catch (e: Exception) {
-                        Log.e("FormPengujianAdmin", "Error opening Signature Dialog: ${e.message}")
-                    }
-                },
-                modifier = Modifier
-                    .width(125.dp)
-                    .shadow(4.dp, RoundedCornerShape(16.dp)),
-                colors = ButtonDefaults.buttonColors(containerColor = Maroon),
-                shape = RoundedCornerShape(15.dp)
-            ) {
-                Text(
-                    text = "Insert TTD",
-                    color = Putih,
-                    fontWeight = FontWeight.Bold,
-                    fontSize = 16.sp
-                )
-            }
-
-            // Signature Dialog
-            if (isDialogOpen.value) {
-                SignatureDialog(
-                    isDialogOpen = isDialogOpen,
-                    capturingViewBound = capturingViewBounds,
-                    drawColor = drawColor,
-                    drawBrush = drawBrush,
-                    usedColors = usedColors,
-                    paths = paths,
-                    image = image
-                )
-            }
-
-            if (image.value != null) {
-                Image(
-                    bitmap = image.value!!.asImageBitmap(),
-                    contentDescription = "Capture Image"
-                )
-            }
-
-            if (!paths.value.isEmpty()) {
-                Text("Tanda Tangan Penguji:", color = Maroon)
-            }
-
-            // Approval Section
-            Text(
-                text = "Approval",
-                fontSize = 18.sp,
-                fontWeight = FontWeight.Bold,
-                color = Color.Black
-            )
 
             Divider(modifier = Modifier.padding(bottom = 0.dp))
 
-            // Checkbox Options
-            val roles = listOf("Admin", "Pemohon", "QMR", "Kacab")
-            val checkedStates = remember { mutableStateOf(mapOf<String, Boolean>()) }
 
-            Column(modifier = Modifier.fillMaxWidth()) {
-                // First Row with two columns
-                Row(
-                    horizontalArrangement = Arrangement.spacedBy(18.dp), // More space between columns
-                    verticalAlignment = Alignment.CenterVertically,
-                    modifier = Modifier.fillMaxWidth()
-                ) {
-                    // First column: Admin and Pemohon
-                    roles.take(2).forEach { role ->
-                        Row(
-                            verticalAlignment = Alignment.CenterVertically,
-                            modifier = Modifier.weight(1f) // Ensure equal spacing between columns
-                        ) {
-                            Checkbox(
-                                checked = checkedStates.value[role] == true,
-                                onCheckedChange = { isChecked ->
-                                    checkedStates.value = checkedStates.value + (role to isChecked)
-                                },
-                                colors = CheckboxDefaults.colors(
-                                    checkedColor = Maroon, // Warna centang Maroon
-                                    uncheckedColor = Color.LightGray, // Warna checkbox saat tidak dicentang
-                                    checkmarkColor = Color.White // Warna tanda centang itu sendiri
-                                )
-                            )
-                            Text(
-                                text = role,
-                                fontSize = 16.sp,
-                                modifier = Modifier.padding(start = 8.dp),
-                                color = Maroon
-                            )
-                        }
-                    }
-                }
+            UserCheckboxList(checkedUserIds = checkedUserIds)
 
-                // Second Row with two columns
-                Row(
-                    horizontalArrangement = Arrangement.spacedBy(18.dp), // More space between columns
-                    verticalAlignment = Alignment.CenterVertically,
-                    modifier = Modifier.fillMaxWidth()
-                ) {
-                    // Second column: QMR and Kacab
-                    roles.drop(2).forEach { role ->
-                        Row(
-                            verticalAlignment = Alignment.CenterVertically,
-                            modifier = Modifier.weight(1f) // Ensure equal spacing between columns
-                        ) {
-                            Checkbox(
-                                checked = checkedStates.value[role] == true,
-                                onCheckedChange = { isChecked ->
-                                    checkedStates.value = checkedStates.value + (role to isChecked)
-                                },
-                                colors = CheckboxDefaults.colors(
-                                    checkedColor = Maroon, // Warna centang Maroon
-                                    uncheckedColor = Color.LightGray, // Warna checkbox saat tidak dicentang
-                                    checkmarkColor = Color.White // Warna tanda centang itu sendiri
-                                )
-                            )
-                            Text(
-                                text = role,
-                                fontSize = 16.sp,
-                                modifier = Modifier.padding(start = 8.dp),
-                                color = Maroon
-                            )
-                        }
-                    }
-                }
-            }
 
             // Submit Button
             Row(
@@ -588,6 +556,28 @@ fun FormPengujianAdmin(navController: NavController, idPengembangan: String?, na
                 Button(
                     onClick = {
                         if (validateForm()) {
+                            val pengujianDetails = listOf(
+                                PengujianDetail(
+                                    nama_uji = namaUji,
+                                    kasus_uji = kasusUji,
+                                    hasil_diharapkan = hasilYangDiharapkan,
+                                    hasil_pengujian = hasilPengujian,
+                                    kategori = selectedKeterangan,
+                                    status = keteranganStatus
+                                )
+                            )
+
+                            // Buat objek catatan_pengujian jika showCatatan aktif
+                            val catatanPengujian = if (showCatatan) {
+                                CatatanPengujian(
+                                    uraian = UraianCatatan,
+                                    rencana_tindak_lanjut = rencanacatatan,
+                                    penanggung_jawab_id = userId,
+                                )
+                            } else {
+                                null
+                            }
+
                             val pengujianRequest = PengujianRequest(
                                 pengembangan_id = idPengembangan,
                                 perangkat_lunak = namaSistem,
@@ -596,40 +586,27 @@ fun FormPengujianAdmin(navController: NavController, idPengembangan: String?, na
                                 metode = metodePengujian,
                                 tanggal = tanggalPengujian,
                                 pelaksana_id = userId,
-                                nama_uji = namaUji,
-                                kasus_uji = kasusUji,
-                                hasil_diharapkan = hasilYangDiharapkan,
-                                hasil_pengujian = hasilPengujian,
-                                status = keterangan,
-                                jenis_uji = selectedTestType
+                                user_ids = checkedUserIds.value,  // Pastikan list user ID benar
+                                pengujian_detail = pengujianDetails,
+                                catatan_pengujian = catatanPengujian // Tambahkan catatan pengujian jika ada
                             )
+
                             val jsonPayload = Json.encodeToString(pengujianRequest)
                             println("Request payload: $jsonPayload")
-                            // Call the API to post the Pengujian data
+
                             coroutineScope.launch {
                                 try {
                                     postPengujian(pengujianRequest)
-                                    // Show success Toast
-                                    Toast.makeText(
-                                        context,
-                                        "Pengujian berhasil disubmit!",
-                                        Toast.LENGTH_SHORT
-                                    ).show()
-                                    // Navigate back after successful submission
+                                    Toast.makeText(context, "Pengujian berhasil disubmit!", Toast.LENGTH_SHORT).show()
                                     navController.popBackStack()
                                 } catch (e: Exception) {
-                                    // Show error Toast
-                                    Toast.makeText(
-                                        context,
-                                        "Terjadi kesalahan: ${e.message}",
-                                        Toast.LENGTH_SHORT
-                                    ).show()
+                                    Toast.makeText(context, "Terjadi kesalahan: ${e.message}", Toast.LENGTH_SHORT).show()
                                 }
                             }
                         }
                     },
                     modifier = Modifier
-                        .width(115.dp) // Width for the Submit button
+                        .width(115.dp)
                         .shadow(4.dp, RoundedCornerShape(16.dp)),
                     colors = ButtonDefaults.buttonColors(containerColor = Maroon),
                     shape = RoundedCornerShape(16.dp)

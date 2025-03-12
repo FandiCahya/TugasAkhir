@@ -46,6 +46,9 @@ import com.example.applicationsop.presentation.screen.pemohon.ScheduleItem
 import com.example.applicationsop.ui.theme.Maroon
 import androidx.compose.runtime.rememberCoroutineScope
 import kotlinx.coroutines.launch
+import android.widget.Toast
+import androidx.compose.ui.platform.LocalContext
+import io.ktor.client.statement.bodyAsText
 
 @Composable
 fun SchedulePopupAdmin(
@@ -266,16 +269,32 @@ fun SchedulePopupAdmin(
                         horizontalArrangement = Arrangement.SpaceBetween
                     ) {
                         if (status == "developed") {
+                            val context = LocalContext.current
                             Button(
                                 onClick = {
                                     coroutineScope.launch { // Run inside coroutine
-                                        val updatedPengembangan = UpdatePengembangan(
-                                            tahap = selectedStagesState.joinToString(", "),
-                                            persentase = progressPercentageState,
-                                            status = if (progressPercentageState == 100) "testing" else "developed"
-                                        )
-                                        updatePengembangan(idState, updatedPengembangan) // Call the update API
-                                        onDismiss() // Close the popup
+                                        try {
+                                            val safePercentage = progressPercentageState.coerceIn(0, 100)
+                                            val newStatus = if (safePercentage == 100) "testing" else "developed"
+
+                                            val updatedPengembangan = UpdatePengembangan(
+                                                tahap = selectedStagesState.joinToString(", "),
+                                                persentase = safePercentage,
+                                                status = newStatus
+                                            )
+
+                                            val response = updatePengembangan(idState, updatedPengembangan)
+
+                                            if (response.status.value in 200..299) {
+                                                Toast.makeText(context, "Update berhasil!", Toast.LENGTH_SHORT).show()
+                                                onDismiss() // Tutup popup jika berhasil
+                                            } else {
+                                                val errorMessage = response.bodyAsText()
+                                                Toast.makeText(context, "Gagal update: $errorMessage", Toast.LENGTH_LONG).show()
+                                            }
+                                        } catch (e: Exception) {
+                                            Toast.makeText(context, "Error: ${e.message}", Toast.LENGTH_LONG).show()
+                                        }
                                     }
                                 },
                                 modifier = Modifier

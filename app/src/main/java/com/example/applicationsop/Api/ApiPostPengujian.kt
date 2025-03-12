@@ -11,7 +11,12 @@ import com.example.applicationsop.core.ApiConfig
 import kotlinx.serialization.json.Json
 import io.ktor.client.statement.HttpResponse
 import com.example.applicationsop.models.PengujianRequest
-import io.ktor.client.statement.bodyAsText
+import io.ktor.client.call.body
+import kotlinx.serialization.encodeToString
+import kotlinx.serialization.json.JsonObject
+import kotlinx.serialization.json.JsonArray
+import kotlinx.serialization.json.JsonPrimitive
+import kotlinx.serialization.json.JsonElement
 
 // Initialize HttpClient with JSON support
 val PostPengujian = HttpClient(OkHttp) {
@@ -29,9 +34,10 @@ suspend fun postPengujian(pengujianRequest: PengujianRequest): HttpResponse {
         // Make the POST request to the API
         val response: HttpResponse = PostPengujian.post("${ApiConfig.BASE_URL}pengujian") {
             contentType(ContentType.Application.Json)
-            setBody(pengujianRequest)  // Send the PengujianRequest as body
+            setBody(pengujianRequest)  // Kirim data dalam format JSON
         }
-        val responseBody = response.bodyAsText()
+
+        val responseBody = response.body<String>()
         val responseStatus = response.status
         val responseHeaders = response.headers
 
@@ -39,20 +45,17 @@ suspend fun postPengujian(pengujianRequest: PengujianRequest): HttpResponse {
         println("Response Headers: $responseHeaders")
         println("Response Body: $responseBody")
 
-        // Handle successful response
-        if (response.status.value in 200..299) {
-            val responseBody = response.bodyAsText()
+        // Handle response dengan status sukses (200-299)
+        if (response.status.isSuccess()) {
             println("Successfully submitted Pengujian!")
-            println("Response: $responseBody")
         } else {
-            val responseBody = response.bodyAsText()  // Get the response body for debugging
             println("Failed to submit Pengujian: $responseBody")
         }
 
-        response  // Return the response object to check the result
+        response  // Return response object untuk pengecekan lebih lanjut
 
     } catch (e: Exception) {
-        e.printStackTrace()  // Log the exception
-        throw Exception("Failed to submit Pengujian")
+        e.printStackTrace()  // Log error
+        throw Exception("Failed to submit Pengujian: ${e.message}")
     }
 }
