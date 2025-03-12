@@ -23,13 +23,7 @@ import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.Divider
 import androidx.compose.material3.Icon
 import androidx.compose.material3.Text
-import androidx.compose.material3.TextField
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.remember
-import androidx.compose.runtime.rememberCoroutineScope
-import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.shadow
@@ -39,15 +33,10 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.navigation.NavController
-import com.example.applicationsop.Api.updatePengajuan
-import com.example.applicationsop.models.PengajuanRequest
 import com.example.applicationsop.ui.theme.Maroon
-import com.example.applicationsop.ui.theme.abang
-import com.example.applicationsop.ui.theme.ijo
-import kotlinx.coroutines.launch
 
 @Composable
-fun DetailPopupUsulanAdmin(
+fun DetailPopupUsulanKacab(
     onDismiss: () -> Unit,
     id: String,
     hariTanggal: String,
@@ -58,17 +47,8 @@ fun DetailPopupUsulanAdmin(
     outputHasil: String,
     status: String,
     alasan: String? = null, // Alasan hanya ada jika status ditolak
-    isAdmin: Boolean, // Menambahkan parameter untuk memeriksa peran
-    onAcceptClick: () -> Unit, // Fungsi untuk menerima usulan
-    onRejectClick: (String) -> Unit, // Fungsi untuk menolak usulan
     navController: NavController
 ) {
-//    println("Idnya Adalah: $id")
-    var inputAlasan by remember { mutableStateOf(alasan.orEmpty()) }
-    var showAlasanInput by remember { mutableStateOf(false) }
-    // Coroutine scope for launching suspend functions
-    val coroutineScope = rememberCoroutineScope()
-
     val displayNames = mapOf(
         "sistem_baru" to "Sistem Baru",
         "pengembangan" to "Pengembangan",
@@ -306,140 +286,22 @@ fun DetailPopupUsulanAdmin(
                 // Line separator
                 Divider(modifier = Modifier.padding(vertical = 8.dp))
 
-                // Tombol berdasarkan status
-                if (status == "accepted") {
-                    Row(
+                // Hanya menampilkan tombol "Tutup" untuk Kacab
+                Row(
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .padding(top = 15.dp),
+                    horizontalArrangement = Arrangement.End
+                ) {
+                    Button(
+                        onClick = { onDismiss() },
                         modifier = Modifier
-                            .fillMaxWidth()
-                            .padding(top = 15.dp),
-                        horizontalArrangement = Arrangement.End // Menempatkan tombol di sebelah kanan
+                            .width(120.dp)
+                            .shadow(4.dp, RoundedCornerShape(16.dp)),
+                        colors = ButtonDefaults.buttonColors(containerColor = Color.Gray),
+                        shape = RoundedCornerShape(16.dp)
                     ) {
-                        Button(
-                            onClick = {
-                                // Redirect ke halaman "Add Schedule" dengan parameter id dan namaSistem
-                                navController.navigate("addSchedule?id=$id&namaSistem=$namaSistem")
-                            },
-                            modifier = Modifier
-                                .width(130.dp)
-                                .shadow(4.dp, RoundedCornerShape(16.dp)),
-                            colors = ButtonDefaults.buttonColors(containerColor = ijo),
-                            shape = RoundedCornerShape(16.dp)
-                        ) {
-                            Text("Add Schedule", color = Color.White)
-                        }
-                    }
-                }
-                else {
-                    // Tombol Terima dan Tolak untuk status selain "accepted"
-                    Row(
-                        modifier = Modifier
-                            .fillMaxWidth()
-                            .padding(top = 15.dp),
-                        horizontalArrangement = Arrangement.Center
-                    ) {
-                        Button(
-                            onClick = {
-                                // Call the updatePengajuan API when "Terima" button is clicked
-                                val pengajuanRequest = PengajuanRequest(
-                                    status = "accepted" // Only update the status field
-                                )
-
-                                // Call updatePengajuan API to update the status to accepted
-                                coroutineScope.launch {
-                                    try {
-                                        val response = updatePengajuan(id, pengajuanRequest)
-                                        if (response.status.value in 200..299) {
-                                            onAcceptClick() // Execute the callback after success
-                                            onDismiss()
-                                        } else {
-                                            println("Failed to update status")
-                                        }
-                                    } catch (e: Exception) {
-                                        println("Error: ${e.message}")
-                                    }
-                                }
-                            },
-                            modifier = Modifier
-                                .width(120.dp)
-                                .shadow(4.dp, RoundedCornerShape(16.dp)),
-                            colors = ButtonDefaults.buttonColors(containerColor = ijo),
-                            shape = RoundedCornerShape(16.dp)
-                        ) {
-                            Text("Terima", color = Color.White)
-                        }
-
-                        Spacer(modifier = Modifier.weight(1f))
-
-                        Button(
-                            onClick = {
-                                showAlasanInput = true // Show the input for reason
-                            },
-                            modifier = Modifier
-                                .width(120.dp)
-                                .shadow(4.dp, RoundedCornerShape(16.dp)),
-                            colors = ButtonDefaults.buttonColors(containerColor = abang),
-                            shape = RoundedCornerShape(16.dp)
-                        ) {
-                            Text("Tolak", color = Color.White)
-                        }
-                    }
-
-                    // Tampilkan input alasan jika tombol Tolak ditekan
-                    if (showAlasanInput) {
-                        // Input alasan
-                        Column(
-                            modifier = Modifier.fillMaxWidth().padding(top = 16.dp)
-                        ) {
-                            Text("Alasan Penolakan", fontWeight = FontWeight.Bold, color = Color.Black)
-                            Spacer(modifier = Modifier.height(8.dp))
-                            TextField(
-                                value = inputAlasan,
-                                onValueChange = { inputAlasan = it },
-                                placeholder = { Text("Masukkan alasan") },
-                                modifier = Modifier.fillMaxWidth(),
-                                maxLines = 3
-                            )
-                            Spacer(modifier = Modifier.height(8.dp))
-
-                            // Button to submit the rejection reason
-                            Button(
-                                onClick = {
-//                                    if (inputAlasan.isNotEmpty()) {
-//                                        // Call the onRejectClick function with the inputAlasan value
-//                                        onRejectClick(inputAlasan)
-//                                        onDismiss()
-//                                    }
-                                    if (inputAlasan.isNotEmpty()) {
-                                        // Prepare the PengajuanRequest for rejection with the reason
-                                        val pengajuanRequest = PengajuanRequest(
-                                            status = "rejected",  // Set status to rejected
-                                            alasan_penolakan = inputAlasan  // Add the rejection reason
-                                        )
-
-                                        // Call updatePengajuan API to update the status to rejected
-                                        coroutineScope.launch {
-                                            try {
-                                                val response = updatePengajuan(id, pengajuanRequest)
-                                                if (response.status.value in 200..299) {
-                                                    onRejectClick(inputAlasan)  // Execute the callback after rejection success
-                                                    println("response success update alasan$response")
-                                                    onDismiss()
-                                                } else {
-                                                    println("Failed to update status")
-                                                }
-                                            } catch (e: Exception) {
-                                                println("Error: ${e.message}")
-                                            }
-                                        }
-                                    }
-                                },
-                                modifier = Modifier.align(Alignment.CenterHorizontally),
-                                colors = ButtonDefaults.buttonColors(containerColor = abang),
-                                shape = RoundedCornerShape(16.dp)
-                            ) {
-                                Text("Kirim Alasan", color = Color.White)
-                            }
-                        }
+                        Text("Tutup", color = Color.White)
                     }
                 }
             }

@@ -1,4 +1,4 @@
-package com.example.applicationsop.presentation.screen.admin.list
+package com.example.applicationsop.presentation.screen.kacab
 
 import android.util.Log
 import androidx.compose.foundation.background
@@ -25,7 +25,7 @@ import java.text.SimpleDateFormat
 import java.util.*
 
 @Composable
-fun ListPengajuanScreenAdmin1(navController: NavController) {
+fun ListPengajuanKacab(navController: NavController) {
     var showPopup by remember { mutableStateOf(false) }
     var selectedDetail by remember { mutableStateOf(DetailInfo(id="")) }
     var pengajuanList by remember { mutableStateOf<List<Pengajuan>>(emptyList()) }
