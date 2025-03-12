@@ -1,4 +1,4 @@
-package com.example.applicationsop.presentation.screen.admin.list
+package com.example.applicationsop.presentation.screen.kacab.list
 
 import android.util.Log
 import androidx.compose.foundation.background
@@ -20,12 +20,13 @@ import com.example.applicationsop.models.Pengajuan
 import androidx.compose.foundation.lazy.items
 import com.example.applicationsop.presentation.component.listitem.ListPengajuanItem
 import com.example.applicationsop.presentation.component.header.HeaderWithSearch
-import com.example.applicationsop.presentation.component.popup.DetailPopupUsulanAdmin
+import com.example.applicationsop.presentation.component.popup.DetailPopupUsulanKacab
 import java.text.SimpleDateFormat
 import java.util.*
 
+
 @Composable
-fun ListPengajuanScreenAdmin1(navController: NavController) {
+fun ListPengajuanScreenKacab1(navController: NavController) {
     var showPopup by remember { mutableStateOf(false) }
     var selectedDetail by remember { mutableStateOf(DetailInfo(id="")) }
     var pengajuanList by remember { mutableStateOf<List<Pengajuan>>(emptyList()) }
@@ -95,7 +96,7 @@ fun ListPengajuanScreenAdmin1(navController: NavController) {
     }
 
     if (showPopup) {
-        DetailPopupUsulanAdmin(
+        DetailPopupUsulanKacab(
             onDismiss = { showPopup = false },
             id = selectedDetail.id,
             hariTanggal = selectedDetail.tanggal,
@@ -106,13 +107,6 @@ fun ListPengajuanScreenAdmin1(navController: NavController) {
             outputHasil = selectedDetail.outputHasil,
             status = selectedDetail.status,  // Use the dynamically selected status
             alasan = if (selectedDetail.status == "Pengajuan ditolak") "Output kurang jelas" else null, // Reason only appears if the status is rejected
-            isAdmin = true, // Adds the isAdmin parameter, which can be adjusted based on the user
-            onAcceptClick = {
-                // Action on accept (change status or perform other actions)
-            },
-            onRejectClick = { alasan ->
-                // Action on reject with the given reason
-            },
             navController = navController
         )
     }

@@ -1,4 +1,4 @@
-package com.example.applicationsop.presentation.screen.pemohon
+package com.example.applicationsop.presentation.screen.kacab
 
 import android.app.Activity
 import android.content.Context
@@ -22,21 +22,11 @@ import com.example.applicationsop.models.Pengembangan
 import com.example.applicationsop.presentation.component.header.HeaderWithSearch
 import com.example.applicationsop.presentation.component.listitem.ListPengembangan
 import com.example.applicationsop.presentation.component.popup.SchedulePopupUser
+import com.example.applicationsop.presentation.screen.pemohon.ScheduleItem
 import java.text.SimpleDateFormat
 import java.util.Date
 import java.util.Locale
 
-// Data model for the schedule
-data class ScheduleItem(
-    val task: String,
-    val id: String,
-    val startDate: String,
-    val endDate: String,
-    val description: String,
-    val stage: String,
-    val progressPercentage: Int,
-    val status: String
-)
 fun getUserData(context: Context): Map<String, String?> {
     val sharedPreferences = context.getSharedPreferences("MyPrefs", Activity.MODE_PRIVATE)
     val token = sharedPreferences.getString("TOKEN", null)
@@ -57,7 +47,7 @@ fun getUserData(context: Context): Map<String, String?> {
 }
 
 @Composable
-fun ListPengembanganScreen(navController: NavController) {
+fun ListPengembanganKacab(navController: NavController) {
     var showPopup by remember { mutableStateOf(false) }
     var selectedScheduleItem by remember { mutableStateOf<ScheduleItem?>(null) }
     var pengembanganList by remember { mutableStateOf<List<Pengembangan>>(emptyList()) }
@@ -151,4 +141,3 @@ fun ListPengembanganScreen(navController: NavController) {
         }
     }
 }
-

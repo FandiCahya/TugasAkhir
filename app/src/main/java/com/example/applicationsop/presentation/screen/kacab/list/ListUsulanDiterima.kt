@@ -1,6 +1,5 @@
-package com.example.applicationsop.presentation.screen.admin.list
+package com.example.applicationsop.presentation.screen.kacab.list
 
-import android.util.Log
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
@@ -20,22 +19,19 @@ import com.example.applicationsop.models.Pengajuan
 import androidx.compose.foundation.lazy.items
 import com.example.applicationsop.presentation.component.listitem.ListPengajuanItem
 import com.example.applicationsop.presentation.component.header.HeaderWithSearch
-import com.example.applicationsop.presentation.component.popup.DetailPopupUsulanAdmin
+import com.example.applicationsop.presentation.component.popup.DetailPopupUsulanKacab
 import java.text.SimpleDateFormat
 import java.util.*
 
 @Composable
-fun ListPengajuanScreenAdmin1(navController: NavController) {
+fun ListPengajuanScreenKacab3(navController: NavController) {
     var showPopup by remember { mutableStateOf(false) }
-    var selectedDetail by remember { mutableStateOf(DetailInfo(id="")) }
+    var selectedDetail by remember { mutableStateOf(DetailInfo(id = "")) }
     var pengajuanList by remember { mutableStateOf<List<Pengajuan>>(emptyList()) }
 
     LaunchedEffect(Unit) {
-        val fetchedPengajuanList = fetchPengajuanList("pending")
-        Log.d("PengajuanList", "Fetched Pengajuan List: $fetchedPengajuanList")
-        if (fetchedPengajuanList.isEmpty()) {
-            Log.d("PengajuanList", "No data available")
-        }
+        // Fetching the data when the Composable is first launched
+        val fetchedPengajuanList = fetchPengajuanList("accepted") // Fetch the data
         pengajuanList = fetchedPengajuanList // Updating the state
     }
 
@@ -58,14 +54,24 @@ fun ListPengajuanScreenAdmin1(navController: NavController) {
             .fillMaxSize()
             .background(Color.White)
     ) {
+        // Header with back button and search icon
         HeaderWithSearch(navController = navController, title = "Pengajuan")
-
         Spacer(modifier = Modifier.height(20.dp))
-
-
+        var currentDate: String? = null
+        // List of submissions
         LazyColumn(modifier = Modifier.fillMaxSize()) {
             items(sortedPengajuanList) { pengajuan ->
+                var formattedDate: String
+                try {
+                    // Try to parse the date string and format it
+                    val parsedDate = dateFormat.parse(pengajuan.tgl)
+                    formattedDate = dateFormat.format(parsedDate ?: Date()) // If parsing fails, fallback to current date
+                } catch (e: Exception) {
+                    // If parsing fails, fallback to current date
+                    formattedDate = todayDate
+                }
 
+                // Using data from the API response dynamically
                 ListPengajuanItem(
                     namaSistem = pengajuan.nama_sistem,
                     tanggal = pengajuan.tgl,
@@ -95,7 +101,7 @@ fun ListPengajuanScreenAdmin1(navController: NavController) {
     }
 
     if (showPopup) {
-        DetailPopupUsulanAdmin(
+        DetailPopupUsulanKacab(
             onDismiss = { showPopup = false },
             id = selectedDetail.id,
             hariTanggal = selectedDetail.tanggal,
@@ -104,18 +110,10 @@ fun ListPengajuanScreenAdmin1(navController: NavController) {
             rencanaAnggaran = selectedDetail.rencanaAnggaran,
             masalahSistem = selectedDetail.masalahSistem,
             outputHasil = selectedDetail.outputHasil,
-            status = selectedDetail.status,  // Use the dynamically selected status
-            alasan = if (selectedDetail.status == "Pengajuan ditolak") "Output kurang jelas" else null, // Reason only appears if the status is rejected
-            isAdmin = true, // Adds the isAdmin parameter, which can be adjusted based on the user
-            onAcceptClick = {
-                // Action on accept (change status or perform other actions)
-            },
-            onRejectClick = { alasan ->
-                // Action on reject with the given reason
-            },
+            status = selectedDetail.status, // Gunakan status yang dipilih secara dinamis
+            alasan = if (selectedDetail.status == "Pengajuan ditolak") "Output kurang jelas" else null, // Alasan hanya muncul jika status ditolak
             navController = navController
         )
     }
 }
-
 

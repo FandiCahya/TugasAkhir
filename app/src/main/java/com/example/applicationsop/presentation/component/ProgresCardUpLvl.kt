@@ -22,7 +22,7 @@ import androidx.compose.ui.unit.sp
 import androidx.navigation.NavController
 
 @Composable
-fun ProgressCard(
+fun ProgressCardUp(
     title: String,
     icon: androidx.compose.ui.graphics.vector.ImageVector,
     color: Color,
@@ -31,11 +31,9 @@ fun ProgressCard(
 
     // Mapping untuk menampilkan "Pengembangan" atau "Pengujian"
     val displayTitle = when (title) {
-        "Pengembangan Admin" -> "Pengembangan"
-        "Pengujian Admin" -> "Pengujian"
-        "Pengembangan User" -> "Pengembangan"
-        "Pengujian User" -> "Pengujian"
+        "Pengajuan Kacab" -> "Pengajuan"
         "Pengembangan Kacab" -> "Pengembangan"
+        "Pengujian Kacab" -> "Pengujian"
         else -> title
     }
 
@@ -44,16 +42,12 @@ fun ProgressCard(
             .fillMaxWidth()
             .padding(vertical = 10.dp)
             .clickable {
-                if (title == "Pengembangan Admin") {
-                    navController.navigate("pengembanganAdmin") // Arahkan ke halaman pengembangan
-                } else if (title == "Pengujian Admin") {
-                    navController.navigate("pengujianAdmin") // Arahkan ke halaman pengujian
-                } else if (title == "Pengembangan User") {
-                    navController.navigate("pengembanganUser") // Arahkan ke halaman pengembangan
-                }else if (title == "Pengujian User") {
-                    navController.navigate("pengujianUser") // Arahkan ke halaman pengembangan
-                }else if (title == "Pengembangan Kacab") {
+                if (title == "Pengajuan Kacab") {
+                    navController.navigate("pengajuanKacab") // Arahkan ke halaman pengujian
+                } else if (title == "pengembangan Kacab") {
                     navController.navigate("pengembanganKacab") // Arahkan ke halaman pengembangan
+                } else if (title == "Pengujian Kacab") {
+                    navController.navigate("pengujianKacab") // Arahkan ke halaman pengujian
                 }
             },
         colors = CardDefaults.cardColors(

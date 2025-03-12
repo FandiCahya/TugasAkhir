@@ -257,13 +257,16 @@ fun LoginButtonComposable(
                             navController.navigate("homeUser/${response.token}/${response.user.id}/${response.user.role}/${response.user.name}/${response.user.email}/${response.user.devisi}")
                         }
 
-                        "mqr", "kepalacabang" -> {
-                            navController.navigate("homeAdmin")
+                        "kepalacabang" -> {
+                            navController.navigate("homeKacab/${response.token}/${response.user.id}/${response.user.role}/${response.user.name}/${response.user.email}/${response.user.devisi}")
+                        }
+
+                        "qmr" -> {
+                            navController.navigate("homeQmr/${response.token}/${response.user.id}/${response.user.role}/${response.user.name}/${response.user.email}/${response.user.devisi}")
                         }
 
                         else -> {
-                            Toast.makeText(context, "Role tidak dikenal.", Toast.LENGTH_SHORT)
-                                .show()
+                            Toast.makeText(context, "Role tidak dikenal.", Toast.LENGTH_SHORT).show()
                         }
                     }
                     // Anda bisa menyimpan token di SharedPreferences atau sesi lainnya jika diperlukan
