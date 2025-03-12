@@ -95,12 +95,14 @@ fun HistoryUser(navController: NavController) {
     if (showPopup) {
         DetailPopupPengujian(
             onDismiss = { showPopup = false },
+            id = selectedDetail.id,
             namaSistem = selectedDetail.namaSistem,
             versiPerangkat = selectedDetail.versiPerangkat,
             tujuanPengujian = selectedDetail.tujuanPengujian,
             metodePengujian = selectedDetail.metodePengujian,
             tanggalPengujian = selectedDetail.tanggalPengujian,
             pelaksanaPengujian = selectedDetail.pelaksanaPengujian,
+            status = selectedDetail.status,
             navController = navController
         )
     }

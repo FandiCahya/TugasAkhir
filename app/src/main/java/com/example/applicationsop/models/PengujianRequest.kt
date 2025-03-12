@@ -14,7 +14,7 @@ data class PengujianRequest(
     val pelaksana_id: String?,
     val user_ids: List<String>, // Menampung daftar user ID
     val pengujian_detail: List<PengujianDetail>, // Menampung detail pengujian
-    val catatan_pengujian: CatatanPengujian? = null
+    val catatan: CatatanPengujian? = null
 )
 @Serializable
 data class PengujianDetail(

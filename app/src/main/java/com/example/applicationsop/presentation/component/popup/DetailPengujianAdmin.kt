@@ -45,12 +45,14 @@ import com.example.applicationsop.ui.theme.ijo
 @Composable
 fun DetailPopupPengujian(
     onDismiss: () -> Unit,
+    id: String,
     namaSistem: String,
     versiPerangkat: String,
     tujuanPengujian: String,
     metodePengujian: String,
     tanggalPengujian: String,
     pelaksanaPengujian: String,
+    status: String,
     navController: NavController // Menambahkan navController sebagai parameter
 ) {
     Box(modifier = Modifier.fillMaxSize()) {
@@ -218,16 +220,21 @@ fun DetailPopupPengujian(
                     Spacer(modifier = Modifier.height(16.dp))
 
                     // Status Approval
-                    Text(
-                        text = "Status Approval",
-                        fontSize = 16.sp,
-                        fontWeight = FontWeight.Bold,
-                        color = Color.Black
-                    )
-                    Column(modifier = Modifier.padding(top = 8.dp)) {
-//                        approvalList.forEach { name ->
-//                            Text(" $name", color = Color.Black)
-//                        }
+                    Row(
+                        modifier = Modifier.fillMaxWidth(),
+                        horizontalArrangement = Arrangement.SpaceBetween // Menggunakan SpaceBetween untuk jarak antar elemen
+                    ) {
+                        Column(modifier = Modifier.weight(1f)) {
+                            Text("Status", fontWeight = FontWeight.Bold, color = Color.Black)
+                        }
+                        Column(modifier = Modifier.weight(2f)) {
+                            Text(
+                                ": $status",
+                                color = Color.Black,
+                                maxLines = 1,
+                                overflow = TextOverflow.Ellipsis
+                            )
+                        }
                     }
 
                     Spacer(modifier = Modifier.height(10.dp))

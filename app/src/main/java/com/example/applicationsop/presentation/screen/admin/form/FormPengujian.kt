@@ -577,6 +577,9 @@ fun FormPengujianAdmin(navController: NavController, idPengembangan: String?, na
                             } else {
                                 null
                             }
+                            println("showCatatan: $showCatatan")
+                            println("catatanPengujian: $catatanPengujian")
+
 
                             val pengujianRequest = PengujianRequest(
                                 pengembangan_id = idPengembangan,
@@ -588,7 +591,7 @@ fun FormPengujianAdmin(navController: NavController, idPengembangan: String?, na
                                 pelaksana_id = userId,
                                 user_ids = checkedUserIds.value,  // Pastikan list user ID benar
                                 pengujian_detail = pengujianDetails,
-                                catatan_pengujian = catatanPengujian // Tambahkan catatan pengujian jika ada
+                                catatan = catatanPengujian // Tambahkan catatan pengujian jika ada
                             )
 
                             val jsonPayload = Json.encodeToString(pengujianRequest)
