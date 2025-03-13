@@ -36,7 +36,6 @@ fun ListPengujianScreenAdmin(navController: NavController) {
         pengujianList = fetchedPengujianList // Updating the state
     }
     val dateFormat = SimpleDateFormat("yyyy-MM-dd", Locale.getDefault()) // Parsing the date format
-    val todayDate = dateFormat.format(Date()) // Current date for fallback
     // Sort pengajuanList by tanggal
     val sortedPengujianList = pengujianList.sortedByDescending { pengujian ->
         try {
@@ -59,7 +58,7 @@ fun ListPengujianScreenAdmin(navController: NavController) {
         // List of pengujian items from fetched data
         LazyColumn(modifier = Modifier.fillMaxSize()) {
             items(sortedPengujianList) { pengujian ->
-                val status = when (pengujian.pengembangan.status) {
+                val status = when (pengujian.pengembangan?.status?:"Tidak Tersedia") {
                     "finished" -> "Pengembangan Selesai"
                     else -> "Pengembangan Belum Selesai"
                 }
@@ -70,7 +69,7 @@ fun ListPengujianScreenAdmin(navController: NavController) {
                     tujuanPengujian = pengujian.tujuan,  // Purpose from Pengujian object
                     metodePengujian = pengujian.metode,  // Testing method from Pengujian object
                     tanggalPengujian = pengujian.tanggal,  // Date of testing
-                    pelaksanaPengujian = pengujian.pelaksana.name,  // Executor's name
+                    pelaksanaPengujian = pengujian.pelaksana?.name?:"Tidak Tersedia",  // Executor's name
                     status = pengujian.status,
                     onClick = {
                         // Populate selectedDetail with all required data
@@ -81,7 +80,7 @@ fun ListPengujianScreenAdmin(navController: NavController) {
                             tujuanPengujian = pengujian.tujuan,
                             metodePengujian = pengujian.metode,
                             tanggalPengujian = pengujian.tanggal,
-                            pelaksanaPengujian = pengujian.pelaksana.name,
+                            pelaksanaPengujian = pengujian.pelaksana?.name?:"Tidak Tersedia",
                             status = pengujian.status
                         )
                         showPopup = true

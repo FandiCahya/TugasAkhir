@@ -315,13 +315,13 @@ fun MainApp(
         }
 
         // Halaman Detail Pengujian
-        composable("DetailPengujianAdmin?id={id}&taskName={taskName}") { backStackEntry ->
+        composable("DetailPengujianAdmin?id={id}&namaSistem={namaSistem}") { backStackEntry ->
             val id = backStackEntry.arguments?.getString("id")
-            val taskName = backStackEntry.arguments?.getString("taskName")
+            val namaSistem = backStackEntry.arguments?.getString("namaSistem")
             DetailPengujianAdmin(
                 navController = navController,
-                idPengembangan = id,
-                namaSistem = taskName,
+                idPengujian = id,
+                namaSistem = namaSistem,
             )
         }
 

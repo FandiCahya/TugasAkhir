@@ -25,9 +25,14 @@ val GetPengujian = HttpClient(OkHttp) {
 }
 
 // Function to fetch pengembangan list
-suspend fun fetchPengujianList(): List<Pengujian> {
+suspend fun fetchPengujianList(pengajuan_id:String? = null): List<Pengujian> {
     return try {
-        val response: HttpResponse = GetPengujian.get("${ApiConfig.BASE_URL}pengujian") {
+
+        val url = buildString {
+            append("${ApiConfig.BASE_URL}pengujian?")
+            if (pengajuan_id != null) append("pengajuan_id=$pengajuan_id")
+        }
+        val response: HttpResponse = GetPengajuan.get(url) {
             contentType(ContentType.Application.Json)
         }
 
