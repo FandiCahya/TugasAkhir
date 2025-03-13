@@ -250,7 +250,7 @@ fun DetailPopupPengujian(
                         // Tombol See All
                         Button(
                             onClick = {
-                                navController.navigate("DetailPengujianAdmin?id=123&taskName=TestTask")
+                                navController.navigate("DetailPengujianAdmin?id=$id&namaSistem=$namaSistem")
                             },
                             modifier = Modifier
                                 .width(100.dp)
