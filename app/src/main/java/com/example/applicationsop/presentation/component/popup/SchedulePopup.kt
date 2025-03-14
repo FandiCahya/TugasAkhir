@@ -561,7 +561,7 @@ fun SchedulePopupUser(
                                     4.dp,
                                     RoundedCornerShape(16.dp)
                                 ), // Set the width of the button to a smaller size
-                            colors = ButtonDefaults.buttonColors(containerColor = Maroon),
+                            colors = ButtonDefaults.buttonColors(containerColor = Color.Gray),
                             shape = RoundedCornerShape(16.dp)
                         ) {
                             Text(
