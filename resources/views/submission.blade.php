@@ -6,8 +6,8 @@
                 <h4 class="card-title">Pengajuan</h4>
 
                 <!-- Button to Open Add pengajuan Modal -->
-                <button class="btn btn-success btn-sm mb-3" data-bs-toggle="modal" data-bs-target="#addPengajuanModal">Tambah
-                    Pengajuan</button>
+                {{-- <button class="btn btn-success btn-sm mb-3" data-bs-toggle="modal" data-bs-target="#addPengajuanModal">Tambah
+                    Pengajuan</button> --}}
 
                 <!-- Search Input -->
                 <input type="text" id="search" class="form-control mb-3" placeholder="Search by name sistem..." />

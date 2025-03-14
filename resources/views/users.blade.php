@@ -57,20 +57,28 @@
                             <select class="form-control" id="role" required>
                                 <option value="user">User</option>
                                 <option value="admin">Admin</option>
-                                <option value="mqr">MQR</option>
+                                <option value="qmr">QMR</option>
                                 <option value="kepalacabang">Kepalacabang</option>
                             </select>
                         </div>
                         <div class="mb-3">
                             <label for="devisi" class="form-label">Division</label>
-                            <select class="form-control" id="devisi" required>
-                                <option value="IT">IT</option>
-                                <option value="HR">HR</option>
-                                <option value="Finance">Finance</option>
-                                <option value="Marketing">Marketing</option>
-                                <option value="Operations">Operations</option>
+                            <select class="form-control" id="devisi" name="devisi" required>
+                                <option value="egov">E-Gov</option>
+                                <option value="opj">OPJ</option>
+                                <option value="legal">Legal</option>
+                                <option value="c-care">C-Care</option>
+                                <option value="nro">NRO</option>
+                                <option value="noc">NOC</option>
+                                <option value="rumah tangga">Rumah Tangga</option>
+                                <option value="helpdesk">Helpdesk</option>
+                                <option value="hrd">HRD</option>
+                                <option value="retail">Retail</option>
+                                <option value="vas">VAS</option>
+                                <option value="corp">Corporate</option>
+                                <option value="finance">Finance</option>
                             </select>
-                        </div>
+                        </div>                        
                         <!-- Changed foto_profile to password -->
                         <div class="mb-3">
                             <label for="password" class="form-label">Password</label>
@@ -110,20 +118,28 @@
                             <select class="form-control" id="edit-role" required>
                                 <option value="user">User</option>
                                 <option value="admin">Admin</option>
-                                <option value="mqr">MQR</option>
+                                <option value="qmr">QMR</option>
                                 <option value="kepalacabang">Kepalacabang</option>
                             </select>
                         </div>
                         <div class="mb-3">
-                            <label for="edit-devisi" class="form-label">Division</label>
-                            <select class="form-control" id="edit-devisi" required>
-                                <option value="IT">IT</option>
-                                <option value="HR">HR</option>
-                                <option value="Finance">Finance</option>
-                                <option value="Marketing">Marketing</option>
-                                <option value="Operations">Operations</option>
+                            <label for="devisi" class="form-label">Division</label>
+                            <select class="form-control" id="devisi" name="devisi" required>
+                                <option value="egov">E-Gov</option>
+                                <option value="opj">OPJ</option>
+                                <option value="legal">Legal</option>
+                                <option value="c-care">C-Care</option>
+                                <option value="nro">NRO</option>
+                                <option value="noc">NOC</option>
+                                <option value="rumah tangga">Rumah Tangga</option>
+                                <option value="helpdesk">Helpdesk</option>
+                                <option value="hrd">HRD</option>
+                                <option value="retail">Retail</option>
+                                <option value="vas">VAS</option>
+                                <option value="corp">Corporate</option>
+                                <option value="finance">Finance</option>
                             </select>
-                        </div>
+                        </div>                        
                         <div class="mb-3">
                             <label for="edit-password" class="form-label">Password</label>
                             <input type="password" class="form-control" id="edit-password" required>

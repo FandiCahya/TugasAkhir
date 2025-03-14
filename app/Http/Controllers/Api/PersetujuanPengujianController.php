@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers\Api;
 
+use App\Models\Pengajuan;
 use Illuminate\Http\Request;
 use App\Http\Controllers\Controller;
 use App\Models\PersetujuanPengujian;
@@ -14,8 +15,18 @@ class PersetujuanPengujianController extends Controller
     public function showall(Request $request)
     {
         try {
-            $data = PersetujuanPengujianModel::all();
+            // $data = PersetujuanPengujianModel::all();
+            $query = PersetujuanPengujianModel::query();
+            $persetujuanId = $request->get('persetujuanId');
             $userId = $request->get('user_id');
+
+            // Filter berdasarkan ID persetujuan_pengujian jika diberikan
+            if ($persetujuanId) {
+                $query->where('persetujuan_pengujian_id', $persetujuanId);
+            }
+
+            // Ambil semua data yang sesuai dengan filter
+            $data = $query->get();
 
             // Return the data as a JSON response
             return response()->json([
@@ -106,6 +117,13 @@ class PersetujuanPengujianController extends Controller
 
             // Dynamically assign users based on the request data
             $persetujuan->assignApprovalUsers($request->user_ids);
+
+            // Update the status of the pengajuan to 'approval'
+            $pengajuan = Pengajuan::find($request->pengujian_id);
+            if ($pengajuan) {
+                $pengajuan->status = 'approval'; // Change status to 'approval'
+                $pengajuan->save(); // Save the changes
+            }
 
             return response()->json(
                 [

@@ -67,6 +67,34 @@ class PersetujuanPengujian extends Model
             ]);
         }
     }
+    public function createPengujianDetail(array $userIds,$pengujian_id)
+    {
+        // Ensure we have 4 users in the provided array
+        if (count($userIds) !== 4) {
+            throw new \Exception('You must provide exactly 4 users for approval');
+        }
+
+        $roles = ['user', 'admin', 'mqr', 'kepala cabang'];
+
+        foreach ($userIds as $index => $userId) {
+            $user = User::find($userId); // Find user by ID
+
+            // Ensure the user exists
+            if (!$user) {
+                throw new \Exception('User with ID ' . $userId . ' not found.');
+            }
+
+            // Create an approval detail for this user
+            PersetujuanPengujianDetail::create([
+                'persetujuan_pengujian_id' => $pengujian_id,
+                'user_id' => $user->id,
+                'status' => 'tidak_setuju',
+                'catatan' => null,
+                'signature' => null,
+                'role' => $roles[$index] ?? 'user',
+            ]);
+        }
+    }
 }
 
 class PersetujuanPengujianDetail extends Model

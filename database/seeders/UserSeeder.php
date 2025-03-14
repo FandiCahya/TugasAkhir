@@ -21,7 +21,7 @@ class UserSeeder extends Seeder
             'email' => 'admin@gmail.com',
             'email_verified_at' => now(),
             'password' => Hash::make(value: 'admin123'),  // Password yang di-hash
-            'devisi' => 'IT',  // Devise Admin // Ganti dengan path foto yang sesuai
+            'devisi' => 'vas',  // Devise Admin // Ganti dengan path foto yang sesuai
             'role' => 'admin',  // Role admin
             'created_at' => now(),
             'updated_at' => now(),
@@ -32,19 +32,19 @@ class UserSeeder extends Seeder
             'email' => 'user@gmail.com',
             'email_verified_at' => now(),
             'password' => Hash::make(value: 'user123'),  // Password yang di-hash
-            'devisi' => 'IT',  // Devise Admin // Ganti dengan path foto yang sesuai
+            'devisi' => 'helpdesk',  // Devise Admin // Ganti dengan path foto yang sesuai
             'role' => 'user',  // Role admin
             'created_at' => now(),
             'updated_at' => now(),
         ]);
         DB::table('users')->insert([
             'id' => (string) Str::uuid(),  // UUID untuk id
-            'name' => 'mqr',
-            'email' => 'mqr@gmail.com',
+            'name' => 'hrdku',
+            'email' => 'qmr@gmail.com',
             'email_verified_at' => now(),
-            'password' => Hash::make(value: 'mqr123'),  // Password yang di-hash
-            'devisi' => 'IT',  // Devise Admin // Ganti dengan path foto yang sesuai
-            'role' => 'mqr',  // Role admin
+            'password' => Hash::make(value: 'qmr123'),  // Password yang di-hash
+            'devisi' => 'hrd',  // Devise Admin // Ganti dengan path foto yang sesuai
+            'role' => 'qmr',  // Role admin
             'created_at' => now(),
             'updated_at' => now(),
         ]);
@@ -54,7 +54,7 @@ class UserSeeder extends Seeder
             'email' => 'kacap@gmail.com',
             'email_verified_at' => now(),
             'password' => Hash::make(value: 'kacap123'),  // Password yang di-hash
-            'devisi' => 'IT',  // Devise Admin // Ganti dengan path foto yang sesuai
+            'devisi' => 'egov',  // Devise Admin // Ganti dengan path foto yang sesuai
             'role' => 'kepalacabang',  // Role admin
             'created_at' => now(),
             'updated_at' => now(),

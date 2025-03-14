@@ -21,7 +21,7 @@ return new class extends Migration
             $table->string('password');
             $table->enum('devisi', ['IT', 'HR', 'Finance', 'Marketing', 'Operations'])->nullable();
             $table->string('foto_profile')->nullable();
-            $table->enum('role', ['user', 'admin', 'mqr', 'kepalacabang'])->default('user');
+            $table->enum('role', ['user', 'admin', 'qmr', 'kepalacabang'])->default('user');
             $table->timestamps();
         });
 

@@ -272,12 +272,14 @@
 
         pengajuan.forEach(p => {
             const row = document.createElement('tr');
+            const createdAt = new Date(p.pengembangan.pengajuan.created_at);
+            const formattedDate = createdAt.toISOString().split('T')[0]; 
             row.innerHTML = `
             <td>${p.pengembangan.pengajuan.nama_sistem}</td>
             <td>${p.versi}</td>
             <td>${p.pengembangan.pengajuan.jenis}</td>
             <td>${p.pengembangan.pengajuan.status}</td> <!-- Assuming 'status' refers to pengajuan's status -->
-            <td>${p.pengembangan.pengajuan.created_at}</td> <!-- Assuming created_at is the deadline -->
+            <td>${formattedDate}</td><!-- Assuming created_at is the deadline -->
         `;
             tableBody.appendChild(row);
         });

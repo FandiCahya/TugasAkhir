@@ -32,7 +32,6 @@ class Pengajuan extends Model
     ];
 
     protected $casts = [
-        'tgl' => 'date',
         'jenis' => 'string',
         'rencana_anggaran' => 'string',
         'status' => 'string',

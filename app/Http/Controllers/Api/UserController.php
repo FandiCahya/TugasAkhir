@@ -49,9 +49,9 @@ class UserController extends Controller
                 'name' => 'required|string|max:255',
                 'email' => 'required|string|email|max:255|unique:users',
                 'password' => 'required|string|min:8',
-                'devisi' => 'nullable|in:IT,HR,Finance,Marketing,Operations',
+                'devisi' => 'nullable',
                 'foto_profile' => 'nullable|string',
-                'role' => 'required|in:user,admin,mqr,kepalacabang',
+                'role' => 'required|in:user,admin,qmr,kepalacabang',
             ]);
 
             $user = User::create([
@@ -123,9 +123,9 @@ class UserController extends Controller
                 'name' => 'string|max:255',
                 'email' => 'string|email|max:255|unique:users,email,' . $id,
                 'password' => 'nullable|string|min:8',
-                'devisi' => 'nullable|in:IT,HR,Finance,Marketing,Operations',
+                'devisi' => 'nullable',
                 'foto_profile' => 'nullable|string',
-                'role' => 'in:user,admin,mqr,kepalacabang',
+                'role' => 'in:user,admin,qmr,kepalacabang',
             ]);
 
             $user->update(array_filter($request->only(['name', 'email', 'password', 'devisi', 'foto_profile', 'role'])));

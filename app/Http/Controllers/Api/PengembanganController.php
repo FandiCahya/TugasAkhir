@@ -22,6 +22,8 @@ class PengembanganController extends Controller
             $keyword = $request->query->get('keyword');
             $status = $request->query->get('status');
             $userId = $request->query->get('user_id');
+            $role = $request->query->get('role'); // Mendapatkan filter role
+            $devisi = $request->query->get('devisi'); // Mendapatkan filter devisi
             $pengembanganQuery = Pengembangan::with('pengajuan', 'pengajuan.user');
             if ($keyword) {
                 $pengembanganQuery->where(function ($query) use ($keyword) {
@@ -36,6 +38,20 @@ class PengembanganController extends Controller
             if ($userId) {
                 $pengembanganQuery->whereHas('pengajuan.user', function ($query) use ($userId) {
                     $query->where('id', '=', $userId); // Memfilter berdasarkan id user
+                });
+            }
+
+            // Filter berdasarkan role
+            if ($role) {
+                $pengembanganQuery->whereHas('pengajuan.user', function ($query) use ($role) {
+                    $query->where('role', 'like', '%' . $role . '%'); // Memfilter berdasarkan role user
+                });
+            }
+
+            // Filter berdasarkan devisi
+            if ($devisi) {
+                $pengembanganQuery->whereHas('pengajuan.user', function ($query) use ($devisi) {
+                    $query->where('devisi', 'like', '%' . $devisi . '%'); // Memfilter berdasarkan devisi user
                 });
             }
 
@@ -112,7 +128,7 @@ class PengembanganController extends Controller
                 'tahap' => 'required|string',
                 'persentase' => 'required|integer|min:0|max:100',
                 'keterangan' => 'nullable|string',
-                'status' => 'nullable|in:developed,finished',
+                'status' => 'nullable|in:developed,testing,finished',
             ]);
 
             // Mengambil data pengajuan berdasarkan pengajuan_id
@@ -215,7 +231,7 @@ class PengembanganController extends Controller
                 'tahap' => 'string',
                 'persentase' => 'integer|min:0|max:100',
                 'keterangan' => 'string',
-                'status' => 'in:developed,finished',
+                'status' => 'in:developed,finished,testing',
             ]);
 
             // Memperbarui data pengembangan

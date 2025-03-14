@@ -9,6 +9,7 @@ use Illuminate\Validation\ValidationException;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Database\QueryException;
 use Illuminate\Support\Str;
+use Carbon\Carbon;
 
 class PengajuanController extends Controller
 {
@@ -117,14 +118,16 @@ class PengajuanController extends Controller
                 'masalah' => 'required|string',
                 'output' => 'required|string',
                 'status' => 'in:pending,accepted,rejected',
-                'signature' => 'required|image|mimes:jpeg,png,jpg,gif|max:5048',
-                'user_id' => 'required|uuid',
+                'signature' => 'image|mimes:jpeg,png,jpg,gif|max:5048',
+                'user_id' => 'uuid',
             ]);
+            // Format the date to "yyyy-MM-dd"
+            $formattedDate = Carbon::parse($request->tgl)->format('Y-m-d');
 
             $usulan = Pengajuan::create([
                 'id' => Str::uuid(),
                 'user_id' => $request->user_id,
-                'tgl' => $request->tgl,
+                'tgl' => $formattedDate,
                 'nama_sistem' => $request->nama_sistem,
                 'jenis' => $request->jenis,
                 'rencana_anggaran' => $request->rencana_anggaran,
@@ -214,7 +217,7 @@ class PengajuanController extends Controller
                 'output' => 'string',
                 'tanda_tangan' => 'string|max:255',
                 'alasan_penolakan' => 'string|max:255',
-                'status' => 'in:pending,submitted,accepted',
+                'status' => 'in:pending,rejected,accepted',
             ]);
 
             $usulan->update($request->all());

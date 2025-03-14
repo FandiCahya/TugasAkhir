@@ -22,7 +22,7 @@ return new class extends Migration
             $table->text('output');
             $table->string('tanda_tangan')->nullable();
             $table->text('alasan_penolakan')->nullable();
-            $table->enum('status', ['pending', 'accepted', 'rejected','developing','testing','finished'])->default('pending');
+            $table->enum('status', ['pending', 'accepted', 'rejected','developing','testing','approval','finished'])->default('pending');
             $table->timestamps();
 
             // Foreign key
