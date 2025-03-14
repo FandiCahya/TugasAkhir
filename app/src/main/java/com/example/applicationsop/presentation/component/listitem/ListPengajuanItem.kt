@@ -16,6 +16,7 @@ import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.Description
 import androidx.compose.material.icons.filled.Person
 import androidx.compose.material3.Divider
 import androidx.compose.material3.Icon
@@ -27,6 +28,7 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import com.example.applicationsop.ui.theme.Maroon
 import com.example.applicationsop.ui.theme.abang
 import com.example.applicationsop.ui.theme.ijo
 import com.example.applicationsop.ui.theme.kuning
@@ -75,15 +77,15 @@ fun ListPengajuanItem(
             modifier = Modifier
                 .size(40.dp)
                 .background(
-                    kuning,
+                    Color(0xFFF6F6F6),
                     shape = CircleShape
                 )
                 .border(2.dp, Color.Black, shape = CircleShape)
         ) {
             Icon(
-                imageVector = Icons.Filled.Person,
-                contentDescription = "Profile Icon",
-                modifier = Modifier.fillMaxSize(),
+                imageVector = Icons.Filled.Description,
+                contentDescription = "Surat Pengajuan Icon",
+                modifier = Modifier.fillMaxSize() .padding(5.dp),
                 tint = Color.Black
             )
         }
