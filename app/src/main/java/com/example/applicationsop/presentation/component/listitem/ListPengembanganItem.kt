@@ -16,6 +16,7 @@ import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.Assignment
 import androidx.compose.material.icons.filled.Person
 import androidx.compose.material3.Divider
 import androidx.compose.material3.Icon
@@ -71,15 +72,15 @@ fun ListPengembangan(
             modifier = Modifier
                 .size(40.dp)
                 .background(
-                    kuning,
+                    Color(0xFFF6F6F6),
                     shape = CircleShape
                 ) // Yellow background for the circle
                 .border(2.dp, Color.Black, shape = CircleShape) // Border around the circle
         ) {
             Icon(
-                imageVector = Icons.Filled.Person,
-                contentDescription = "Profile Icon",
-                modifier = Modifier.fillMaxSize(),
+                imageVector = Icons.Filled.Assignment,
+                contentDescription = "Surat Pengembangan Icon",
+                modifier = Modifier.fillMaxSize() .padding(5.dp),
                 tint = Color.Black
             )
         }
