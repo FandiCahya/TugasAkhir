@@ -40,6 +40,7 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.navigation.NavController
 import com.example.applicationsop.Api.updatePengajuan
+import com.example.applicationsop.models.Pengajuan
 import com.example.applicationsop.models.PengajuanRequest
 import com.example.applicationsop.ui.theme.Maroon
 import com.example.applicationsop.ui.theme.abang
@@ -63,9 +64,10 @@ fun DetailPopupUsulanAdmin(
     onRejectClick: (String) -> Unit, // Fungsi untuk menolak usulan
     navController: NavController
 ) {
-//    println("Idnya Adalah: $id")
     var inputAlasan by remember { mutableStateOf(alasan.orEmpty()) }
     var showAlasanInput by remember { mutableStateOf(false) }
+    var pengajuanList by remember { mutableStateOf<List<Pengajuan>>(emptyList()) }
+
     // Coroutine scope for launching suspend functions
     val coroutineScope = rememberCoroutineScope()
 
@@ -328,9 +330,33 @@ fun DetailPopupUsulanAdmin(
                             Text("Add Schedule", color = Color.White)
                         }
                     }
-                }
-                else {
-                    // Tombol Terima dan Tolak untuk status selain "accepted"
+                } else if (status == "rejected") {
+                    // Tombol "Tutup" untuk status "rejected"
+                    Row(
+                        modifier = Modifier.fillMaxWidth(), // Take full width
+                        horizontalArrangement = Arrangement.End // Align to the right
+                    ) {
+                        Button(
+                            onClick = onDismiss,
+                            modifier = Modifier
+                                .padding(end = 16.dp) // Optional padding to give some space from the edge
+                                .width(100.dp)
+                                .shadow(
+                                    4.dp,
+                                    RoundedCornerShape(16.dp)
+                                ), // Set the width of the button to a smaller size
+                            colors = ButtonDefaults.buttonColors(containerColor = Color.Gray),
+                            shape = RoundedCornerShape(16.dp)
+                        ) {
+                            Text(
+                                text = "Tutup",
+                                fontWeight = FontWeight.Bold,
+                                color = Color.White
+                            )
+                        }
+                    }
+                } else {
+                    // Tombol Terima dan Tolak untuk status selain "accepted" atau "rejected"
                     Row(
                         modifier = Modifier
                             .fillMaxWidth()
@@ -349,6 +375,10 @@ fun DetailPopupUsulanAdmin(
                                     try {
                                         val response = updatePengajuan(id, pengajuanRequest)
                                         if (response.status.value in 200..299) {
+                                            // Remove the accepted pengajuan from the list
+                                            pengajuanList = pengajuanList.filterNot { it.id == id }
+
+                                            // Execute the callback after success
                                             onAcceptClick() // Execute the callback after success
                                             onDismiss()
                                         } else {
@@ -372,7 +402,8 @@ fun DetailPopupUsulanAdmin(
 
                         Button(
                             onClick = {
-                                showAlasanInput = true // Show the input for reason
+                                // Show the reason input for rejection
+                                showAlasanInput = true
                             },
                             modifier = Modifier
                                 .width(120.dp)
@@ -388,9 +419,15 @@ fun DetailPopupUsulanAdmin(
                     if (showAlasanInput) {
                         // Input alasan
                         Column(
-                            modifier = Modifier.fillMaxWidth().padding(top = 16.dp)
+                            modifier = Modifier
+                                .fillMaxWidth()
+                                .padding(top = 16.dp)
                         ) {
-                            Text("Alasan Penolakan", fontWeight = FontWeight.Bold, color = Color.Black)
+                            Text(
+                                "Alasan Penolakan",
+                                fontWeight = FontWeight.Bold,
+                                color = Color.Black
+                            )
                             Spacer(modifier = Modifier.height(8.dp))
                             TextField(
                                 value = inputAlasan,
@@ -401,14 +438,8 @@ fun DetailPopupUsulanAdmin(
                             )
                             Spacer(modifier = Modifier.height(8.dp))
 
-                            // Button to submit the rejection reason
                             Button(
                                 onClick = {
-//                                    if (inputAlasan.isNotEmpty()) {
-//                                        // Call the onRejectClick function with the inputAlasan value
-//                                        onRejectClick(inputAlasan)
-//                                        onDismiss()
-//                                    }
                                     if (inputAlasan.isNotEmpty()) {
                                         // Prepare the PengajuanRequest for rejection with the reason
                                         val pengajuanRequest = PengajuanRequest(

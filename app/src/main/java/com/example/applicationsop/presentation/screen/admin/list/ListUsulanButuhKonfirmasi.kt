@@ -18,6 +18,14 @@ import androidx.compose.runtime.LaunchedEffect
 import com.example.applicationsop.Api.fetchPengajuanList
 import com.example.applicationsop.models.Pengajuan
 import androidx.compose.foundation.lazy.items
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.Error
+import androidx.compose.material3.Icon
+import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.Text
+import androidx.compose.ui.Alignment
+import androidx.compose.ui.text.TextStyle
+import androidx.compose.ui.text.font.FontWeight
 import com.example.applicationsop.presentation.component.listitem.ListPengajuanItem
 import com.example.applicationsop.presentation.component.header.HeaderWithSearch
 import com.example.applicationsop.presentation.component.popup.DetailPopupUsulanAdmin
@@ -27,20 +35,22 @@ import java.util.*
 @Composable
 fun ListPengajuanScreenAdmin1(navController: NavController) {
     var showPopup by remember { mutableStateOf(false) }
-    var selectedDetail by remember { mutableStateOf(DetailInfo(id="")) }
+    var selectedDetail by remember { mutableStateOf(DetailInfo(id = "")) }
     var pengajuanList by remember { mutableStateOf<List<Pengajuan>>(emptyList()) }
 
-    LaunchedEffect(Unit) {
-        val fetchedPengajuanList = fetchPengajuanList("pending")
-        Log.d("PengajuanList", "Fetched Pengajuan List: $fetchedPengajuanList")
-        if (fetchedPengajuanList.isEmpty()) {
-            Log.d("PengajuanList", "No data available")
+    @Composable
+    fun refreshList() {
+        LaunchedEffect(Unit) {
+            val fetchedPengajuanList = fetchPengajuanList("pending")
+            Log.d("PengajuanList", "Fetched Pengajuan List: $fetchedPengajuanList")
+            if (fetchedPengajuanList.isEmpty()) {
+                Log.d("PengajuanList", "No data available")
+            }
+            pengajuanList = fetchedPengajuanList // Updating the state
         }
-        pengajuanList = fetchedPengajuanList // Updating the state
     }
 
     val dateFormat = SimpleDateFormat("yyyy-MM-dd", Locale.getDefault()) // Parsing the date format
-    val todayDate = dateFormat.format(Date()) // Current date for fallback
 
     // Sort pengajuanList by tanggal
     val sortedPengajuanList = pengajuanList.sortedByDescending { pengajuan ->
@@ -53,6 +63,8 @@ fun ListPengajuanScreenAdmin1(navController: NavController) {
         }
     }
 
+    refreshList()
+
     Column(
         modifier = Modifier
             .fillMaxSize()
@@ -62,34 +74,62 @@ fun ListPengajuanScreenAdmin1(navController: NavController) {
 
         Spacer(modifier = Modifier.height(20.dp))
 
+        if (sortedPengajuanList.isEmpty()) {
+            Box(
+                modifier = Modifier
+                    .fillMaxSize()
+                    .padding(bottom = 100.dp)
+                    .wrapContentSize(Alignment.Center)
+            ) {
+                Column(horizontalAlignment = Alignment.CenterHorizontally) {
+                    // Add Icon with size adjustment
+                    Icon(
+                        imageVector = Icons.Default.Error, // Ganti dengan ikon yang diinginkan
+                        contentDescription = "No Pengajuan",
+                        modifier = Modifier.size(70.dp), // Sesuaikan ukuran ikon
+                        tint = Color.Gray
+                    )
 
-        LazyColumn(modifier = Modifier.fillMaxSize()) {
-            items(sortedPengajuanList) { pengajuan ->
-
-                ListPengajuanItem(
-                    namaSistem = pengajuan.nama_sistem,
-                    tanggal = pengajuan.tgl,
-                    jenisSistem = pengajuan.jenis,
-                    rencanaAnggaran = pengajuan.rencana_anggaran,
-                    masalahSistem = pengajuan.masalah,
-                    outputHasil = pengajuan.output,
-                    status = pengajuan.status,
-                    alasan_penolakan = pengajuan.alasan_penolakan ?: "null",
-                    onClick = {
-                        selectedDetail = DetailInfo(
-                            id = pengajuan.id,
-                            namaSistem = pengajuan.nama_sistem,
-                            tanggal = pengajuan.tgl.toString(),
-                            jenisSistem = pengajuan.jenis,
-                            rencanaAnggaran = pengajuan.rencana_anggaran,
-                            masalahSistem = pengajuan.masalah,
-                            outputHasil = pengajuan.output,
-                            status = pengajuan.status,
-                            alasan_penolakan = pengajuan.alasan_penolakan ?: "null"
+                    // Add Text below the icon
+                    Text(
+                        text = "Tidak Ada Pengajuan",
+                        color = Color.Gray,
+                        style = TextStyle(
+                            fontWeight = FontWeight.Bold,
+                            fontSize = MaterialTheme.typography.bodyLarge.fontSize
                         )
-                        showPopup = true
-                    }
-                )
+                    )
+                }
+            }
+        } else {
+            LazyColumn(modifier = Modifier.fillMaxSize()) {
+                items(sortedPengajuanList) { pengajuan ->
+
+                    ListPengajuanItem(
+                        namaSistem = pengajuan.nama_sistem,
+                        tanggal = pengajuan.tgl,
+                        jenisSistem = pengajuan.jenis,
+                        rencanaAnggaran = pengajuan.rencana_anggaran,
+                        masalahSistem = pengajuan.masalah,
+                        outputHasil = pengajuan.output,
+                        status = pengajuan.status,
+                        alasan_penolakan = pengajuan.alasan_penolakan ?: "null",
+                        onClick = {
+                            selectedDetail = DetailInfo(
+                                id = pengajuan.id,
+                                namaSistem = pengajuan.nama_sistem,
+                                tanggal = pengajuan.tgl.toString(),
+                                jenisSistem = pengajuan.jenis,
+                                rencanaAnggaran = pengajuan.rencana_anggaran,
+                                masalahSistem = pengajuan.masalah,
+                                outputHasil = pengajuan.output,
+                                status = pengajuan.status,
+                                alasan_penolakan = pengajuan.alasan_penolakan ?: "null"
+                            )
+                            showPopup = true
+                        }
+                    )
+                }
             }
         }
     }
@@ -117,5 +157,6 @@ fun ListPengajuanScreenAdmin1(navController: NavController) {
         )
     }
 }
+
 
 
