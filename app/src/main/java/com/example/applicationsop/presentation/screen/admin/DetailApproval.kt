@@ -68,27 +68,15 @@ fun DetailApproval(navController: NavController, idPengujian: String?) {
                 isDialogOpen = true
                 currentRole = "Admin"
             }
-            Spacer(modifier = Modifier.height(16.dp))
 
-            // Pemohon Signature
-            SignatureSection("Pemohon Signature", pemohonSignature, "Pemohon") {
-                isDialogOpen = true
-                currentRole = "Pemohon"
-            }
-            Spacer(modifier = Modifier.height(16.dp))
+            // Pemohon Signature (only display)
+            SignatureSection("Pemohon Signature", pemohonSignature, "Pemohon", openSignatureDialog = {})
 
-            // QMR Signature
-            SignatureSection("QMR Signature", qmrSignature, "QMR") {
-                isDialogOpen = true
-                currentRole = "QMR"
-            }
-            Spacer(modifier = Modifier.height(16.dp))
+            // QMR Signature (only display)
+            SignatureSection("QMR Signature", qmrSignature, "QMR", openSignatureDialog = {})
 
-            // Kacab Signature
-            SignatureSection("Kacab Signature", kacabSignature, "Kacab") {
-                isDialogOpen = true
-                currentRole = "Kacab"
-            }
+            // Kacab Signature (only display)
+            SignatureSection("Kacab Signature", kacabSignature, "Kacab", openSignatureDialog = {})
         }
     }
 
@@ -181,11 +169,15 @@ fun SignatureSection(title: String, signature: Bitmap?, role: String, openSignat
         Text("No signature available", color = Color.Gray)
     }
 
-    // Button to insert a signature
-    Button(
-        onClick = openSignatureDialog,
-        modifier = Modifier.padding(top = 8.dp)
-    ) {
-        Text("Insert Signature")
+    // Show "Insert Signature" button only for Admin
+    if (role == "Admin") {
+        // Button to insert a signature
+        Button(
+            onClick = openSignatureDialog,
+            modifier = Modifier.padding(top = 8.dp)
+        ) {
+            Text("Insert Signature")
+        }
     }
 }
+

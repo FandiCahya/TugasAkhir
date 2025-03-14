@@ -103,6 +103,10 @@ fun DetailPengujianAdmin(navController: NavController, idPengujian: String?, nam
             val hasilYangDiharapkan = detailPengujian?.hasil_diharapkan ?: "-"
             val hasilPengujian = detailPengujian?.hasil_pengujian ?: "-"
             val keterangan = detailPengujian?.status ?: "-"
+
+            // Access Catatan Pengujian
+            val catatanPengujian = pengujian?.catatan
+
             // Form Fields Section
             Column(
                 modifier = Modifier
@@ -441,6 +445,96 @@ fun DetailPengujianAdmin(navController: NavController, idPengujian: String?, nam
                         ) {
                             Text(keterangan, color = Color.Black)
                         }
+                    }
+
+                    // Informasi Pengujian
+                    Text(
+                        text = "Uraian Pengujian",
+                        fontSize = 18.sp,
+                        fontWeight = FontWeight.Bold,
+                        color = Color.Black,
+                        modifier = Modifier.padding(vertical = 10.dp)
+                    )
+                    Divider(
+                        color = Color.Gray,
+                        thickness = 1.dp,
+                        modifier = Modifier.padding(bottom = 20.dp)
+                    )
+
+                    // Detail Catatan Pengujian jika ada
+                    if (catatanPengujian != null) {
+                        // Baris kesebelas (Uraian Catatan)
+                        Row(
+                            modifier = Modifier.fillMaxWidth(),
+                            horizontalArrangement = Arrangement.spacedBy(16.dp)
+                        ) {
+                            Box(
+                                modifier = Modifier
+                                    .weight(1f)
+                                    .border(1.dp, Color.Gray)
+                                    .padding(8.dp)
+                            ) {
+                                Text("Uraian", fontWeight = FontWeight.Bold, color = Color.Black)
+                            }
+                            Box(
+                                modifier = Modifier
+                                    .weight(2f)
+                                    .border(1.dp, Color.Gray)
+                                    .padding(8.dp)
+                            ) {
+                                Text(keterangan, color = Color.Black)
+                            }
+                        }
+                        // Baris ke12 (Rencana Tindak Lanjut)
+                        Row(
+                            modifier = Modifier.fillMaxWidth(),
+                            horizontalArrangement = Arrangement.spacedBy(16.dp)
+                        ) {
+                            Box(
+                                modifier = Modifier
+                                    .weight(1f)
+                                    .border(1.dp, Color.Gray)
+                                    .padding(8.dp)
+                            ) {
+                                Text("Rencana Tindak Lanjut", fontWeight = FontWeight.Bold, color = Color.Black)
+                            }
+                            Box(
+                                modifier = Modifier
+                                    .weight(2f)
+                                    .border(1.dp, Color.Gray)
+                                    .padding(8.dp)
+                            ) {
+                                Text(keterangan, color = Color.Black)
+                            }
+                        }
+                        // Baris ke13 (Penanngung jawab)
+                        Row(
+                            modifier = Modifier.fillMaxWidth(),
+                            horizontalArrangement = Arrangement.spacedBy(16.dp)
+                        ) {
+                            Box(
+                                modifier = Modifier
+                                    .weight(1f)
+                                    .border(1.dp, Color.Gray)
+                                    .padding(8.dp)
+                            ) {
+                                Text("Penanngung Jawab", fontWeight = FontWeight.Bold, color = Color.Black)
+                            }
+                            Box(
+                                modifier = Modifier
+                                    .weight(2f)
+                                    .border(1.dp, Color.Gray)
+                                    .padding(8.dp)
+                            ) {
+                                Text(keterangan, color = Color.Black)
+                            }
+                        }
+                    } else {
+                        Text(
+                            text = "Tidak ada catatan pengujian",
+                            fontSize = 16.sp,
+                            color = Color.Black
+                        )
                     }
                 }
             }
