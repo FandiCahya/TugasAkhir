@@ -93,7 +93,7 @@ fun SubmissionSection(navController: NavController) {
             color = kuning,
             icon = Icons.Filled.Timer,
             onClick = {
-                navController.navigate("list_pengajuanAdmin1")
+                navController.navigate("list_pengajuanKacab1")
             }
         )
 
@@ -102,7 +102,7 @@ fun SubmissionSection(navController: NavController) {
             color = abang,
             icon = Icons.Filled.Close,
             onClick = {
-                navController.navigate("list_pengajuanAdmin2")
+                navController.navigate("list_pengajuanKacab2")
             }
         )
 
@@ -111,7 +111,7 @@ fun SubmissionSection(navController: NavController) {
             color = ijo,
             icon = Icons.Filled.Verified,
             onClick = {
-                navController.navigate("list_pengajuanAdmin3")
+                navController.navigate("list_pengajuanKacab3")
             }
         )
     }
