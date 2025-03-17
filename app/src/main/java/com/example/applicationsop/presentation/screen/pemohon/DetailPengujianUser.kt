@@ -1,28 +1,45 @@
-package com.example.applicationsop.presentation.screen.admin
+package com.example.applicationsop.presentation.screen.pemohon
 
 import android.app.Activity
 import android.content.Context
+import android.graphics.Bitmap
+import android.graphics.Rect
+import android.widget.Toast
+import androidx.annotation.OptIn
+import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.rememberScrollState
+import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.verticalScroll
+import androidx.compose.material3.Button
+import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.Divider
 import androidx.compose.material3.Text
+import androidx.compose.material3.TextField
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.setValue
+import androidx.compose.ui.ExperimentalComposeUiApi
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.shadow
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.graphics.Path
+import androidx.compose.ui.graphics.asImageBitmap
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
@@ -34,37 +51,63 @@ import com.example.applicationsop.Api.fetchPengujianList
 import com.example.applicationsop.models.Catatan
 import com.example.applicationsop.models.Pengajuan
 import com.example.applicationsop.models.Pengujian
+import com.example.applicationsop.presentation.component.ActionButton
 import com.example.applicationsop.presentation.component.header.HeaderForm
+import com.example.applicationsop.presentation.component.signaturepad.PathState
+import com.example.applicationsop.presentation.component.signaturepad.SignatureDialog
+import com.example.applicationsop.ui.theme.Maroon
 import com.example.applicationsop.ui.theme.Putih
+import com.example.applicationsop.ui.theme.abang
+import com.example.applicationsop.ui.theme.ijo
+import kotlinx.coroutines.launch
 import java.text.SimpleDateFormat
 import java.util.Date
 import java.util.Locale
 
-fun getUserData(context: Context): Map<String, String?> {
-    val sharedPreferences = context.getSharedPreferences("MyPrefs", Activity.MODE_PRIVATE)
-    val token = sharedPreferences.getString("TOKEN", null)
-    val userId = sharedPreferences.getString("USER_ID", null)
-    val role = sharedPreferences.getString("ROLE", null)
-    val name = sharedPreferences.getString("NAME", null)
-    val email = sharedPreferences.getString("EMAIL", null)
-    val devisi = sharedPreferences.getString("DEVISI", null)
+//fun getUserData(context: Context): Map<String, String?> {
+//    val sharedPreferences = context.getSharedPreferences("MyPrefs", Activity.MODE_PRIVATE)
+//    val token = sharedPreferences.getString("TOKEN", null)
+//    val userId = sharedPreferences.getString("USER_ID", null)
+//    val role = sharedPreferences.getString("ROLE", null)
+//    val name = sharedPreferences.getString("NAME", null)
+//    val email = sharedPreferences.getString("EMAIL", null)
+//    val devisi = sharedPreferences.getString("DEVISI", null)
+//
+//    return mapOf(
+//        "token" to token,
+//        "userId" to userId,
+//        "role" to role,
+//        "name" to name,
+//        "email" to email,
+//        "devisi" to devisi
+//    )
+//}
 
-    return mapOf(
-        "token" to token,
-        "userId" to userId,
-        "role" to role,
-        "name" to name,
-        "email" to email,
-        "devisi" to devisi
-    )
-}
-
-@androidx.annotation.OptIn(UnstableApi::class)
+@kotlin.OptIn(ExperimentalComposeUiApi::class)
 @Composable
-fun DetailPengujianAdmin(navController: NavController, idPengujian: String?, namaSistem: String?) {
+fun DetailPengujianPemohon(
+    navController: NavController,
+    idPengujian: String?,
+    namaSistem: String?,
+    onAcceptClick: () -> Unit,
+    onRejectClick: (String) -> Unit,
+    onDismiss: () -> Unit
+
+) {
     // Informasi Pengujian
     var pengujian by remember { mutableStateOf<Pengujian?>(null) }
     var isLoading by remember { mutableStateOf(true) }
+    // States for signature dialog and rejection reason input
+    val showAlasanInput = remember { mutableStateOf(false) }
+    val inputAlasan = remember { mutableStateOf("") }
+    val isDialogOpen = remember { mutableStateOf(false) }
+    val paths = remember { mutableStateOf(mutableListOf<PathState>()) }
+    val capturingViewBounds = remember { mutableStateOf<Rect?>(null) }
+    val image = remember { mutableStateOf<Bitmap?>(null) }
+    val drawColor = remember { mutableStateOf(Color.Black) }
+    val drawBrush = remember { mutableStateOf(5f) }
+    val usedColors = remember { mutableStateOf(mutableSetOf(Color.Black, Color.White, Color.Gray)) }
+    val coroutineScope = rememberCoroutineScope()
     print("IDPengujian : $idPengujian")
 
     val scrollState = rememberScrollState()
@@ -80,7 +123,7 @@ fun DetailPengujianAdmin(navController: NavController, idPengujian: String?, nam
             println("Updated pengujian: $pengujian")
 
             fetchedPengujian?.catatan?.forEach { catatan ->
-                Log.d("CatatanPengujian", "ID: ${catatan.id}, Uraian: ${catatan.uraian}")
+//                Log.d("CatatanPengujian", "ID: ${catatan.id}, Uraian: ${catatan.uraian}")
             }
         }
     }
@@ -587,6 +630,168 @@ fun DetailPengujianAdmin(navController: NavController, idPengujian: String?, nam
                             fontSize = 16.sp,
                             color = Color.Black
                         )
+                    }
+
+                    // Row for the "Terima" and "Tolak" buttons
+                    Row(
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .padding(top = 15.dp),
+                        horizontalArrangement = Arrangement.Center
+                    ) {
+                        Button(
+                            onClick = {
+                                // Handle "Terima" (Accept) button click
+                                isDialogOpen.value = true // Open signature dialog
+                            },
+                            modifier = Modifier
+                                .width(120.dp)
+                                .shadow(4.dp, RoundedCornerShape(16.dp)),
+                            colors = ButtonDefaults.buttonColors(containerColor = ijo),
+                            shape = RoundedCornerShape(16.dp)
+                        ) {
+                            Text("Terima", color = Color.White)
+                        }
+
+                        Spacer(modifier = Modifier.weight(1f))
+
+                        Button(
+                            onClick = {
+                                // Show input for rejection reason when "Tolak" (Reject) button is clicked
+                                showAlasanInput.value = true
+                            },
+                            modifier = Modifier
+                                .width(120.dp)
+                                .shadow(4.dp, RoundedCornerShape(16.dp)),
+                            colors = ButtonDefaults.buttonColors(containerColor = abang),
+                            shape = RoundedCornerShape(16.dp)
+                        ) {
+                            Text("Tolak", color = Color.White)
+                        }
+                    }
+
+                    // Show reason input if "Tolak" button is clicked
+                    if (showAlasanInput.value) {
+                        // Input rejection reason
+                        Column(
+                            modifier = Modifier
+                                .fillMaxWidth()
+                                .padding(top = 16.dp)
+                        ) {
+                            Text(
+                                "Alasan Penolakan",
+                                fontWeight = FontWeight.Bold,
+                                color = Color.Black
+                            )
+                            Spacer(modifier = Modifier.height(8.dp))
+                            TextField(
+                                value = inputAlasan.value,
+                                onValueChange = { inputAlasan.value = it },
+                                placeholder = { Text("Masukkan alasan") },
+                                modifier = Modifier.fillMaxWidth(),
+                                maxLines = 3
+                            )
+                            Spacer(modifier = Modifier.height(8.dp))
+
+                            Button(
+                                onClick = {
+//                                    if (inputAlasan.value.isNotEmpty()) {
+//                                        val pengajuanRequest = PengajuanRequest(
+//                                            status = "rejected",
+//                                            alasan_penolakan = inputAlasan.value
+//                                        )
+//                                        coroutineScope.launch {
+//                                            try {
+//                                                val response = updatePengajuan(id, pengajuanRequest)
+//                                                if (response.status.value in 200..299) {
+//                                                    onRejectClick(inputAlasan.value) // Execute the callback
+//                                                    println("Response success update alasan: $response")
+//                                                    onDismiss()
+//                                                } else {
+//                                                    println("Failed to update status")
+//                                                }
+//                                            } catch (e: Exception) {
+//                                                println("Error: ${e.message}")
+//                                            }
+//                                        }
+//                                    }
+                                },
+//                                modifier = Modifier.align(Alignment.CenterHorizontally),
+                                colors = ButtonDefaults.buttonColors(containerColor = abang),
+                                shape = RoundedCornerShape(16.dp)
+                            ) {
+                                Text("Kirim Alasan", color = Color.White)
+                            }
+                        }
+                    }
+
+                    // Signature Dialog for "Terima" (Accept)
+                    SignatureDialog(
+                        isDialogOpen = isDialogOpen,
+                        capturingViewBound = capturingViewBounds,
+                        drawColor = drawColor,
+                        drawBrush = drawBrush,
+                        usedColors = usedColors,
+                        paths = paths,
+                        image = image
+                    )
+
+                    if (image.value != null) {
+                        Image(
+                            bitmap = image.value!!.asImageBitmap(),
+                            contentDescription = "Capture Image"
+                        )
+                    }
+
+                    // Show captured signature paths
+                    if (!paths.value.isEmpty()) {
+                        Text("Tanda Tangan Anda:", color = Maroon)
+                    }
+
+                    // Handle the acceptance of the pengajuan after signature is drawn
+                    if (isDialogOpen.value && image.value != null) {
+                        // Prepare the PengajuanRequest for acceptance with signature
+//                        val pengajuanRequest = PengajuanRequest(
+//                            status = "accepted",
+//                            tanda_tangan = image.value // Attach the signature
+//                        )
+//                        coroutineScope.launch {
+//                            try {
+//                                val response = updatePengajuan(id, pengajuanRequest)
+//                                if (response.status.value in 200..299) {
+//                                    // Remove the accepted pengajuan from the list
+//                                    pengajuanList = pengajuanList.filterNot { it.id == id }
+//
+//                                    // Execute the callback after success
+//                                    onAcceptClick() // Execute the callback
+//                                    onDismiss()
+//                                } else {
+//                                    println("Failed to update status")
+//                                }
+//                            } catch (e: Exception) {
+//                                println("Error: ${e.message}")
+//                            }
+//                        }
+                        // Submit Button
+                        Row(
+                            modifier = Modifier
+                                .fillMaxWidth()
+                                .padding(start = 16.dp, bottom = 16.dp, end = 16.dp),
+                            horizontalArrangement = Arrangement.End
+                        ) {
+                            ActionButton(
+                                onClick = {
+//                                    if (validateForm()) {
+//                                        coroutineScope.launch {
+//                                            handleFormSubmit()
+//                                        }
+//                                    } else {
+//                                        Toast.makeText(navController.context, "Harap perbaiki kesalahan pada form.", Toast.LENGTH_SHORT).show()
+//                                    }
+                                },
+                                buttonType = "submit"
+                            )
+                        }
                     }
                 }
             }

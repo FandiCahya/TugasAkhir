@@ -1,4 +1,4 @@
-package com.example.applicationsop.presentation.screen.admin
+package com.example.applicationsop.presentation.screen.pemohon
 
 import android.annotation.SuppressLint
 import android.graphics.Bitmap
@@ -30,7 +30,7 @@ import com.example.applicationsop.ui.theme.Maroon
 @SuppressLint("UnrememberedMutableState")
 @OptIn(ExperimentalComposeUiApi::class)
 @Composable
-fun DetailApproval(navController: NavController, idPengujian: String?) {
+fun DetailApprovalUser(navController: NavController, idPengujian: String?) {
     var adminSignature by remember { mutableStateOf<Bitmap?>(null) }
     var pemohonSignature by remember { mutableStateOf<Bitmap?>(null) }
     var qmrSignature by remember { mutableStateOf<Bitmap?>(null) }
