@@ -68,11 +68,11 @@ data class GetPengajuan(
 
 @Serializable
 data class Catatan(
-    val id: String?,
-    val uraian: String?,
-    val rencana_tindak_lanjut: String?,
-    val penanggung_jawab: String?,
-    val created_at: String?
+    val id: String? = null,
+    val uraian: String? = null,
+    val rencana_tindak_lanjut: String? = null,
+    val penanggung_jawab: String? = null,
+    val created_at: String? = null
 )
 
 @Serializable

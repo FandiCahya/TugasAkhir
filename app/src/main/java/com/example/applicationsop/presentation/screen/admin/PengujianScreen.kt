@@ -16,7 +16,11 @@ import androidx.compose.runtime.setValue
 import androidx.navigation.NavController
 import com.example.applicationsop.Api.fetchPengujianList
 import com.example.applicationsop.data.DetailPengujian
+import com.example.applicationsop.models.Catatan
+import com.example.applicationsop.models.GetPengujianDetail
 import com.example.applicationsop.models.Pengujian
+import com.example.applicationsop.models.PengujianDetail
+import com.example.applicationsop.models.Persetujuan
 import com.example.applicationsop.presentation.component.header.HeaderWithSearch
 import com.example.applicationsop.presentation.component.listitem.ListPengujianItem
 import com.example.applicationsop.presentation.component.popup.DetailPopupPengujian
@@ -53,7 +57,7 @@ fun ListPengujianScreenAdmin(navController: NavController) {
     ) {
         HeaderWithSearch(navController = navController, title = "Pengujian")
         Spacer(modifier = Modifier.height(20.dp))
-        var currentDate: String? = null
+
 
         // List of pengujian items from fetched data
         LazyColumn(modifier = Modifier.fillMaxSize()) {
@@ -81,7 +85,7 @@ fun ListPengujianScreenAdmin(navController: NavController) {
                             metodePengujian = pengujian.metode,
                             tanggalPengujian = pengujian.tanggal,
                             pelaksanaPengujian = pengujian.pelaksana?.name?:"Tidak Tersedia",
-                            status = pengujian.status
+                            status = pengujian.status,
                         )
                         showPopup = true
                     }

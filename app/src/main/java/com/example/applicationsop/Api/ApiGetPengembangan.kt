@@ -33,7 +33,11 @@ suspend fun fetchPengembanganList(): List<Pengembangan> {
 
         if (response.status.value in 200..299) {
             println("Successful response Pengembangan!")
+
         }
+        // Cek isi response sebelum di-mapping
+        val rawResponse = response.body<String>() // Ambil raw JSON dulu
+        println("Raw Response: $rawResponse")
 
         // Deserialize the response body into ResponsePengajuan
         val responsePengembangan: ResponsePengembangan = response.body()
@@ -43,15 +47,13 @@ suspend fun fetchPengembanganList(): List<Pengembangan> {
         val filteredPengembanganList = responsePengembangan.payload.filter { pengembangan ->
             pengembangan.status != "finished"  // Filter out 'finished' status
         }
-
-
-// Return the list of Pengembangan
         filteredPengembanganList
     } catch (e: Exception) {
         e.printStackTrace()  // Log the exception
         emptyList()  // Return an empty list on error
     }
 }
+
 
 suspend fun fetchPengembanganSortList(role: String? = null, devisi: String? = null,userId: String? = null): List<Pengembangan> {
     return try {

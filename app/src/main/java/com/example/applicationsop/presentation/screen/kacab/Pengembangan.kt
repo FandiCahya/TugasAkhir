@@ -28,18 +28,17 @@ import java.util.Locale
 fun ListPengembanganKacab(navController: NavController) {
     var showPopup by remember { mutableStateOf(false) }
     var selectedScheduleItem by remember { mutableStateOf<ScheduleItem?>(null) }
-    var pengembanganList by remember { mutableStateOf<List<Pengembangan>>(emptyList()) }
+    var pengembanganListKacap by remember { mutableStateOf<List<Pengembangan>>(emptyList()) }
 
     LaunchedEffect(Unit) {
         // Fetching the data when the Composable is first launched
         val fetchedPengembanganList = fetchPengembanganList() // Fetch the data
-        pengembanganList = fetchedPengembanganList // Updating the state
-        println("Pengembangan List View :${pengembanganList}")
+        pengembanganListKacap = fetchedPengembanganList // Updating the state
+        println("Pengembangan List View :${pengembanganListKacap}")
     }
     val dateFormat = SimpleDateFormat("yyyy-MM-dd", Locale.getDefault()) // Parsing the date format
-    val todayDate = dateFormat.format(Date()) // Current date for fallback
     // Sort pengajuanList by tanggal
-    val sortedPengembanganList = pengembanganList.sortedByDescending { pengembangan ->
+    val sortedPengembanganList = pengembanganListKacap.sortedByDescending { pengembangan ->
         try {
             // Try to parse the date string to Date object
             dateFormat.parse(pengembangan.tanggal_mulai) ?: Date() // Return Date() if parsing fails

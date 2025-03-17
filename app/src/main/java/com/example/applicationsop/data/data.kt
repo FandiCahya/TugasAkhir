@@ -1,5 +1,10 @@
 package com.example.applicationsop.data
 
+import com.example.applicationsop.models.Catatan
+import com.example.applicationsop.models.GetPengujianDetail
+import com.example.applicationsop.models.PengujianDetail
+import com.example.applicationsop.models.Persetujuan
+
 // Data class untuk menyimpan informasi detail usulan
 data class DetailInfo(
     val id: String, // Tambahkan ID untuk identifikasi yang unik

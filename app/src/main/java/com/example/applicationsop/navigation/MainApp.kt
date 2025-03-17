@@ -360,16 +360,16 @@ fun MainApp(
             ListPengajuanScreenKacab1(navController = navController)
         }
 
-        // List Pengajuan Admin
+        // List Pengajuan Kacab
         composable("list_pengajuanKacab2") {
             ListPengajuanScreenKacab2(navController = navController)
         }
 
-        // List Pengajuan Admin
+        // List Pengajuan kacab
         composable("list_pengajuanKacab3") {
             ListPengajuanScreenKacab3(navController = navController)
         }
-        // Pengembangaan Admin
+        // Pengembangaan kacab
         composable("pengembanganKacab") {
             ListPengembanganKacab(navController = navController)
         }
