@@ -38,8 +38,12 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.navigation.NavController
 import com.example.applicationsop.data.DetailPengujian
+import com.example.applicationsop.models.Catatan
+import com.example.applicationsop.models.GetPengujianDetail
 import com.example.applicationsop.ui.theme.Maroon
+import com.example.applicationsop.ui.theme.Purple40
 import com.example.applicationsop.ui.theme.abang
+import com.example.applicationsop.ui.theme.biru
 import com.example.applicationsop.ui.theme.ijo
 
 @Composable
@@ -55,6 +59,9 @@ fun DetailPopupPengujian(
     status: String,
     navController: NavController // Menambahkan navController sebagai parameter
 ) {
+    // Cetak ID untuk debugging
+    println("ID Pengujian: $id")
+
     Box(modifier = Modifier.fillMaxSize()) {
         Box(
             modifier = Modifier
@@ -251,6 +258,9 @@ fun DetailPopupPengujian(
                         Button(
                             onClick = {
                                 navController.navigate("DetailPengujianAdmin?id=$id&namaSistem=$namaSistem")
+                                {
+                                    popUpTo("DetailPengujianAdmin") { inclusive = true }
+                                }
                             },
                             modifier = Modifier
                                 .width(100.dp)
@@ -269,7 +279,7 @@ fun DetailPopupPengujian(
                             modifier = Modifier
                                 .width(100.dp)
                                 .shadow(4.dp, RoundedCornerShape(16.dp)),
-                            colors = ButtonDefaults.buttonColors(containerColor = Green),
+                            colors = ButtonDefaults.buttonColors(containerColor = biru),
                             shape = RoundedCornerShape(16.dp)
                         ) {
                             Text("Approval", color = Color.White)
