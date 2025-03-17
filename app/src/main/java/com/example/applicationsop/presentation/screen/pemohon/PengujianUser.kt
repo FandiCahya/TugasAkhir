@@ -20,6 +20,7 @@ import com.example.applicationsop.models.Pengujian
 import com.example.applicationsop.presentation.component.header.HeaderWithSearch
 import com.example.applicationsop.presentation.component.listitem.ListPengujianItem
 import com.example.applicationsop.presentation.component.popup.DetailPopupPengujian
+import com.example.applicationsop.presentation.component.popup.DetailPopupPengujianPemohon
 import java.text.SimpleDateFormat
 import java.util.Date
 import java.util.Locale
@@ -93,7 +94,7 @@ fun ListPengujianScreenUser(navController: NavController) {
 
     // Show popup when selectedDetail is not null
     if (showPopup) {
-        DetailPopupPengujian(
+        DetailPopupPengujianPemohon(
             onDismiss = { showPopup = false },
             id = selectedDetail.id,
             namaSistem = selectedDetail.namaSistem,

@@ -25,6 +25,7 @@ import com.example.applicationsop.presentation.screen.kacab.list.ListPengajuanSc
 import com.example.applicationsop.presentation.screen.kacab.list.ListPengajuanScreenKacab3
 import com.example.applicationsop.presentation.screen.kacab.HomeKacabScreen
 import com.example.applicationsop.presentation.screen.kacab.ListPengembanganKacab
+import com.example.applicationsop.presentation.screen.pemohon.DetailPengujianPemohon
 import com.example.applicationsop.presentation.screen.pemohon.HistoryUser
 import com.example.applicationsop.presentation.screen.pemohon.form.FormUsulanScreen
 import com.example.applicationsop.presentation.screen.pemohon.HomeUserScreen
@@ -209,7 +210,7 @@ fun MainApp(
             )
         }
 
-        ////////////////////////// User ///////////////////////
+        ////////////////////////// Pemohon ///////////////////////
 
         // Halaman FormUsulanScreen User
         composable("form_usulan?userId={userId}") { backStackEntry ->
@@ -280,6 +281,26 @@ fun MainApp(
         // History User
         composable("historyUser") {
             HistoryUser(navController = navController)
+        }
+
+        // Halaman Detail Pengujian
+        composable("DetailPengujianPemohon?id={id}&namaSistem={namaSistem}") { backStackEntry ->
+            val id = backStackEntry.arguments?.getString("id")
+            val namaSistem = backStackEntry.arguments?.getString("namaSistem")
+            DetailPengujianPemohon(
+                navController = navController,
+                idPengujian = id,
+                namaSistem = namaSistem,
+                onAcceptClick = {
+                    // Handle acceptance action
+                },
+                onRejectClick = { alasanPenolakan ->
+                    // Handle rejection action and pass rejection reason
+                },
+                onDismiss = {
+                    navController.popBackStack() // Dismiss the screen
+                }
+            )
         }
 
         ////////////////////////// ADMIN ///////////////////////
