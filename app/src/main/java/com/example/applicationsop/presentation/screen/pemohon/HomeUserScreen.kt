@@ -25,8 +25,10 @@ import androidx.compose.material.icons.filled.History
 import androidx.compose.material.icons.filled.Timer
 import androidx.compose.material.icons.filled.Verified
 import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.unit.IntOffset
 import androidx.compose.ui.zIndex
 import com.example.applicationsop.ui.theme.Maroon
@@ -36,6 +38,9 @@ import com.example.applicationsop.ui.theme.ijo
 import com.example.applicationsop.ui.theme.abang
 import com.example.applicationsop.ui.theme.kuning
 import androidx.navigation.NavController
+import com.example.applicationsop.Api.fetchPengajuanList
+import com.example.applicationsop.Api.fetchPengembanganSortList
+import com.example.applicationsop.Api.fetchPengujianList
 import com.example.applicationsop.presentation.component.ProgressCard
 import com.example.applicationsop.presentation.component.ProgressCardRiwayat
 import com.example.applicationsop.presentation.component.SectionTitle
@@ -57,10 +62,20 @@ fun HomeUserScreen(
     // State for controlling visibility and offset for FAB
     val isVisible = remember { mutableStateOf(false) }
     val fabOffset = remember { mutableStateOf(1000) } // Initial offset for FAB sliding
+    var pendingCount by remember { mutableStateOf(0) }
+    var rejectedCount by remember { mutableStateOf(0) }
+    var acceptedCount by remember { mutableStateOf(0) }
+    var pengembanganCount by remember { mutableStateOf(0) }
+    var pengujianCount by remember { mutableStateOf(0) }
 
     // Trigger visibility change after the composable is first shown
     LaunchedEffect(true) {
         isVisible.value = true
+        pendingCount = fetchPengajuanList("pending", role, devisi).size
+        rejectedCount = fetchPengajuanList("rejected", role, devisi).size
+        acceptedCount = fetchPengajuanList("accepted", role, devisi).size
+        pengembanganCount = fetchPengembanganSortList( role, devisi,userId).size
+        pengujianCount = fetchPengujianList(user_id = userId).size
     }
 
     Box(
@@ -87,7 +102,14 @@ fun HomeUserScreen(
 
             // Pengajuan Section
             SectionTitle("Pengajuan")
-            SubmissionSection(navController = navController,roleUS = role,devisiUS = devisi)
+            SubmissionSection(
+                navController = navController,
+                roleUS = role,
+                devisiUS = devisi,
+                pendingCount=pendingCount,
+                rejectedCount=rejectedCount,
+                acceptedCount=acceptedCount,
+   )
 
             Spacer(modifier = Modifier.height(16.dp))
 
@@ -100,7 +122,10 @@ fun HomeUserScreen(
 
             // Progres Section
             SectionTitle("Progres")
-            ProgressSection(navController = navController)
+            ProgressSection(
+                navController = navController,
+                pengembanganCount=pengembanganCount,
+                pengujianCount=pengujianCount)
         }
 
         // Animated FAB with sliding and fading animation
@@ -137,7 +162,7 @@ fun HomeUserScreen(
 }
 
 @Composable
-fun SubmissionSection(navController: NavController, roleUS: String?, devisiUS: String?) {
+fun SubmissionSection(navController: NavController, roleUS: String?, devisiUS: String?, pendingCount: Int, rejectedCount: Int, acceptedCount: Int) {
     Row(
         modifier = Modifier
             .fillMaxWidth()
@@ -148,6 +173,7 @@ fun SubmissionSection(navController: NavController, roleUS: String?, devisiUS: S
         SubmissionCard(
             color = kuning,
             icon = Icons.Filled.Timer,
+            count = pendingCount,
             onClick = {
                 navController.navigate("listUsulan1?role=$roleUS&devisi=$devisiUS")
             }
@@ -157,6 +183,7 @@ fun SubmissionSection(navController: NavController, roleUS: String?, devisiUS: S
         SubmissionCard(
             color = abang,
             icon = Icons.Filled.Close,
+            count = rejectedCount,
             onClick = {
                 navController.navigate("listUsulan3?role=$roleUS&devisi=$devisiUS")
             }
@@ -166,6 +193,7 @@ fun SubmissionSection(navController: NavController, roleUS: String?, devisiUS: S
         SubmissionCard(
             color = ijo,
             icon = Icons.Filled.Verified,
+            count = acceptedCount,
             onClick = {
                 navController.navigate("listUsulan2?role=$roleUS&devisi=$devisiUS")
             }
@@ -174,15 +202,15 @@ fun SubmissionSection(navController: NavController, roleUS: String?, devisiUS: S
 }
 
 @Composable
-fun ProgressSection(navController: NavController) {
+fun ProgressSection(navController: NavController, pengembanganCount: Int, pengujianCount: Int) {
     Column(
         modifier = Modifier
             .fillMaxWidth()
             .padding(horizontal = 16.dp) // Memberikan padding horizontal pada ProgressSection
     ) {
         // Menampilkan beberapa ProgressCard
-        ProgressCard("Pengembangan User", Icons.Filled.Timer, Maroon, count = null,navController)
-        ProgressCard("Pengujian User", Icons.Filled.History, Maroon,count = null, navController)
+        ProgressCard("Pengembangan User", Icons.Filled.Timer, Maroon, count = pengembanganCount,navController)
+        ProgressCard("Pengujian User", Icons.Filled.History, Maroon,count = pengujianCount, navController)
 
         // Garis tengah
         Divider(

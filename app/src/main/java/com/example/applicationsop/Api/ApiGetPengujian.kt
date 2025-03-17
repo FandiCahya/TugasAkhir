@@ -25,11 +25,16 @@ val GetPengujian = HttpClient(OkHttp) {
 }
 
 // Function to fetch pengembangan list
-suspend fun fetchPengujianList(pengujian_id: String? = null): List<Pengujian> {
+suspend fun fetchPengujianList(pengujian_id: String? = null,user_id: String? = null): List<Pengujian> {
     return try {
         val url = buildString {
             append("${ApiConfig.BASE_URL}pengujian?")
-            if (pengujian_id != null) append("pengujian_id=$pengujian_id") // Pastikan ini benar
+            val params = mutableListOf<String>()
+
+            if (!pengujian_id.isNullOrEmpty()) params.add("pengujian_id=$pengujian_id")
+            if (!user_id.isNullOrEmpty()) params.add("user_id=$user_id")
+
+            append(params.joinToString("&"))
         }
 
         println("Fetching URL: $url") // Debugging
