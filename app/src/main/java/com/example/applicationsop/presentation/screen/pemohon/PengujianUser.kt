@@ -13,8 +13,10 @@ import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
+import androidx.compose.ui.platform.LocalContext
 import androidx.navigation.NavController
 import com.example.applicationsop.Api.fetchPengujianList
+import com.example.applicationsop.core.UserUtils
 import com.example.applicationsop.data.DetailPengujian
 import com.example.applicationsop.models.Pengujian
 import com.example.applicationsop.presentation.component.header.HeaderWithSearch
@@ -30,10 +32,15 @@ fun ListPengujianScreenUser(navController: NavController) {
     var showPopup by remember { mutableStateOf(false) }
     var selectedDetail by remember { mutableStateOf(DetailPengujian(id = "")) }
     var pengujianList by remember { mutableStateOf<List<Pengujian>>(emptyList()) }
+    // Informasi User
+    val context = LocalContext.current
+    val userData = remember { UserUtils.getUserData(context) }
+    val userId = userData["userId"]
+
 
     LaunchedEffect(Unit) {
         // Fetching the data when the Composable is first launched
-        val fetchedPengujianList = fetchPengujianList() // Fetch the data
+        val fetchedPengujianList = fetchPengujianList(disetujui_oleh = userId) // Fetch the data
         pengujianList = fetchedPengujianList // Updating the state
     }
     val dateFormat = SimpleDateFormat("yyyy-MM-dd", Locale.getDefault()) // Parsing the date format
