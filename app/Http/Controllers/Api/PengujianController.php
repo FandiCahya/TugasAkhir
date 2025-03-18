@@ -17,6 +17,7 @@ use Illuminate\Validation\ValidationException;
 use Illuminate\Database\QueryException;
 use App\Models\Pengajuan;
 use App\Models\User;
+use App\Models\PersetujuanPengujianModel;
 
 class PengujianController extends Controller
 {
@@ -26,12 +27,13 @@ class PengujianController extends Controller
             $keyword = $request->query->get('keyword');
             $userId = $request->query->get('user_id');
             $pengujianId = $request->query->get('pengujian_id');
+            $disetujuiOleh = $request->query->get('disetujui_oleh');
 
             $pengujians = Pengujian::with([
                 'details',
                 'pengembangan.pengajuan.user',
                 'catatan', // Tambahkan relasi ke catatan
-                'persetujuan', // Tambahkan relasi ke persetujuan]);
+                'persetujuan.persetujuan_detail.user'// Tambahkan relasi ke persetujuan]);
             ]);
 
             // Jika ada keyword, filter berdasarkan keyword
@@ -57,7 +59,13 @@ class PengujianController extends Controller
             if ($pengujianId) {
                 $pengujians->where('id', '=', $pengujianId);
             }
-    
+            
+            // Filter berdasarkan disetujui oleh user tertentu
+            if ($disetujuiOleh) {
+                $pengujians->whereHas('persetujuan.persetujuan_detail.user', function ($query) use ($disetujuiOleh) {
+                    $query->where('id', '=', $disetujuiOleh);
+                });
+            }
 
             $pengujians = $pengujians->get();
 
@@ -125,7 +133,7 @@ class PengujianController extends Controller
                                     'id' => $catatan->id,
                                     'uraian' => $catatan->uraian,
                                     'rencana_tindak_lanjut' => $catatan->rencana_tindak_lanjut,
-                                    'penanggung_jawab' => $catatan->penanggung_jawab,
+                                    'penanggung_jawab' => $catatan->penanggung_jawab_id,
                                     'created_at' => $catatan->created_at,
                                 ];
                             }),
@@ -133,12 +141,23 @@ class PengujianController extends Controller
                                 return [
                                     'id' => $persetujuan->id,
                                     'status' => $persetujuan->status,
-                                    'tanggal_persetujuan' => $persetujuan->tanggal_persetujuan,
-                                    'disetujui_oleh' => [
-                                        'id' => $persetujuan->user->id ?? null,
-                                        'name' => $persetujuan->user->name ?? null,
-                                        'email' => $persetujuan->user->email ?? null,
-                                    ],
+                                    'tanggal_persetujuan' => $persetujuan->created_at,
+                                    'persetujuan_detail' => $persetujuan->persetujuan_detail->map(function ($detail) {
+                                    return [
+                                        'id' => $detail->id,
+                                        'status' => $detail->status,
+                                        'catatan' => $detail->catatan,
+                                        'signature' => $detail->signature,
+                                        // 'role' => $detail->role,
+                                        'disetujui_oleh' => [
+                                            'id' => $detail->user->id ?? null,
+                                            'name' => $detail->user->name ?? null,
+                                            'email' => $detail->user->email ?? null,
+                                            'devisi' => $detail->user->devisi ?? null,
+                                            'role' => $detail->user->role ?? null,
+                                        ],
+                                    ];
+                                })
                                 ];
                             }),
                         ];

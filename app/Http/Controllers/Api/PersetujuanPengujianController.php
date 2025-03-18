@@ -6,9 +6,10 @@ use App\Models\Pengajuan;
 use Illuminate\Http\Request;
 use App\Http\Controllers\Controller;
 use App\Models\PersetujuanPengujian;
-use App\Models\PersetujuanPengujianDetail;
 use App\Models\PersetujuanPengujianModel;
 use Illuminate\Support\Facades\Log;
+use Illuminate\Database\QueryException;
+use Illuminate\Validation\ValidationException;
 
 class PersetujuanPengujianController extends Controller
 {
@@ -44,6 +45,7 @@ class PersetujuanPengujianController extends Controller
                             'created_at' => $item->persetujuanPengujian->created_at ?? null,
                             'updated_at' => $item->persetujuanPengujian->updated_at ?? null,
                             'pengujian' => [
+                                'id' => $item->persetujuanPengujian->pengujian->id ?? null, // Check if pengujian is not null
                                 'perangkat_lunak' => $item->persetujuanPengujian->pengujian->perangkat_lunak ?? null,
                                 'versi' => $item->persetujuanPengujian->pengujian->versi ?? null,
                                 'tujuan' => $item->persetujuanPengujian->pengujian->tujuan ?? null,
@@ -100,6 +102,88 @@ class PersetujuanPengujianController extends Controller
         }
     }
 
+    public function update(Request $request, $id)
+
+    {
+    try {
+        
+        // Validasi input
+        $request->validate([
+            'status' => 'required|string',
+            'catatan' => 'nullable|string',
+            'signature' => 'nullable|image|mimes:jpeg,png,jpg,gif|max:5048',
+        ]);
+
+        $persetujuanPengujian = PersetujuanPengujianModel::where('id', $id)->first();
+        if (!$persetujuanPengujian) {
+            return response()->json([
+                'success' => false,
+                'payload' => null,
+                'error' => "Data tidak ditemukan untuk ID: $id"
+            ], 404);
+        }
+        
+        // Update data
+        $persetujuanPengujian->update([
+            'status' => $request->status,
+            'catatan' => $request->catatan,
+            'signature' => $this->handleSignatureUpload($request),
+        ]);
+
+        return response()->json(
+            [
+                'success' => true,
+                'payload' => $persetujuanPengujian,
+            ],
+            200 // Status 200 untuk update sukses
+        );
+        
+    } catch (ValidationException $e) {
+        // Jika validasi gagal
+        return response()->json(
+            [
+                'success' => false,
+                'payload' => [],
+                'error' => [
+                    'code' => 422,
+                    'message' => 'Validation failed',
+                    'details' => $e->errors(), // Menampilkan kesalahan validasi
+                ],
+            ],
+            422
+        );
+        
+    } catch (QueryException $e) {
+        // Jika ada masalah query database (misal: masalah foreign key)
+        return response()->json(
+            [
+                'success' => false,
+                'payload' => [],
+                'error' => [
+                    'code' => 400,
+                    'message' => 'Database query error',
+                    'details' => $e->getMessage(), // Menampilkan pesan error database
+                ],
+            ],
+            400
+        );
+        
+    } catch (\Exception $e) {
+        // Menangani error lainnya
+        return response()->json(
+            [
+                'success' => false,
+                'payload' => [],
+                'error' => [
+                    'code' => $e->getCode() ?: 500,
+                    'message' => $e->getMessage(),
+                ],
+            ],
+            $e->getCode() ?: 500
+        );
+    }
+}
+
     public function createApproval(Request $request)
     {
         try {
@@ -143,79 +227,6 @@ class PersetujuanPengujianController extends Controller
             );
         }
     }
-
-    // public function approve(Request $request, $id)
-    // {
-    //     try {
-    //         // Validate incoming data
-    //         $request->validate([
-    //             'user_id' => 'nullable|exists:users,id',
-    //             'status' => 'required|in:setuju,tidak_setuju',
-    //             'catatan' => 'nullable|string',
-    //             'signature' => 'nullable|image|mimes:jpeg,png,jpg,gif|max:2048', // Signature as image
-    //         ]);
-
-    //         // Find the approval record
-    //         $persetujuan = PersetujuanPengujianModel::findOrFail($id);
-
-    //         // Find or create the PersetujuanPengujianDetail record for this user
-    //         $detail = PersetujuanPengujianDetail::updateOrCreate(
-    //             ['persetujuan_pengujian_id' => $persetujuan->id, 'user_id' => $request->user_id],
-    //             [
-    //                 'status' => $request->status,
-    //                 'catatan' => $request->catatan,
-    //                 'signature' => $this->handleSignatureUpload($request), // Upload signature
-    //             ],
-    //         );
-
-    //         // After each approval, check if all 4 users have approved
-    //         if ($this->checkIfAllApproved($persetujuan)) {
-    //             // If all users approved, set the status of PersetujuanPengujian to 'approved'
-    //             $persetujuan->update(['status' => 'approved']);
-    //         }
-
-    //         // Check if there is any rejection
-    //         if ($this->checkIfRejected($persetujuan)) {
-    //             return response()->json(
-    //                 [
-    //                     'success' => false,
-    //                     'message' => 'Approval failed due to rejection from one or more users',
-    //                     'data' => $persetujuan,
-    //                 ],
-    //                 400,
-    //             );
-    //         }
-
-    //         // Check if all approvals are completed (all 4 approved)
-    //         if ($this->checkIfAllApproved($persetujuan)) {
-    //             return response()->json(
-    //                 [
-    //                     'success' => true,
-    //                     'message' => 'Approval completed successfully',
-    //                     'data' => $persetujuan,
-    //                 ],
-    //                 200,
-    //             );
-    //         }
-
-    //         return response()->json(
-    //             [
-    //                 'success' => true,
-    //                 'message' => 'Approval submitted successfully, waiting for other users',
-    //                 'data' => $persetujuan,
-    //             ],
-    //             200,
-    //         );
-    //     } catch (\Exception $e) {
-    //         return response()->json(
-    //             [
-    //                 'success' => false,
-    //                 'error' => $e->getMessage(),
-    //             ],
-    //             500,
-    //         );
-    //     }
-    // }
 
     public function approval(Request $request, $id)
     {
@@ -318,10 +329,6 @@ class PersetujuanPengujianController extends Controller
     {
         if ($request->hasFile('signature')) {
             $signature = $request->file('signature');
-
-            // Add logging to check the file upload
-            Log::info('Signature file uploaded: ' . $signature->getClientOriginalName());
-
             $signaturePath = $signature->storeAs('signatures', $signature->getClientOriginalName(), 'public');
             return $signaturePath;
         }

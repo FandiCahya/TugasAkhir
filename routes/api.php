@@ -34,3 +34,6 @@ Route::post('persetujuan-pengujian/create', [PersetujuanPengujianController::cla
 
 Route::post('persetujuan-pengujian-detail/{id}/approval', [PersetujuanPengujianController::class, 'approval']);
 
+Route::post('pengujian-detail/{id}', [PersetujuanPengujianController::class, 'update']);
+
+

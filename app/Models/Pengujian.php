@@ -44,6 +44,11 @@ class Pengujian extends Model
     {
         return $this->hasMany(CatatanPengujian::class, 'pengujian_id');
     }
+    public function penanggungJawab()
+    {
+        return $this->belongsTo(User::class, 'penanggung_jawab_id');
+    }
+
 
     public function createPengujianDetail(array $userIds,$pengujian_id)
     {
