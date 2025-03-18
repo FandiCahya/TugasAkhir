@@ -87,11 +87,11 @@ data class Persetujuan(
 
 @Serializable
 data class PersetujuanDetail(
-    val id: String?,
-    val status: String?,
-    val catatan: String?,
-    val signature: String?,
-    val disetujui_oleh: Pelaksana?
+    val id: String? = null,
+    val status: String? = null,
+    val catatan: String? = null,
+    val signature: String? = null,
+    val disetujui_oleh: Pelaksana? = null
 )
 
 
