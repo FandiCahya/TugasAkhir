@@ -91,6 +91,10 @@ dependencies {
     implementation(libs.kotlinx.coroutines.android)
     implementation(libs.ktor.server.test.host)
 
+//    dep refresh
+    implementation(libs.swiperefreshlayout)
+    implementation ("androidx.swiperefreshlayout:swiperefreshlayout:1.1.0")
+
     implementation(libs.kotlin.test)
     implementation(libs.kotlinx.coroutines.debug)
     implementation(libs.byte.buddy.agent)

@@ -19,7 +19,7 @@ media3CommonKtx = "1.5.1"
 storage = "1.5.0"
 bytebuddy = "1.10.9"  # Version for bytebuddy
 bytebuddyAgent = "1.10.9"  # Define version for byte-buddy-agent
-
+swiperefreshlayout = "1.1.0"
 
 [libraries]
 androidx-core-ktx = { group = "androidx.core", name = "core-ktx", version.ref = "coreKtx" }
@@ -49,6 +49,7 @@ androidx-storage = { group = "androidx.test.services", name = "storage", version
 kotlin-test = { module = "org.jetbrains.kotlin:kotlin-test", version.ref = "kotlin" }
 kotlinx-coroutines-debug = { module = "org.jetbrains.kotlinx:kotlinx-coroutines-debug", version = "1.9.0" }
 byte-buddy-agent = { module = "net.bytebuddy:byte-buddy-agent", version.ref = "bytebuddyAgent" }
+swiperefreshlayout = { module = "androidx.swiperefreshlayout:swiperefreshlayout", version.ref = "swiperefreshlayout" }
 
 [plugins]
 android-application = { id = "com.android.application", version.ref = "agp" }
