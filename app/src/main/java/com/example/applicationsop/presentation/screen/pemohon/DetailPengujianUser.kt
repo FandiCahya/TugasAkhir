@@ -88,14 +88,19 @@ fun DetailPengujianPemohon(
     // States for signature dialog and rejection reason input
     val showAlasanInput = remember { mutableStateOf(false) }
     val inputAlasan = remember { mutableStateOf("") }
-    val isDialogOpen = remember { mutableStateOf(false) }
+
+    // Signature Pad
     val paths = remember { mutableStateOf(mutableListOf<PathState>()) }
     val capturingViewBounds = remember { mutableStateOf<Rect?>(null) }
     val image = remember { mutableStateOf<Bitmap?>(null) }
+    val isDialogOpen = remember { mutableStateOf(false) }
     val drawColor = remember { mutableStateOf(Color.Black) }
     val drawBrush = remember { mutableStateOf(5f) }
     val usedColors = remember { mutableStateOf(mutableSetOf(Color.Black, Color.White, Color.Gray)) }
+
     val coroutineScope = rememberCoroutineScope()
+
+    paths.value.add(PathState(Path(), drawColor.value, drawBrush.value))
 
     // Informasi User
     val context = LocalContext.current
@@ -187,7 +192,7 @@ fun DetailPengujianPemohon(
                                     devisi = pelaksana.devisi ?: "-",
                                     role = pelaksana.role ?: "-"
                                 )
-                            } // Jika `disetujui_oleh` null, tetap null
+                            }
                         )
                     } ?: emptyList() // Jika `persetujuan_detail` null, kembalikan list kosong
                 )
@@ -663,164 +668,130 @@ fun DetailPengujianPemohon(
                         )
                     }
 
-                    // Row for the "Terima" and "Tolak" buttons
-                    Row(
-                        modifier = Modifier
-                            .fillMaxWidth()
-                            .padding(top = 15.dp),
-                        horizontalArrangement = Arrangement.Center
+                    Column(
+                        modifier = Modifier.fillMaxWidth().padding(16.dp)
                     ) {
-                        Button(
-                            onClick = {
-                                // Handle "Terima" (Accept) button click
-                                isDialogOpen.value = true // Open signature dialog
-                            },
-                            modifier = Modifier
-                                .width(120.dp)
-                                .shadow(4.dp, RoundedCornerShape(16.dp)),
-                            colors = ButtonDefaults.buttonColors(containerColor = ijo),
-                            shape = RoundedCornerShape(16.dp)
+                        // Row for "Approve" and "Tolak" buttons
+                        Row(
+                            modifier = Modifier.fillMaxWidth(),
+                            horizontalArrangement = Arrangement.SpaceBetween
                         ) {
-                            Text("Terima", color = Color.White)
-                        }
+                            // Tombol untuk menambahkan tanda tangan (Approve)
+                            Button(
+                                onClick = { isDialogOpen.value = true },
+                                modifier = Modifier.width(125.dp),
+                                colors = ButtonDefaults.buttonColors(containerColor = ijo),
+                                shape = RoundedCornerShape(15.dp)
+                            ) {
+                                Text(
+                                    text = "Approve",
+                                    color = Putih,
+                                    fontWeight = FontWeight.Bold,
+                                    fontSize = 16.sp
+                                )
+                            }
 
-                        Spacer(modifier = Modifier.weight(1f))
-
-                        Button(
-                            onClick = {
-                                // Show input for rejection reason when "Tolak" (Reject) button is clicked
-                                showAlasanInput.value = true
-                            },
-                            modifier = Modifier
-                                .width(120.dp)
-                                .shadow(4.dp, RoundedCornerShape(16.dp)),
-                            colors = ButtonDefaults.buttonColors(containerColor = abang),
-                            shape = RoundedCornerShape(16.dp)
-                        ) {
-                            Text("Tolak", color = Color.White)
-                        }
-                    }
-
-                    // Show reason input if "Tolak" button is clicked
-                    if (showAlasanInput.value) {
-                        // Input rejection reason
-                        Column(
-                            modifier = Modifier
-                                .fillMaxWidth()
-                                .padding(top = 16.dp)
-                        ) {
-                            Text(
-                                "Alasan Penolakan",
-                                fontWeight = FontWeight.Bold,
-                                color = Color.Black
-                            )
-                            Spacer(modifier = Modifier.height(8.dp))
-                            TextField(
-                                value = inputAlasan.value,
-                                onValueChange = { inputAlasan.value = it },
-                                placeholder = { Text("Masukkan alasan") },
-                                modifier = Modifier.fillMaxWidth(),
-                                maxLines = 3
-                            )
-                            Spacer(modifier = Modifier.height(8.dp))
-
+                            // Tombol Tolak (Reject)
                             Button(
                                 onClick = {
-
-                                    filteredPersetujuanDetailIds.forEach { id ->
-                                        println("ID Persetujuan Detail: $id")
-                                    }
-
-                                    val firstPersetujuanDetailId = filteredPersetujuanDetailIds.firstOrNull() ?: "-"
-                                    println("ID pertama yang sesuai: $firstPersetujuanDetailId")
-
-                                    if (inputAlasan.value.isNotEmpty()) {
-                                        val pengujianRequest = PersetujuanDetail(
-                                            status = "tidak_setuju",
-                                            catatan = inputAlasan.value
-                                        )
-                                        coroutineScope.launch {
-                                            try {
-                                                val response = updatePersetujuanPengujian(firstPersetujuanDetailId, pengujianRequest)
-                                                if (response.status.value in 200..299) {
-                                                    onRejectClick(inputAlasan.value) // Execute the callback
-                                                    println("Response success update alasan: $response")
-                                                    onDismiss()
-                                                } else {
-                                                    println("Failed to update status")
-                                                }
-                                            } catch (e: Exception) {
-                                                println("Error: ${e.message}")
-                                            }
-                                        }
-                                    }
+                                    showAlasanInput.value = true
                                 },
-//                                modifier = Modifier.align(Alignment.CenterHorizontally),
+                                modifier = Modifier.width(120.dp).shadow(4.dp, RoundedCornerShape(16.dp)),
                                 colors = ButtonDefaults.buttonColors(containerColor = abang),
                                 shape = RoundedCornerShape(16.dp)
                             ) {
-                                Text("Kirim Alasan", color = Color.White)
+                                Text("Tolak", color = Color.White)
                             }
                         }
-                    }
 
-                    // Signature Dialog
-                    SignatureDialog(
-                        isDialogOpen = isDialogOpen,
-                        capturingViewBound = capturingViewBounds,
-                        drawColor = drawColor,
-                        drawBrush = drawBrush,
-                        usedColors = usedColors,
-                        paths = paths,
-                        image = image
-                    )
+                        // Show reason input if "Tolak" button is clicked
+                        if (showAlasanInput.value) {
+                            Column(modifier = Modifier.fillMaxWidth().padding(top = 16.dp)) {
+                                Text(
+                                    "Alasan Penolakan",
+                                    fontWeight = FontWeight.Bold,
+                                    color = Color.Black
+                                )
+                                Spacer(modifier = Modifier.height(8.dp))
+                                TextField(
+                                    value = inputAlasan.value,
+                                    onValueChange = { inputAlasan.value = it },
+                                    placeholder = { Text("Masukkan alasan") },
+                                    modifier = Modifier.fillMaxWidth(),
+                                    maxLines = 3
+                                )
+                                Spacer(modifier = Modifier.height(8.dp))
 
-                    if (image.value != null) {
-                        Image(
-                            bitmap = image.value!!.asImageBitmap(),
-                            contentDescription = "Capture Image"
+                                Button(
+                                    onClick = {
+                                        filteredPersetujuanDetailIds.forEach { id ->
+                                            println("ID Persetujuan Detail: $id")
+                                        }
+
+                                        val firstPersetujuanDetailId = filteredPersetujuanDetailIds.firstOrNull() ?: "-"
+                                        println("ID pertama yang sesuai: $firstPersetujuanDetailId")
+
+                                        if (inputAlasan.value.isNotEmpty()) {
+                                            val pengujianRequest = PersetujuanDetail(
+                                                status = "tidak_setuju",
+                                                catatan = inputAlasan.value
+                                            )
+                                            coroutineScope.launch {
+                                                try {
+                                                    val response = updatePersetujuanPengujian(firstPersetujuanDetailId, pengujianRequest)
+                                                    if (response.status.value in 200..299) {
+                                                        onRejectClick(inputAlasan.value) // Execute the callback
+                                                        println("Response success update alasan: $response")
+                                                        onDismiss()
+                                                    } else {
+                                                        println("Failed to update status")
+                                                    }
+                                                } catch (e: Exception) {
+                                                    println("Error: ${e.message}")
+                                                }
+                                            }
+                                        }
+                                    },
+                                    colors = ButtonDefaults.buttonColors(containerColor = abang),
+                                    shape = RoundedCornerShape(16.dp)
+                                ) {
+                                    Text("Kirim Alasan", color = Color.White)
+                                }
+                            }
+                        }
+
+                        SignatureDialog(
+                            isDialogOpen = isDialogOpen,
+                            capturingViewBound = capturingViewBounds,
+                            drawColor = drawColor,
+                            drawBrush = drawBrush,
+                            usedColors = usedColors,
+                            paths = paths,
+                            image = image
                         )
-                    }
 
-                    // Handle the acceptance of the pengajuan after signature is drawn
-                    if (isDialogOpen.value && image.value != null) {
+                        // Displaying the signature result (Image and Signature)
+                        if (image.value != null) {
+                            Image(
+                                bitmap = image.value!!.asImageBitmap(),
+                                contentDescription = "Capture Image",
+                                modifier = Modifier.padding(top = 16.dp)
+                            )
+                        }
 
-                        val pengujianRequest = PersetujuanDetail(
-                            status = "setuju", // Attach the signature
-                        )
-//                        coroutineScope.launch {
-//                            try {
-//                                val response = updatePengajuan(id, pengajuanRequest)
-//                                if (response.status.value in 200..299) {
-//                                    // Remove the accepted pengajuan from the list
-//                                    pengajuanList = pengajuanList.filterNot { it.id == id }
-//
-//                                    // Execute the callback after success
-//                                    onAcceptClick() // Execute the callback
-//                                    onDismiss()
-//                                } else {
-//                                    println("Failed to update status")
-//                                }
-//                            } catch (e: Exception) {
-//                                println("Error: ${e.message}")
-//                            }
-//                        }
+
+                        if (!paths.value.isEmpty()) {
+                            Text("Tanda Tangan Anda:", color = Maroon, modifier = Modifier.padding(top = 8.dp))
+                        }
+
                         // Submit Button
                         Row(
-                            modifier = Modifier
-                                .fillMaxWidth()
-                                .padding(start = 16.dp, bottom = 16.dp, end = 16.dp),
+                            modifier = Modifier.fillMaxWidth().padding(top = 16.dp, bottom = 16.dp),
                             horizontalArrangement = Arrangement.End
                         ) {
                             ActionButton(
                                 onClick = {
-//                                    if (validateForm()) {
-//                                        coroutineScope.launch {
-//                                            handleFormSubmit()
-//                                        }
-//                                    } else {
-//                                        Toast.makeText(navController.context, "Harap perbaiki kesalahan pada form.", Toast.LENGTH_SHORT).show()
-//                                    }
+                                    // Handle the submit button logic here
                                 },
                                 buttonType = "submit"
                             )
