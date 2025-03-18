@@ -80,7 +80,10 @@ suspend fun fetchPengembanganSortList(role: String? = null, devisi: String? = nu
         val responsePengembangan: ResponsePengembangan = response.body()
         println("Pengembangan List: ${responsePengembangan.payload}")
 
-        responsePengembangan.payload // Return the list of Pengembangan
+        val filteredPengembanganList = responsePengembangan.payload.filter { pengembangan ->
+            pengembangan.status != "finished"  // Filter out 'finished' status
+        }
+        filteredPengembanganList
     } catch (e: Exception) {
         e.printStackTrace()  // Log the exception
         emptyList()  // Return an empty list on error

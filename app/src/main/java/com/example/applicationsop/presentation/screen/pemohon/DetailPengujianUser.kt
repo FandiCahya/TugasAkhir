@@ -40,6 +40,7 @@ import androidx.compose.ui.draw.shadow
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.Path
 import androidx.compose.ui.graphics.asImageBitmap
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
@@ -48,6 +49,7 @@ import androidx.media3.common.util.UnstableApi
 import androidx.navigation.NavController
 import com.example.applicationsop.Api.fetchPengajuanList
 import com.example.applicationsop.Api.fetchPengujianList
+import com.example.applicationsop.core.UserUtils
 import com.example.applicationsop.models.Catatan
 import com.example.applicationsop.models.Pengajuan
 import com.example.applicationsop.models.Pengujian
@@ -64,24 +66,6 @@ import java.text.SimpleDateFormat
 import java.util.Date
 import java.util.Locale
 
-//fun getUserData(context: Context): Map<String, String?> {
-//    val sharedPreferences = context.getSharedPreferences("MyPrefs", Activity.MODE_PRIVATE)
-//    val token = sharedPreferences.getString("TOKEN", null)
-//    val userId = sharedPreferences.getString("USER_ID", null)
-//    val role = sharedPreferences.getString("ROLE", null)
-//    val name = sharedPreferences.getString("NAME", null)
-//    val email = sharedPreferences.getString("EMAIL", null)
-//    val devisi = sharedPreferences.getString("DEVISI", null)
-//
-//    return mapOf(
-//        "token" to token,
-//        "userId" to userId,
-//        "role" to role,
-//        "name" to name,
-//        "email" to email,
-//        "devisi" to devisi
-//    )
-//}
 
 @kotlin.OptIn(ExperimentalComposeUiApi::class)
 @Composable
@@ -94,7 +78,7 @@ fun DetailPengujianPemohon(
     onDismiss: () -> Unit
 
 ) {
-    // Informasi Pengujian
+
     var pengujian by remember { mutableStateOf<Pengujian?>(null) }
     var isLoading by remember { mutableStateOf(true) }
     // States for signature dialog and rejection reason input
@@ -120,7 +104,7 @@ fun DetailPengujianPemohon(
             pengujian = fetchedPengujian
             isLoading = false
 
-            println("Updated pengujian: $pengujian")
+//            println("Updated pengujian: $pengujian")
 
             fetchedPengujian?.catatan?.forEach { catatan ->
 //                Log.d("CatatanPengujian", "ID: ${catatan.id}, Uraian: ${catatan.uraian}")
