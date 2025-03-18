@@ -23,12 +23,17 @@ import androidx.compose.material.icons.filled.Error
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
+import androidx.compose.runtime.MutableState
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.font.FontWeight
 import com.example.applicationsop.presentation.component.listitem.ListPengajuanItem
 import com.example.applicationsop.presentation.component.header.HeaderWithSearch
 import com.example.applicationsop.presentation.component.popup.DetailPopupUsulanAdmin
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.launch
+import kotlinx.coroutines.withContext
 import java.text.SimpleDateFormat
 import java.util.*
 
@@ -39,8 +44,7 @@ fun ListPengajuanScreenAdmin1(navController: NavController) {
     var selectedDetail by remember { mutableStateOf(DetailInfo(id = "")) }
     var pengajuanList by remember { mutableStateOf<List<Pengajuan>>(emptyList()) }
 
-    @Composable
-    fun refreshList() {
+
         LaunchedEffect(Unit) {
             val fetchedPengajuanList = fetchPengajuanList("pending")
             Log.d("PengajuanList", "Fetched Pengajuan List: $fetchedPengajuanList")
@@ -49,7 +53,7 @@ fun ListPengajuanScreenAdmin1(navController: NavController) {
             }
             pengajuanList = fetchedPengajuanList // Updating the state
         }
-    }
+
 
     val dateFormat = SimpleDateFormat("yyyy-MM-dd", Locale.getDefault()) // Parsing the date format
 
@@ -64,7 +68,7 @@ fun ListPengajuanScreenAdmin1(navController: NavController) {
         }
     }
 
-    refreshList()
+
 
     Column(
         modifier = Modifier
@@ -150,14 +154,26 @@ fun ListPengajuanScreenAdmin1(navController: NavController) {
             isAdmin = true, // Adds the isAdmin parameter, which can be adjusted based on the user
             onAcceptClick = {
                 // Action on accept (change status or perform other actions)
+                refreshData { updatedList -> pengajuanList = updatedList }
             },
             onRejectClick = { alasan ->
                 // Action on reject with the given reason
+                refreshData { updatedList -> pengajuanList = updatedList }
             },
             navController = navController
         )
     }
 }
+
+private fun refreshData(onDataUpdated: (List<Pengajuan>) -> Unit) {
+    CoroutineScope(Dispatchers.IO).launch {
+        val updatedList = fetchPengajuanList("pending")
+        withContext(Dispatchers.Main) {
+            onDataUpdated(updatedList)
+        }
+    }
+}
+
 
 
 
