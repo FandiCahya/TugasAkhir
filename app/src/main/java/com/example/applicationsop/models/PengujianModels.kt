@@ -80,8 +80,20 @@ data class Persetujuan(
     val id: String?,
     val status: String?,
     val tanggal_persetujuan: String?,
+//    val disetujui_oleh: Pelaksana?,
+    val persetujuan_detail: List<PersetujuanDetail>? // Tambahan untuk detail persetujuan
+)
+
+
+@Serializable
+data class PersetujuanDetail(
+    val id: String?,
+    val status: String?,
+    val catatan: String?,
+    val signature: String?,
     val disetujui_oleh: Pelaksana?
 )
+
 
 @Serializable
 data class ResponsePengujian(
