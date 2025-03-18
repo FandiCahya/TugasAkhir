@@ -38,6 +38,7 @@ import androidx.compose.ui.ExperimentalComposeUiApi
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.shadow
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.graphics.ImageBitmap
 import androidx.compose.ui.graphics.Path
 import androidx.compose.ui.graphics.asImageBitmap
 import androidx.compose.ui.platform.LocalContext
@@ -51,7 +52,10 @@ import com.example.applicationsop.Api.fetchPengajuanList
 import com.example.applicationsop.Api.fetchPengujianList
 import com.example.applicationsop.core.UserUtils
 import com.example.applicationsop.models.Catatan
+import com.example.applicationsop.models.Persetujuan
+import com.example.applicationsop.models.PersetujuanDetail
 import com.example.applicationsop.models.Pengajuan
+import com.example.applicationsop.models.PengajuanRequest
 import com.example.applicationsop.models.Pengujian
 import com.example.applicationsop.presentation.component.ActionButton
 import com.example.applicationsop.presentation.component.header.HeaderForm
@@ -62,9 +66,9 @@ import com.example.applicationsop.ui.theme.Putih
 import com.example.applicationsop.ui.theme.abang
 import com.example.applicationsop.ui.theme.ijo
 import kotlinx.coroutines.launch
-import java.text.SimpleDateFormat
-import java.util.Date
-import java.util.Locale
+import com.example.applicationsop.Api.updatePersetujuanPengujian
+import com.example.applicationsop.models.Pelaksana
+import java.io.File
 
 
 @kotlin.OptIn(ExperimentalComposeUiApi::class)
@@ -92,6 +96,15 @@ fun DetailPengujianPemohon(
     val drawBrush = remember { mutableStateOf(5f) }
     val usedColors = remember { mutableStateOf(mutableSetOf(Color.Black, Color.White, Color.Gray)) }
     val coroutineScope = rememberCoroutineScope()
+
+    // Informasi User
+    val context = LocalContext.current
+    val userData = remember { UserUtils.getUserData(context) }
+    val userId = userData["userId"]
+
+    var signatureFile by remember { mutableStateOf<File?>(null) }
+    var capturedImage by remember { mutableStateOf<ImageBitmap?>(null) }
+
     print("IDPengujian : $idPengujian")
 
     val scrollState = rememberScrollState()
@@ -153,6 +166,40 @@ fun DetailPengujianPemohon(
                     created_at = it.created_at ?: "-"
                 )
             } ?: emptyList()
+
+            // Menyimpan daftar Persetujuan ke dalam variabel
+            val persetujuanList = pengujian?.persetujuan?.map { persetujuan ->
+                Persetujuan(
+                    id = persetujuan.id ?: "-",
+                    status = persetujuan.status ?: "-",
+                    tanggal_persetujuan = persetujuan.tanggal_persetujuan ?: "-",
+                    persetujuan_detail = persetujuan.persetujuan_detail?.map { detail ->
+                        PersetujuanDetail(
+                            id = detail.id ?: "-",
+                            status = detail.status ?: "-",
+                            catatan = detail.catatan ?: "-",
+                            signature = detail.signature ?: "-",
+                            disetujui_oleh = detail.disetujui_oleh?.let { pelaksana ->
+                                Pelaksana(
+                                    id = pelaksana.id ?: "-",
+                                    name = pelaksana.name ?: "-",
+                                    email = pelaksana.email ?: "-",
+                                    devisi = pelaksana.devisi ?: "-",
+                                    role = pelaksana.role ?: "-"
+                                )
+                            } // Jika `disetujui_oleh` null, tetap null
+                        )
+                    } ?: emptyList() // Jika `persetujuan_detail` null, kembalikan list kosong
+                )
+            } ?: emptyList()
+
+
+            val filteredPersetujuanDetailIds = persetujuanList
+                .flatMap { it.persetujuan_detail.orEmpty() } // Hindari null dengan orEmpty()
+                .filter { it.disetujui_oleh?.id == userId } // Filter berdasarkan userId
+                .map { it.id ?: "-" } // Ambil ID, gunakan "-" jika null
+
+
 
             // Form Fields Section
             Column(
@@ -679,26 +726,34 @@ fun DetailPengujianPemohon(
 
                             Button(
                                 onClick = {
-//                                    if (inputAlasan.value.isNotEmpty()) {
-//                                        val pengajuanRequest = PengajuanRequest(
-//                                            status = "rejected",
-//                                            alasan_penolakan = inputAlasan.value
-//                                        )
-//                                        coroutineScope.launch {
-//                                            try {
-//                                                val response = updatePengajuan(id, pengajuanRequest)
-//                                                if (response.status.value in 200..299) {
-//                                                    onRejectClick(inputAlasan.value) // Execute the callback
-//                                                    println("Response success update alasan: $response")
-//                                                    onDismiss()
-//                                                } else {
-//                                                    println("Failed to update status")
-//                                                }
-//                                            } catch (e: Exception) {
-//                                                println("Error: ${e.message}")
-//                                            }
-//                                        }
-//                                    }
+
+                                    filteredPersetujuanDetailIds.forEach { id ->
+                                        println("ID Persetujuan Detail: $id")
+                                    }
+
+                                    val firstPersetujuanDetailId = filteredPersetujuanDetailIds.firstOrNull() ?: "-"
+                                    println("ID pertama yang sesuai: $firstPersetujuanDetailId")
+
+                                    if (inputAlasan.value.isNotEmpty()) {
+                                        val pengujianRequest = PersetujuanDetail(
+                                            status = "tidak_setuju",
+                                            catatan = inputAlasan.value
+                                        )
+                                        coroutineScope.launch {
+                                            try {
+                                                val response = updatePersetujuanPengujian(firstPersetujuanDetailId, pengujianRequest)
+                                                if (response.status.value in 200..299) {
+                                                    onRejectClick(inputAlasan.value) // Execute the callback
+                                                    println("Response success update alasan: $response")
+                                                    onDismiss()
+                                                } else {
+                                                    println("Failed to update status")
+                                                }
+                                            } catch (e: Exception) {
+                                                println("Error: ${e.message}")
+                                            }
+                                        }
+                                    }
                                 },
 //                                modifier = Modifier.align(Alignment.CenterHorizontally),
                                 colors = ButtonDefaults.buttonColors(containerColor = abang),
@@ -709,7 +764,7 @@ fun DetailPengujianPemohon(
                         }
                     }
 
-                    // Signature Dialog for "Terima" (Accept)
+                    // Signature Dialog
                     SignatureDialog(
                         isDialogOpen = isDialogOpen,
                         capturingViewBound = capturingViewBounds,
@@ -727,18 +782,12 @@ fun DetailPengujianPemohon(
                         )
                     }
 
-                    // Show captured signature paths
-                    if (!paths.value.isEmpty()) {
-                        Text("Tanda Tangan Anda:", color = Maroon)
-                    }
-
                     // Handle the acceptance of the pengajuan after signature is drawn
                     if (isDialogOpen.value && image.value != null) {
-                        // Prepare the PengajuanRequest for acceptance with signature
-//                        val pengajuanRequest = PengajuanRequest(
-//                            status = "accepted",
-//                            tanda_tangan = image.value // Attach the signature
-//                        )
+
+                        val pengujianRequest = PersetujuanDetail(
+                            status = "setuju", // Attach the signature
+                        )
 //                        coroutineScope.launch {
 //                            try {
 //                                val response = updatePengajuan(id, pengajuanRequest)
