@@ -48,8 +48,10 @@ import androidx.compose.ui.unit.sp
 import androidx.media3.common.util.Log
 import androidx.media3.common.util.UnstableApi
 import androidx.navigation.NavController
+import com.example.applicationsop.Api.UpdatePersetujuanDiterima
 import com.example.applicationsop.Api.fetchPengajuanList
 import com.example.applicationsop.Api.fetchPengujianList
+import com.example.applicationsop.Api.postPengajuan
 import com.example.applicationsop.core.UserUtils
 import com.example.applicationsop.models.Catatan
 import com.example.applicationsop.models.Persetujuan
@@ -113,6 +115,8 @@ fun DetailPengujianPemohon(
     print("IDPengujian : $idPengujian")
 
     val scrollState = rememberScrollState()
+
+
 
     LaunchedEffect(idPengujian) {
         println("LaunchedEffect triggered with idPengujian: $idPengujian")
@@ -203,6 +207,7 @@ fun DetailPengujianPemohon(
                 .flatMap { it.persetujuan_detail.orEmpty() } // Hindari null dengan orEmpty()
                 .filter { it.disetujui_oleh?.id == userId } // Filter berdasarkan userId
                 .map { it.id ?: "-" } // Ambil ID, gunakan "-" jika null
+
 
 
 
@@ -676,9 +681,12 @@ fun DetailPengujianPemohon(
                             modifier = Modifier.fillMaxWidth(),
                             horizontalArrangement = Arrangement.SpaceBetween
                         ) {
-                            // Tombol untuk menambahkan tanda tangan (Approve)
+                            // Tombol untuk menambahkan tanda tangan (Approve) dan catatan
                             Button(
-                                onClick = { isDialogOpen.value = true },
+                                onClick = {
+                                    isDialogOpen.value = true
+                                    showAlasanInput.value = true
+                                          },
                                 modifier = Modifier.width(125.dp),
                                 colors = ButtonDefaults.buttonColors(containerColor = ijo),
                                 shape = RoundedCornerShape(15.dp)
@@ -692,16 +700,16 @@ fun DetailPengujianPemohon(
                             }
 
                             // Tombol Tolak (Reject)
-                            Button(
-                                onClick = {
-                                    showAlasanInput.value = true
-                                },
-                                modifier = Modifier.width(120.dp).shadow(4.dp, RoundedCornerShape(16.dp)),
-                                colors = ButtonDefaults.buttonColors(containerColor = abang),
-                                shape = RoundedCornerShape(16.dp)
-                            ) {
-                                Text("Tolak", color = Color.White)
-                            }
+//                            Button(
+//                                onClick = {
+//                                    showAlasanInput.value = true
+//                                },
+//                                modifier = Modifier.width(120.dp).shadow(4.dp, RoundedCornerShape(16.dp)),
+//                                colors = ButtonDefaults.buttonColors(containerColor = abang),
+//                                shape = RoundedCornerShape(16.dp)
+//                            ) {
+//                                Text("Tolak", color = Color.White)
+//                            }
                         }
 
                         // Show reason input if "Tolak" button is clicked
@@ -722,41 +730,6 @@ fun DetailPengujianPemohon(
                                 )
                                 Spacer(modifier = Modifier.height(8.dp))
 
-                                Button(
-                                    onClick = {
-                                        filteredPersetujuanDetailIds.forEach { id ->
-                                            println("ID Persetujuan Detail: $id")
-                                        }
-
-                                        val firstPersetujuanDetailId = filteredPersetujuanDetailIds.firstOrNull() ?: "-"
-                                        println("ID pertama yang sesuai: $firstPersetujuanDetailId")
-
-                                        if (inputAlasan.value.isNotEmpty()) {
-                                            val pengujianRequest = PersetujuanDetail(
-                                                status = "tidak_setuju",
-                                                catatan = inputAlasan.value
-                                            )
-                                            coroutineScope.launch {
-                                                try {
-                                                    val response = updatePersetujuanPengujian(firstPersetujuanDetailId, pengujianRequest)
-                                                    if (response.status.value in 200..299) {
-                                                        onRejectClick(inputAlasan.value) // Execute the callback
-                                                        println("Response success update alasan: $response")
-                                                        onDismiss()
-                                                    } else {
-                                                        println("Failed to update status")
-                                                    }
-                                                } catch (e: Exception) {
-                                                    println("Error: ${e.message}")
-                                                }
-                                            }
-                                        }
-                                    },
-                                    colors = ButtonDefaults.buttonColors(containerColor = abang),
-                                    shape = RoundedCornerShape(16.dp)
-                                ) {
-                                    Text("Kirim Alasan", color = Color.White)
-                                }
                             }
                         }
 
@@ -791,7 +764,51 @@ fun DetailPengujianPemohon(
                         ) {
                             ActionButton(
                                 onClick = {
-                                    // Handle the submit button logic here
+                                    filteredPersetujuanDetailIds.forEach { id ->
+                                        println("ID Persetujuan Detail: $id")
+                                    }
+
+                                    val firstPersetujuanDetailId = filteredPersetujuanDetailIds.firstOrNull() ?: "-"
+                                    println("ID pertama yang sesuai: $firstPersetujuanDetailId")
+
+                                    val signatureFile = image.value?.let { bitmap ->
+                                        val uniqueFileName = "signature_${System.currentTimeMillis()}.png"
+                                        val file = File(navController.context.cacheDir, uniqueFileName)
+                                        file.outputStream().use { out -> bitmap.compress(Bitmap.CompressFormat.PNG, 100, out) }
+                                        file
+                                    }
+
+                                        val pengujianRequest = PersetujuanDetail(
+                                            status = "setuju",
+                                            catatan = if (showAlasanInput.value) inputAlasan.value else ""
+
+                                        )
+                                        coroutineScope.launch {
+                                            try {
+                                                val response = updatePersetujuanPengujian(firstPersetujuanDetailId, pengujianRequest)
+                                                if (signatureFile != null) {
+                                                    val response = UpdatePersetujuanDiterima(firstPersetujuanDetailId, pengujianRequest, signatureFile)
+                                                    if (response.status.value in 200..299) {
+                                                        Toast.makeText(navController.context, "Approval berhasil dikirim!", Toast.LENGTH_LONG).show()
+                                                        navController.popBackStack()
+                                                    } else {
+                                                        Toast.makeText(navController.context, "Gagal mengirim. Coba lagi!", Toast.LENGTH_LONG).show()
+                                                    }
+                                                } else {
+                                                    Toast.makeText(navController.context, "Tanda tangan diperlukan.", Toast.LENGTH_LONG).show()
+                                                }
+                                                if (response.status.value in 200..299) {
+                                                    onRejectClick(inputAlasan.value) // Execute the callback
+                                                    println("Response success update alasan: $response")
+                                                    onDismiss()
+                                                } else {
+                                                    println("Failed to update status")
+                                                }
+                                            } catch (e: Exception) {
+                                                println("Error: ${e.message}")
+                                            }
+                                        }
+
                                 },
                                 buttonType = "submit"
                             )
