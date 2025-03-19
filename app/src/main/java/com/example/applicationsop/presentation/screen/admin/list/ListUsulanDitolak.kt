@@ -63,8 +63,6 @@ fun ListPengajuanScreenAdmin2(navController: NavController) {
         }
     }
 
-    refreshList()
-
     Column(
         modifier = Modifier
             .fillMaxSize()

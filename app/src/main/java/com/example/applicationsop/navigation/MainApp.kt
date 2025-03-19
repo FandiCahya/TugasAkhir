@@ -36,6 +36,10 @@ import com.example.applicationsop.presentation.screen.pemohon.list.ListPengajuan
 import com.example.applicationsop.presentation.screen.pemohon.list.ListPengajuanScreenDiterima
 import com.example.applicationsop.presentation.screen.pemohon.list.ListPengajuanScreenDitolak
 import com.example.applicationsop.presentation.screen.qmr.HomeQmrScreen
+import com.example.applicationsop.presentation.screen.qmr.ListPengembanganQmr
+import com.example.applicationsop.presentation.screen.qmr.list.ListPengajuanScreenQmr1
+import com.example.applicationsop.presentation.screen.qmr.list.ListPengajuanScreenQmr2
+import com.example.applicationsop.presentation.screen.qmr.list.ListPengajuanScreenQmr3
 
 @RequiresApi(Build.VERSION_CODES.O)
 @Composable
@@ -402,6 +406,27 @@ fun MainApp(
         // Pengembangaan kacab
         composable("pengembanganKacab") {
             ListPengembanganKacab(navController = navController)
+        }
+
+        ////////////////////////// Kacab ///////////////////////
+
+        // List Pengajuan Admin
+        composable("list_pengajuanQmr1") {
+            ListPengajuanScreenQmr1(navController = navController)
+        }
+
+        // List Pengajuan Kacab
+        composable("list_pengajuanQmr2") {
+            ListPengajuanScreenQmr2(navController = navController)
+        }
+
+        // List Pengajuan kacab
+        composable("list_pengajuanQmr3") {
+            ListPengajuanScreenQmr3(navController = navController)
+        }
+        // Pengembangaan kacab
+        composable("pengembanganQmr") {
+            ListPengembanganQmr(navController = navController)
         }
 
     }
