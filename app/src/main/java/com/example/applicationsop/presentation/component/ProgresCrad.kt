@@ -43,6 +43,7 @@ fun ProgressCard(
         "Pengembangan User" -> "Pengembangan"
         "Pengujian User" -> "Pengujian"
         "Pengembangan Kacab" -> "Pengembangan"
+        "Pengembangan Qmr" -> "Pengembangan"
         else -> title
     }
 

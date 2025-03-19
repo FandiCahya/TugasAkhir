@@ -28,6 +28,10 @@ import androidx.compose.ui.text.font.FontWeight
 import com.example.applicationsop.presentation.component.listitem.ListPengajuanItem
 import com.example.applicationsop.presentation.component.header.HeaderWithSearch
 import com.example.applicationsop.presentation.component.popup.DetailPopupUsulanAdmin
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.launch
+import kotlinx.coroutines.withContext
 import java.text.SimpleDateFormat
 import java.util.*
 
@@ -147,13 +151,21 @@ fun ListPengajuanScreenAdmin3(navController: NavController) {
                 // Jika status adalah accepted, navigasi ke Add Schedule
                 if (selectedDetail.status == "accepted") {
                     navController.navigate("addSchedule?id=${selectedDetail.id}&namaSistem=${selectedDetail.namaSistem}")
+                    refreshData { updatedList -> pengajuanList = updatedList }
                 }
             },
             onRejectClick = { alasan ->
-                // Aksi tolak dengan alasan yang dimasukkan
             },
             navController = navController
         )
     }
 }
 
+private fun refreshData(onDataUpdated: (List<Pengajuan>) -> Unit) {
+    CoroutineScope(Dispatchers.IO).launch {
+        val updatedList = fetchPengajuanList("pending")
+        withContext(Dispatchers.Main) {
+            onDataUpdated(updatedList)
+        }
+    }
+}
