@@ -343,6 +343,15 @@ fun MainApp(
                 navController = navController,
                 idPengujian = id,
                 namaSistem = namaSistem,
+                onAcceptClick = {
+                    // Handle acceptance action
+                },
+                onRejectClick = { alasanPenolakan ->
+                    // Handle rejection action and pass rejection reason
+                },
+                onDismiss = {
+                    navController.popBackStack() // Dismiss the screen
+                }
             )
         }
 
