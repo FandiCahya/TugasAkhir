@@ -113,7 +113,7 @@ fun ListPengujianItem(
             ) {
                 Text(
                     text = when (status) {
-                        "testing" -> "Waiting for Approval"
+                        "testing" -> "Menunggu Approval"
                         "finished" -> "Pengujian Selesai"
                         else -> status // Default fallback in case of other statuses
                     },

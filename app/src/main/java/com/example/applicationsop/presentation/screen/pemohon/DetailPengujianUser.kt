@@ -208,9 +208,6 @@ fun DetailPengujianPemohon(
                 .filter { it.disetujui_oleh?.id == userId } // Filter berdasarkan userId
                 .map { it.id ?: "-" } // Ambil ID, gunakan "-" jika null
 
-
-
-
             // Form Fields Section
             Column(
                 modifier = Modifier
@@ -716,7 +713,7 @@ fun DetailPengujianPemohon(
                         if (showAlasanInput.value) {
                             Column(modifier = Modifier.fillMaxWidth().padding(top = 16.dp)) {
                                 Text(
-                                    "Alasan Penolakan",
+                                    "Catatan",
                                     fontWeight = FontWeight.Bold,
                                     color = Color.Black
                                 )
@@ -724,7 +721,7 @@ fun DetailPengujianPemohon(
                                 TextField(
                                     value = inputAlasan.value,
                                     onValueChange = { inputAlasan.value = it },
-                                    placeholder = { Text("Masukkan alasan") },
+                                    placeholder = { Text("Masukkan catatan(opsional)") },
                                     modifier = Modifier.fillMaxWidth(),
                                     maxLines = 3
                                 )

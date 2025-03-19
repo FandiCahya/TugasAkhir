@@ -235,8 +235,15 @@ fun DetailPopupPengujian(
                             Text("Status", fontWeight = FontWeight.Bold, color = Color.Black)
                         }
                         Column(modifier = Modifier.weight(2f)) {
+                            // Menerjemahkan status testing dan finished
                             Text(
-                                ": $status",
+                                ": ${
+                                    when (status) {
+                                        "testing" -> "Menunggu Approval"
+                                        "finished" -> "ACC"
+                                        else -> status // Menampilkan status lain jika tidak matching
+                                    }
+                                }",
                                 color = Color.Black,
                                 maxLines = 1,
                                 overflow = TextOverflow.Ellipsis
