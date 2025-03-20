@@ -37,7 +37,8 @@ data class DetailPengujian(
     val metodePengujian: String = "", // Add this field
     val tanggalPengujian: String = "", // Add this field
     val pelaksanaPengujian: String = "", // Add this field
-    var status: String = ""
+    var status: String = "",
+    var persetujuanId: String = ""
 )
 
 // Data model for the schedule

@@ -13,8 +13,10 @@ import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
+import androidx.compose.ui.platform.LocalContext
 import androidx.navigation.NavController
 import com.example.applicationsop.Api.fetchPengujianList
+import com.example.applicationsop.core.UserUtils
 import com.example.applicationsop.data.DetailPengujian
 import com.example.applicationsop.models.Catatan
 import com.example.applicationsop.models.GetPengujianDetail
@@ -33,6 +35,11 @@ fun ListPengujianScreenAdmin(navController: NavController) {
     var showPopup by remember { mutableStateOf(false) }
     var selectedDetail by remember { mutableStateOf(DetailPengujian(id = "")) }
     var pengujianList by remember { mutableStateOf<List<Pengujian>>(emptyList()) }
+
+    // Informasi User
+    val context = LocalContext.current
+    val userData = remember { UserUtils.getUserData(context) }
+    val userId = userData["userId"]
 
     LaunchedEffect(Unit) {
         // Fetching the data when the Composable is first launched
@@ -75,6 +82,8 @@ fun ListPengujianScreenAdmin(navController: NavController) {
                     tanggalPengujian = pengujian.tanggal,  // Date of testing
                     pelaksanaPengujian = pengujian.pelaksana?.name?:"Tidak Tersedia",  // Executor's name
                     status = pengujian.status,
+                    persetujuanId = pengujian.persetujuan?.joinToString(", ") { it.id ?: "Tidak Tersedia" } ?: "Tidak Tersedia",
+
                     onClick = {
                         // Populate selectedDetail with all required data
                         selectedDetail = DetailPengujian(
@@ -86,7 +95,8 @@ fun ListPengujianScreenAdmin(navController: NavController) {
                             tanggalPengujian = pengujian.tanggal,
                             pelaksanaPengujian = pengujian.pelaksana?.name?:"Tidak Tersedia",
                             status = pengujian.status,
-                        )
+                            persetujuanId = pengujian.persetujuan?.joinToString(", ") { it.id ?: "Tidak Tersedia" } ?: "Tidak Tersedia",
+                            )
                         showPopup = true
                     }
                 )
@@ -106,6 +116,7 @@ fun ListPengujianScreenAdmin(navController: NavController) {
             tanggalPengujian = selectedDetail.tanggalPengujian,
             pelaksanaPengujian = selectedDetail.pelaksanaPengujian,
             status = selectedDetail.status,
+            persetujuanId = selectedDetail.persetujuanId,
             navController = navController
         )
     }

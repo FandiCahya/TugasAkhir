@@ -42,6 +42,7 @@ fun ListPengujianItem(
     tanggalPengujian: String, // Menggunakan tanggalPengujian
     pelaksanaPengujian: String,
     status: String,
+    persetujuanId: String,
     onClick: () -> Unit // Fungsi untuk menangani klik
 ) {
     // Format tanggal pengujian

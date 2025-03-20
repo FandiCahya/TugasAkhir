@@ -56,6 +56,7 @@ fun DetailPopupPengujianPemohon(
     tanggalPengujian: String,
     pelaksanaPengujian: String,
     status: String,
+    persetujuanId: String,
     navController: NavController // Menambahkan navController sebagai parameter
 ) {
     // Cetak ID untuk debugging

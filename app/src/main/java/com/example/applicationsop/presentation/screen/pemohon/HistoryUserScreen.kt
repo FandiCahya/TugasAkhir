@@ -72,6 +72,7 @@ fun HistoryUser(navController: NavController) {
                     tanggalPengujian = pengujian.tanggal,  // Date of testing
                     pelaksanaPengujian = pengujian.pelaksana?.name?:"Tidak Tersedia",
                     status = pengujian.status,
+                    persetujuanId = pengujian.persetujuan?.joinToString(", ") { it.id ?: "Tidak Tersedia" } ?: "Tidak Tersedia",
                     onClick = {
                         // Populate selectedDetail with all required data
                         selectedDetail = DetailPengujian(
@@ -82,7 +83,8 @@ fun HistoryUser(navController: NavController) {
                             metodePengujian = pengujian.metode,
                             tanggalPengujian = pengujian.tanggal,
                             pelaksanaPengujian = pengujian.pelaksana?.name?:"Tidak Tersedia",
-                            status = pengujian.status
+                            status = pengujian.status,
+                            persetujuanId = pengujian.persetujuan?.joinToString(", ") { it.id ?: "Tidak Tersedia" } ?: "Tidak Tersedia",
                         )
                         showPopup = true
                     }
@@ -103,6 +105,7 @@ fun HistoryUser(navController: NavController) {
             tanggalPengujian = selectedDetail.tanggalPengujian,
             pelaksanaPengujian = selectedDetail.pelaksanaPengujian,
             status = selectedDetail.status,
+            persetujuanId = selectedDetail.persetujuanId,
             navController = navController
         )
     }

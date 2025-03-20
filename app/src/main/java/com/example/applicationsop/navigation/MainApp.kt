@@ -359,9 +359,9 @@ fun MainApp(
             )
         }
 
-        composable("detail_approval_screen/{idPengujian}") { backStackEntry ->
-            val idPengujian = backStackEntry.arguments?.getString("idPengujian")
-            DetailApproval(navController = navController, idPengujian = idPengujian)
+        composable("detail_approval_screen/persetujuanId={persetujuanId}") { backStackEntry ->
+            val persetujuanId = backStackEntry.arguments?.getString("persetujuanId")
+            DetailApproval(navController = navController, persetujuanId = persetujuanId)
         }
 
         // Halaman Form Pengujian
