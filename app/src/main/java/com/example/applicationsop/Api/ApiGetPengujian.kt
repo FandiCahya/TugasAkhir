@@ -25,7 +25,7 @@ val GetPengujian = HttpClient(OkHttp) {
 }
 
 // Function to fetch pengembangan list
-suspend fun fetchPengujianList(pengujian_id: String? = null,user_id: String? = null,disetujui_oleh: String? = null,persetujuan_id: String? = null): List<Pengujian> {
+suspend fun fetchPengujianList(pengujian_id: String? = null,user_id: String? = null,disetujui_oleh: String? = null,persetujuan_id: String? = null,status_persetujuan: String? = null): List<Pengujian> {
     return try {
         val url = buildString {
             append("${ApiConfig.BASE_URL}pengujian?")
@@ -35,6 +35,7 @@ suspend fun fetchPengujianList(pengujian_id: String? = null,user_id: String? = n
             if (!user_id.isNullOrEmpty()) params.add("user_id=$user_id")
             if (!disetujui_oleh.isNullOrEmpty()) params.add("disetujui_oleh=$disetujui_oleh")
             if (!persetujuan_id.isNullOrEmpty()) params.add("persetujuan_id=$persetujuan_id")
+            if (!status_persetujuan.isNullOrEmpty()) params.add("status_persetujuan=$status_persetujuan")
 
             append(params.joinToString("&"))
         }

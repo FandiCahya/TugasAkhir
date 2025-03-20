@@ -75,7 +75,7 @@ fun HomeUserScreen(
         rejectedCount = fetchPengajuanList("rejected", role, devisi).size
         acceptedCount = fetchPengajuanList("accepted", role, devisi).size
         pengembanganCount = fetchPengembanganSortList( role, devisi,userId).size
-        pengujianCount = fetchPengujianList(user_id = userId).size
+        pengujianCount = fetchPengujianList(user_id = userId,status_persetujuan = "approved").size
     }
 
     Box(
