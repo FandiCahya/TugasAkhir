@@ -60,6 +60,7 @@ import com.example.applicationsop.models.PengujianRequest
 import com.example.applicationsop.models.Users
 import com.example.applicationsop.presentation.component.DatePickerField
 import com.example.applicationsop.presentation.component.FormField
+import com.example.applicationsop.presentation.component.UserCheckboxList
 import com.example.applicationsop.presentation.component.header.HeaderForm
 import com.example.applicationsop.presentation.component.signaturepad.PathState
 import com.example.applicationsop.presentation.component.signaturepad.SignatureDialog
@@ -181,90 +182,6 @@ fun FormPengujianAdmin(navController: NavController, idPengembangan: String?, na
         // Perbarui pesan error
         validationErrors = errors
         return errors.isEmpty()  // Jika tidak ada error, form valid
-    }
-
-    @Composable
-    fun UserCheckboxList(checkedUserIds: MutableState<List<String>>) {
-        val coroutineScope = rememberCoroutineScope()
-        var userList by remember { mutableStateOf<List<Users>>(emptyList()) }
-        val checkedStates = remember { mutableStateOf(mapOf<String, Boolean>()) }
-        var isLoading by remember { mutableStateOf(true) }
-
-        // Role yang ingin ditampilkan
-        val filteredRoles = listOf("admin", "user", "qmr", "kepalacabang")
-
-        // Fetch user list from API when the composable is first launched
-        LaunchedEffect(Unit) {
-            coroutineScope.launch {
-                val fetchedUsers = fetchUserList()
-                println("Fetched Users: $fetchedUsers")
-                userList = fetchedUsers.filter { it.role in filteredRoles } // Filter user by role
-                isLoading = false
-            }
-        }
-
-        Column(modifier = Modifier.fillMaxWidth()) {
-            Text(
-                text = "Pilih 4 User :",
-                fontSize = 18.sp,
-                fontWeight = FontWeight.Bold,
-                color = Maroon
-            )
-
-            if (isLoading) {
-                CircularProgressIndicator(modifier = Modifier.padding(16.dp)) // Loading indicator
-            } else {
-                userList.chunked(2).forEach { rowUsers -> // Membagi user ke dalam dua kolom per baris
-                    Row(
-                        horizontalArrangement = Arrangement.spacedBy(18.dp),
-                        verticalAlignment = Alignment.CenterVertically,
-                        modifier = Modifier.fillMaxWidth()
-                    ) {
-                        rowUsers.forEach { user ->
-                            Row(
-                                verticalAlignment = Alignment.CenterVertically,
-                                modifier = Modifier.weight(1f)
-                            ) {
-                                Checkbox(
-                                    checked = checkedStates.value[user.id] == true,
-                                    onCheckedChange = { isChecked ->
-                                        checkedStates.value = checkedStates.value + (user.id to isChecked)
-
-                                        // Update daftar user_id yang dipilih
-                                        checkedUserIds.value = if (isChecked) {
-                                            (checkedUserIds.value + user.id).distinct()
-                                        } else {
-                                            checkedUserIds.value - user.id
-                                        }
-                                    },
-                                    colors = CheckboxDefaults.colors(
-                                        checkedColor = Maroon,
-                                        uncheckedColor = Color.LightGray,
-                                        checkmarkColor = Color.White
-                                    )
-                                )
-                                Text(
-                                    text = user.name,
-                                    fontSize = 16.sp,
-                                    modifier = Modifier.padding(start = 8.dp),
-                                    color = Maroon
-                                )
-                            }
-                        }
-                    }
-                }
-            }
-
-            // Pesan validasi jika kurang dari 4 user yang dipilih
-            if (checkedUserIds.value.size < 4) {
-                Text(
-                    text = "Silakan pilih 4 pengguna.",
-                    color = Color.Red,
-                    fontSize = 14.sp,
-                    modifier = Modifier.padding(top = 8.dp)
-                )
-            }
-        }
     }
 
     Column(
@@ -539,12 +456,9 @@ fun FormPengujianAdmin(navController: NavController, idPengembangan: String?, na
                     onValueChange = { rencanacatatan = it })
             }
 
-
             Divider(modifier = Modifier.padding(bottom = 0.dp))
 
-
             UserCheckboxList(checkedUserIds = checkedUserIds)
-
 
             // Submit Button
             Row(
