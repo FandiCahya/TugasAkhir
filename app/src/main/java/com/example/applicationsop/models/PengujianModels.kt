@@ -22,7 +22,7 @@ data class Pengujian(
 
 @Serializable
 data class GetPengujianDetail(
-    val id: String,
+    val id: String? = null,
     val nama_uji: String,
     val kasus_uji: String,
     val hasil_diharapkan: String,

@@ -57,10 +57,13 @@ fun DetailPopupPengujian(
     tanggalPengujian: String,
     pelaksanaPengujian: String,
     status: String,
+    persetujuanId: String,
     navController: NavController // Menambahkan navController sebagai parameter
 ) {
     // Cetak ID untuk debugging
     println("ID Pengujian: $id")
+    println("Persetujuan Id: $persetujuanId")
+
 
     Box(modifier = Modifier.fillMaxSize()) {
         Box(
@@ -281,8 +284,7 @@ fun DetailPopupPengujian(
                         // Tombol Approval
                         Button(
                             onClick = {  // Example: Navigating to DetailApproval with a mock DetailPengujian object
-                                val detailPengujian = DetailPengujian(id = "1", namaSistem = "Pengujian 1", status = "Approved")
-                                navController.navigate("detail_approval_screen/${detailPengujian.id}") },
+                                navController.navigate("detail_approval_screen/persetujuanId=$persetujuanId") },
                             modifier = Modifier
                                 .width(100.dp)
                                 .shadow(4.dp, RoundedCornerShape(16.dp)),

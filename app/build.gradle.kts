@@ -91,6 +91,10 @@ dependencies {
     implementation(libs.kotlinx.coroutines.android)
     implementation(libs.ktor.server.test.host)
 
+    // Depedencies untuk Image Loading
+    implementation("io.coil-kt.coil3:coil-compose:3.1.0")
+    implementation("io.coil-kt.coil3:coil-network-okhttp:3.1.0")
+
 //    dep refresh
     implementation(libs.swiperefreshlayout)
     implementation ("androidx.swiperefreshlayout:swiperefreshlayout:1.1.0")

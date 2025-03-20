@@ -80,6 +80,7 @@ fun ListPengujianScreenUser(navController: NavController) {
                     tanggalPengujian = pengujian.tanggal,  // Date of testing
                     pelaksanaPengujian = pengujian.pelaksana?.name?:"Tidak Tersedia",  // Executor's name
                     status = pengujian.status,
+                    persetujuanId = pengujian.persetujuan?.joinToString(", ") { it.id ?: "Tidak Tersedia" } ?: "Tidak Tersedia",
                     onClick = {
                         // Populate selectedDetail with all required data
                         selectedDetail = DetailPengujian(
@@ -90,7 +91,8 @@ fun ListPengujianScreenUser(navController: NavController) {
                             metodePengujian = pengujian.metode,
                             tanggalPengujian = pengujian.tanggal,
                             pelaksanaPengujian = pengujian.pelaksana?.name?:"Tidak Tersedia",
-                            status = pengujian.status
+                            status = pengujian.status,
+                            persetujuanId = pengujian.persetujuan?.joinToString(", ") { it.id ?: "Tidak Tersedia" } ?: "Tidak Tersedia",
                         )
                         showPopup = true
                     }
@@ -111,6 +113,7 @@ fun ListPengujianScreenUser(navController: NavController) {
             tanggalPengujian = selectedDetail.tanggalPengujian,
             pelaksanaPengujian = selectedDetail.pelaksanaPengujian,
             status = selectedDetail.status,
+            persetujuanId = selectedDetail.persetujuanId,
             navController = navController
         )
     }
