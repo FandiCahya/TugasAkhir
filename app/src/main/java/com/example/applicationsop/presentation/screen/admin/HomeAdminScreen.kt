@@ -58,7 +58,7 @@ fun HomeAdminScreen(
         rejectedCount = fetchPengajuanList("rejected").size
         acceptedCount = fetchPengajuanList("accepted").size
         pengembanganCount = fetchPengembanganList().size
-        pengujianCount = fetchPengujianList().size
+        pengujianCount = fetchPengujianList(status_persetujuan = "approved").size
     }
 
     Box(

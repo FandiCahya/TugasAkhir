@@ -40,7 +40,7 @@ fun ListPengujianScreenUser(navController: NavController) {
 
     LaunchedEffect(Unit) {
         // Fetching the data when the Composable is first launched
-        val fetchedPengujianList = fetchPengujianList(disetujui_oleh = userId) // Fetch the data
+        val fetchedPengujianList = fetchPengujianList(disetujui_oleh = userId,status_persetujuan = "approved") // Fetch the data
         pengujianList = fetchedPengujianList // Updating the state
     }
     val dateFormat = SimpleDateFormat("yyyy-MM-dd", Locale.getDefault()) // Parsing the date format
