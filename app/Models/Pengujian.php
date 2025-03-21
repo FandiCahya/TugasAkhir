@@ -48,34 +48,84 @@ class Pengujian extends Model
     {
         return $this->belongsTo(User::class, 'penanggung_jawab_id');
     }
-
-
-    public function createPengujianDetail(array $userIds,$pengujian_id)
+    public function createPengujianDetail(array $userIds, $pengujian_id)
     {
-        // Ensure we have 4 users in the provided array
+        // Pastikan jumlah user adalah 4
         if (count($userIds) !== 4) {
             throw new \Exception('You must provide exactly 4 users for approval');
         }
 
-        $roles = ['user', 'admin', 'mqr', 'kepala cabang'];
+        // Definisikan roles yang tersedia
+        $roles = ['user', 'admin', 'qmr', 'kepala cabang'];
 
-        foreach ($userIds as $index => $userId) {
-            $user = User::find($userId); // Find user by ID
+        // Ambil data user dari database agar bisa diurutkan berdasarkan peran yang benar
+        $users = User::whereIn('id', $userIds)->get();
 
-            // Ensure the user exists
+        // Periksa apakah ada user yang tidak ditemukan
+        if ($users->count() !== 4) {
+            throw new \Exception('Some users were not found in the database.');
+        }
+
+        // Mapping role secara berurutan ke user ID
+        $roleUserMap = [];
+        foreach ($roles as $role) {
+            $user = $users->shift(); // Ambil user pertama yang tersedia
+            if ($user) {
+                $roleUserMap[$user->id] = $role;
+            }
+        }
+
+        // Simpan detail persetujuan dengan role yang benar
+        foreach ($userIds as $userId) {
+            $user = User::find($userId);
+
+            // Pastikan user ada
             if (!$user) {
                 throw new \Exception('User with ID ' . $userId . ' not found.');
             }
 
-            // Create an approval detail for this user
-            PersetujuanPengujianDetail::create([
+            // Ambil role berdasarkan user_id
+            $role = $roleUserMap[$user->id] ?? 'user';
+
+            // Buat detail persetujuan pengujian
+            PersetujuanPengujianModel::create([
                 'persetujuan_pengujian_id' => $pengujian_id,
                 'user_id' => $user->id,
                 'status' => 'tidak_setuju',
                 'catatan' => null,
                 'signature' => null,
-                'role' => $roles[$index] ?? 'user',
+                'role' => $role, // Role yang sudah diperbaiki
             ]);
         }
     }
+
+
+    // public function createPengujianDetail(array $userIds,$pengujian_id)
+    // {
+    //     // Ensure we have 4 users in the provided array
+    //     if (count($userIds) !== 4) {
+    //         throw new \Exception('You must provide exactly 4 users for approval');
+    //     }
+
+    //     $roles = ['user', 'admin', 'mqr', 'kepala cabang'];
+
+    //     foreach ($userIds as $index => $userId) {
+    //         $user = User::find($userId); // Find user by ID
+
+    //         // Ensure the user exists
+    //         if (!$user) {
+    //             throw new \Exception('User with ID ' . $userId . ' not found.');
+    //         }
+
+    //         // Create an approval detail for this user
+    //         PersetujuanPengujianDetail::create([
+    //             'persetujuan_pengujian_id' => $pengujian_id,
+    //             'user_id' => $user->id,
+    //             'status' => 'tidak_setuju',
+    //             'catatan' => null,
+    //             'signature' => null,
+    //             'role' => $roles[$index] ?? 'user',
+    //         ]);
+    //     }
+    // }
 }

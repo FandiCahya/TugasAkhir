@@ -17,6 +17,7 @@
                             {{-- Tbody --}}
                         </tbody>
                     </table>
+                    <div id="pagination-controls" class="mt-3 d-flex justify-content-center"></div>
                 </div>
             </div>
         </div>
@@ -77,6 +78,9 @@
         let CatatanPengujian = [];
         let currentDeleteId = null;
         let currentEditId = null;
+        let groupedPengujian = {};
+        let currentPage = 1;
+        const rowsPerPage = 1;
 
         // Fungsi untuk mengambil data pengujian-detail dan merendernya
         function fetchPengujianDetail(query = '') {
@@ -84,16 +88,17 @@
                 .then(response => response.json())
                 .then(data => {
                     if (data.success) {
-
-                        CatatanPengujian = data.payload;
-                        // Kelompokkan data berdasarkan pengujian_id
-                        let groupedPengujian = groupByPengujianId(CatatanPengujian);
-
-                        // Jika ada query pencarian, filter berdasarkan nama sistem
+                        let filteredData = data.payload;
                         if (query) {
-                            groupedPengujian = filterGroupedPengujian(groupedPengujian, query);
+                            filteredData = filteredData.filter(p =>
+                                p.uraian.toLowerCase().includes(query.toLowerCase()) ||
+                                p.pengujian.perangkat_lunak.toLowerCase().includes(query
+                            .toLowerCase()) // Tambahkan kolom lain
+                            );
                         }
 
+                        // Kelompokkan data berdasarkan pengujian_id
+                        groupedPengujian = groupByPengujianId(filteredData);
                         renderTable(groupedPengujian);
                     } else {
                         alert('Gagal memuat data pengujian');
@@ -101,6 +106,10 @@
                 })
                 .catch(error => console.error('Error:', error));
         }
+
+        document.getElementById('search').addEventListener('input', function(event) {
+            fetchPengujianDetail(event.target.value); // Re-fetch pengujian with search query
+        });
 
         // Fungsi untuk mengelompokkan data berdasarkan pengujian.id
         function groupByPengujianId(data) {
@@ -133,11 +142,21 @@
         }
 
         // Fungsi untuk merender tabel
-        function renderTable(groupedPengujian) {
+        function renderTable(groupedPengujian, page = 1) {
             const tableBody = document.querySelector('#pengujian-table tbody');
             tableBody.innerHTML = ''; // Clear the existing table body
 
-            for (const pengujianId in groupedPengujian) {
+            const keys = Object.keys(groupedPengujian);
+            const totalPages = Math.ceil(keys.length / rowsPerPage);
+
+            // Tentukan indeks awal dan akhir untuk slicing data
+            const startIndex = (page - 1) * rowsPerPage;
+            const endIndex = startIndex + rowsPerPage;
+
+            // Ambil data sesuai halaman
+            const paginatedKeys = keys.slice(startIndex, endIndex);
+
+            paginatedKeys.forEach(pengujianId => {
                 const group = groupedPengujian[pengujianId];
 
                 // Create the group header row
@@ -146,7 +165,6 @@
 
                 groupRow.innerHTML = `
             <td colspan="7" class="group-header">
-                <strong>Pengujian ID: ${group[0].pengujian.id}</strong><br>
                 <span>Perangkat Lunak: <strong>${group[0].pengujian.perangkat_lunak}</strong></span> | 
                 <span>Versi: <strong>${group[0].pengujian.versi}</strong></span> | 
                 <span>Tujuan: <strong>${group[0].pengujian.tujuan}</strong></span> | 
@@ -172,7 +190,42 @@
             `;
                     tableBody.appendChild(row);
                 });
+            });
+            renderPaginationControls(totalPages);
+        }
+
+        function changePage(page) {
+            const totalPages = Math.ceil(Object.keys(groupedPengujian).length / rowsPerPage);
+            if (page < 1 || page > totalPages) return;
+
+            currentPage = page;
+            renderTable(groupedPengujian, currentPage);
+        }
+
+        function renderPaginationControls(totalPages) {
+            const paginationContainer = document.querySelector('#pagination-controls');
+            paginationContainer.innerHTML = '';
+
+            if (totalPages <= 1) return;
+
+            let paginationHTML = '';
+
+            if (currentPage > 1) {
+                paginationHTML +=
+                    `<button onclick="changePage(${currentPage - 1})" class="btn btn-secondary mx-1">Previous</button>`;
             }
+
+            for (let i = 1; i <= totalPages; i++) {
+                paginationHTML +=
+                    `<button onclick="changePage(${i})" class="btn ${i === currentPage ? 'btn-secondary' : 'btn-outline-secondary'} mx-1">${i}</button>`;
+            }
+
+            if (currentPage < totalPages) {
+                paginationHTML +=
+                    `<button onclick="changePage(${currentPage + 1})" class="btn btn-secondary mx-1">Next</button>`;
+            }
+
+            paginationContainer.innerHTML = paginationHTML;
         }
 
         function editPengujian(id) {
@@ -223,6 +276,7 @@
                 })
                 .catch(error => console.error('Error:', error));
         });
+
         function deletePengujian(id) {
             currentDeleteId = id;
 

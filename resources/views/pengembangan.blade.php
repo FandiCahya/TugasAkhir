@@ -27,6 +27,7 @@
 
                         </tbody>
                     </table>
+                    <div id="pagination-controls" class="mt-3 d-flex justify-content-center"></div>
                 </div>
             </div>
         </div>
@@ -145,6 +146,8 @@
         let pengembangan = [];
         let editPengembanganId = null;
         let users = [];
+        let currentPage = 1;
+        const rowsPerPage = 5;
 
         function fetchPengembangan(query = '') {
             fetch('/api/pengembangan')
@@ -162,7 +165,7 @@
                             );
                         }
 
-                        renderTable(pengembangan); // Render tabel dengan data pengembangan
+                        renderTable(pengembangan,currentPage); // Render tabel dengan data pengembangan
                     } else {
                         alert('Gagal memuat data pengembangan');
                     }
@@ -170,11 +173,22 @@
                 .catch(error => console.error('Error:', error));
         }
 
-        function renderTable(pengembangan) {
+        function renderTable(pengembangan, page = 1) {
             const tableBody = document.querySelector('#pengembangan-table tbody');
-            tableBody.innerHTML = ''; // Clear the existing table body
+            tableBody.innerHTML = ''; // Kosongkan isi tabel sebelum mengisi ulang
 
-            pengembangan.forEach(p => {
+            // Hitung total halaman
+            const totalPages = Math.ceil(pengembangan.length / rowsPerPage);
+
+            // Tentukan indeks awal dan akhir untuk slicing data
+            const startIndex = (page - 1) * rowsPerPage;
+            const endIndex = startIndex + rowsPerPage;
+
+            // Ambil data sesuai halaman
+            const paginatedData = pengembangan.slice(startIndex, endIndex);
+
+
+            paginatedData.forEach(p => {
                 const row = document.createElement('tr');
                 row.innerHTML = `
             <td>${p.pengajuan ? p.pengajuan.nama_sistem : '-'}</td>
@@ -188,17 +202,48 @@
             <td>
                 <button class="btn btn-warning btn-sm" onclick="editPengembangan('${p.id}')" style="margin: 5px;">Edit</button>
                 <button class="btn btn-danger btn-sm" onclick="deletePengembangan('${p.id}')" style="margin: 5px;">Delete</button>
-                <!-- Show "Pengujian" button only when status is "finished" -->
-                ${p.status === 'finished' ? 
-                    `<button class="btn btn-success btn-sm" onclick="showPengujian('${p.id}')" style="margin: 5px;">Pengujian</button>`
-                : ''
-                }
             </td>
-
         `;
                 tableBody.appendChild(row);
             });
+            // Render Pagination Controls
+            renderPaginationControls(totalPages);
         }
+
+        function changePage(page) {
+            currentPage = page;
+            renderTable(pengembangan, currentPage); // Pastikan pakai pengajuan, bukan data
+        }
+
+        function renderPaginationControls(totalPages) {
+            const paginationContainer = document.querySelector('#pagination-controls');
+            paginationContainer.innerHTML = '';
+
+            if (totalPages <= 1) return; // Jangan tampilkan pagination jika hanya ada 1 halaman
+
+            let paginationHTML = '';
+
+            // Tombol Previous
+            if (currentPage > 1) {
+                paginationHTML +=
+                    `<button onclick="changePage(${currentPage - 1})" class="btn btn-secondary mx-1">Previous</button>`;
+            }
+
+            // Tombol angka halaman
+            for (let i = 1; i <= totalPages; i++) {
+                paginationHTML +=
+                    `<button onclick="changePage(${i})" class="btn ${i === currentPage ? 'btn-secondary' : 'btn-outline-secondary'} mx-1">${i}</button>`;
+            }
+
+            // Tombol Next
+            if (currentPage < totalPages) {
+                paginationHTML +=
+                    `<button onclick="changePage(${currentPage + 1})" class="btn btn-secondary mx-1">Next</button>`;
+            }
+
+            paginationContainer.innerHTML = paginationHTML;
+        }
+
 
         document.getElementById('search').addEventListener('input', function(event) {
             fetchPengembangan(event.target.value); // Re-fetch pengajuan with search query
@@ -216,7 +261,7 @@
                     .then(response => response.json())
                     .then(data => {
                         if (data.success) {
-                            fetchPengajuan(); // Re-fetch pengajuan setelah hapus
+                            fetchPengembangan(); // Re-fetch pengajuan setelah hapus
                             alert('Pengembangan berhasil dihapus');
                         } else {
                             alert('Gagal menghapus pengembangan');

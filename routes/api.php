@@ -10,6 +10,7 @@ use App\Http\Controllers\Api\PengujianController;
 use App\Http\Controllers\Api\PengujianDetailController;
 use App\Http\Controllers\Api\CatatanPengujianController;
 use App\Http\Controllers\Api\AuthController;
+use App\Http\Controllers\Api\ShowController;
 
 // Route::get('/user', function (Request $request) {
 //     return $request->user();
@@ -29,11 +30,11 @@ Route::resource('pengujian-detail',PengujianDetailController::class);
 Route::resource('catatan-pengujian',CatatanPengujianController::class);
 
 Route::get( 'approval', [PersetujuanPengujianController::class, 'showall']);
-
+Route::get( 'showall', [ShowController::class, 'allshow']);
 Route::post('persetujuan-pengujian/create', [PersetujuanPengujianController::class, 'createApproval']);
 
 Route::post('persetujuan-pengujian-detail/{id}/approval', [PersetujuanPengujianController::class, 'approval']);
 
-Route::post('pengujian-detail/{id}', [PersetujuanPengujianController::class, 'update']);
+Route::post('pengujian-detail/{id}', [PersetujuanPengujianController::class, 'approval']);
 
 

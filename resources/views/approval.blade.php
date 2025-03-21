@@ -24,6 +24,7 @@
                             <!-- Data rows will be injected here by JavaScript -->
                         </tbody>
                     </table>
+                    <div id="pagination-controls" class="mt-3 d-flex justify-content-center"></div>
                 </div>
             </div>
         </div>
@@ -74,33 +75,36 @@
         let DetailApproval = [];
         let currentApprovalId = null;
         let currentPengujianId = null;
-
+        let groupedApproval = {};
+        let currentPage = 1;
+        const rowsPerPage = 1;
 
         function fetchapprovalDetail(query = '') {
             fetch('/api/approval')
                 .then(response => response.json())
                 .then(data => {
-                    if (data.success) {
-                        DetailApproval = data.payload;
+                    if (data.success && Array.isArray(data.payload)) {
+                        let filteredData = data.payload;
 
-                        // Jika ada query pencarian, filter data
                         if (query) {
-                            DetailApproval = DetailApproval.filter(p =>
-                                p.user.name.toLowerCase().includes(query.toLowerCase()) ||
+                            filteredData = filteredData.filter(p =>
                                 p.status.toLowerCase().includes(query.toLowerCase()) ||
-                                p.catatan.toLowerCase().includes(query.toLowerCase())
+                                p.user.name.toLowerCase().includes(query.toLowerCase()) ||
+                                p.catatan.toLowerCase().includes(query.toLowerCase()) ||
+                                p.user.role.toLowerCase().includes(query.toLowerCase())
                             );
                         }
 
-                        // Kelompokkan data berdasarkan pengujian.id
-                        const groupedData = groupByApprovalId(DetailApproval);
-                        renderTable(groupedData);
+                        groupedApproval = groupByApprovalId(filteredData);
+                        renderTable(groupedApproval, currentPage);
                     } else {
+                        console.error('Failed to load approval data or data is not an array.');
                         alert('Failed to load approval data');
                     }
                 })
                 .catch(error => console.error('Error:', error));
         }
+
 
         function groupByApprovalId(data) {
             return data.reduce((acc, item) => {
@@ -113,23 +117,31 @@
             }, {});
         }
 
-        function renderTable(groupedData) {
+        function renderTable(groupedApproval, page = 1) {
             const tableBody = document.querySelector('#approval-table tbody');
             tableBody.innerHTML = ''; // Clear the existing table body
 
-            // Iterasi melalui setiap grup berdasarkan pengujian.id
-            for (const approvalId in groupedData) {
-                const group = groupedData[approvalId];
+            const keys = Object.keys(groupedApproval); // Perbaikan di sini
+            const totalPages = Math.ceil(keys.length / rowsPerPage);
 
-                // Buat baris header grup berdasarkan pengujian.id
+            // Tentukan indeks awal dan akhir untuk slicing data
+            const startIndex = (page - 1) * rowsPerPage;
+            const endIndex = startIndex + rowsPerPage;
+
+            // Ambil data sesuai halaman
+            const paginatedKeys = keys.slice(startIndex, endIndex);
+            // Iterasi melalui setiap grup berdasarkan approvalId
+            paginatedKeys.forEach(approvalId => {
+                const group = groupedApproval[approvalId]; // Perbaikan di sini
+
+                // Buat baris header grup berdasarkan approvalId
                 const groupHeaderRow = document.createElement('tr');
                 groupHeaderRow.classList.add('table-group-header');
                 groupHeaderRow.innerHTML = `
-                    <td colspan="7" class="group-header">
-                        <strong>Pengujian ID: ${approvalId}</strong><br>
-                        <span>Status Pengujian: <strong>${group[0].persetujuan_pengujian.status}</strong></span>
-                    </td>
-                `;
+            <td colspan="7" class="group-header">
+                <span>Status Pengujian: <strong>${group[0].persetujuan_pengujian.status}</strong></span>
+            </td>
+        `;
                 tableBody.appendChild(groupHeaderRow);
 
                 // Render setiap row detail dalam grup
@@ -138,19 +150,56 @@
                     row.classList.add('table-row');
 
                     row.innerHTML = `
-                        <td>${approval.user.name || 'N/A'}</td>
-                        <td>${approval.status}</td>
-                        <td>${approval.catatan || 'N/A'}</td>
-                        <td><img src="/storage/${approval.signature}" alt="Signature" style="width: 50px; height: auto;"></td>
-                            <td>${approval.role || 'N/A'}</td>
-                        <td>${approval.role || 'N/A'}</td>
-                        <td class="action-buttons">
-                            <button class="btn btn-warning btn-sm" onclick="openApprovalModal('${approval.id}', '${approval.persetujuan_pengujian.id}')" style="margin: 5px;" data-bs-toggle="modal" data-bs-target="#approvalModal">Approve</button>
-                        </td>
-                    `;
+                <td>${approval.user.name || '-'}</td>
+                <td>${approval.status}</td>
+                <td>${approval.catatan || '-'}</td>
+                <td><img src="/storage/${approval.signature}" alt="Signature" style="width: 50px; height: auto;"></td>
+                <td>${approval.user.role || '-'}</td>
+                <td class="action-buttons">
+                    <button class="btn btn-warning btn-sm" onclick="openApprovalModal('${approval.id}', '${approval.persetujuan_pengujian.id}')" style="margin: 5px;" data-bs-toggle="modal" data-bs-target="#approvalModal">Approve</button>
+                </td>
+            `;
                     tableBody.appendChild(row);
                 });
+            });
+
+            // Render pagination controls
+            renderPaginationControls(totalPages);
+        }
+
+        function changePage(page) {
+            const totalPages = Math.ceil(Object.keys(groupedApproval).length / rowsPerPage);
+            if (page < 1 || page > totalPages) return;
+
+            currentPage = page;
+            renderTable(groupedApproval, currentPage);
+        }
+
+
+        function renderPaginationControls(totalPages) {
+            const paginationContainer = document.querySelector('#pagination-controls');
+            paginationContainer.innerHTML = '';
+
+            if (totalPages <= 1) return;
+
+            let paginationHTML = '';
+
+            if (currentPage > 1) {
+                paginationHTML +=
+                    `<button onclick="changePage(${currentPage - 1})" class="btn btn-secondary mx-1">Previous</button>`;
             }
+
+            for (let i = 1; i <= totalPages; i++) {
+                paginationHTML +=
+                    `<button onclick="changePage(${i})" class="btn ${i === currentPage ? 'btn-secondary' : 'btn-outline-secondary'} mx-1">${i}</button>`;
+            }
+
+            if (currentPage < totalPages) {
+                paginationHTML +=
+                    `<button onclick="changePage(${currentPage + 1})" class="btn btn-secondary mx-1">Next</button>`;
+            }
+
+            paginationContainer.innerHTML = paginationHTML;
         }
 
         // Event listener untuk input pencarian
@@ -159,36 +208,28 @@
         });
 
         function openApprovalModal(approvalId, pengujianId) {
-            // Set data di modal
-            document.getElementById('approvalForm').reset(); // Reset form sebelum dimunculkan
+            document.getElementById('approvalForm').reset();
             currentApprovalId = approvalId;
             currentPengujianId = pengujianId;
 
-            // Menambahkan data approval ke dalam modal
             const approval = DetailApproval.find(item => item.id === approvalId);
             if (approval) {
-                // Set status
                 document.getElementById('status').value = approval.status;
+                document.getElementById('catatan').value = approval.catatan || '';
 
-                // Set catatan
-                document.getElementById('catatan').value = approval.catatan || ''; // Jika tidak ada catatan, set kosong
-
-                // Set signature (tetap menampilkan signature jika sudah ada)
+                // Pastikan signature tidak kosong sebelum menampilkannya
                 if (approval.signature) {
-                    // Tampilkan gambar signature jika ada
                     const signaturePreview = document.createElement('img');
-                    signaturePreview.src = '/storage/' + approval
-                    .signature; // Path yang benar untuk file signature
+                    signaturePreview.src = '/storage/' + approval.signature;
                     signaturePreview.alt = 'Signature';
                     signaturePreview.style = 'width: 100px; height: auto;';
-                    document.getElementById('signature-preview').innerHTML = ''; // Clear existing preview
+                    document.getElementById('signature-preview').innerHTML = '';
                     document.getElementById('signature-preview').appendChild(signaturePreview);
                 } else {
-                    document.getElementById('signature-preview').innerHTML = ''; // Clear if no signature
+                    document.getElementById('signature-preview').innerHTML = '';
                 }
             }
         }
-
 
         document.getElementById('approveButton').addEventListener('click', function() {
             const status = document.getElementById('status').value;

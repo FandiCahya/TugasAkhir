@@ -28,13 +28,29 @@ class PengujianController extends Controller
             $userId = $request->query->get('user_id');
             $pengujianId = $request->query->get('pengujian_id');
             $disetujuiOleh = $request->query->get('disetujui_oleh');
+            $persetujuanId = $request->query->get(key: 'persetujuan_id');
+            $statusPersetujuan = $request->query->get('status_persetujuan');
 
             $pengujians = Pengujian::with([
                 'details',
                 'pengembangan.pengajuan.user',
                 'catatan', // Tambahkan relasi ke catatan
+                'persetujuan',
                 'persetujuan.persetujuan_detail.user'// Tambahkan relasi ke persetujuan]);
             ]);
+            // Filter berdasarkan disetujui oleh user tertentu
+            if ($persetujuanId) {
+                $pengujians->whereHas('persetujuan', function ($query) use ($persetujuanId): void {
+                    $query->where('id', '=', $persetujuanId);
+                });
+            }
+            
+                    // Filter berdasarkan status persetujuan
+            if ($statusPersetujuan) {
+                $pengujians->whereHas('persetujuan', function ($query) use ($statusPersetujuan) {
+                    $query->where('status', '!=', $statusPersetujuan);
+                });
+            }
 
             // Jika ada keyword, filter berdasarkan keyword
             if ($keyword) {
@@ -312,7 +328,7 @@ class PengujianController extends Controller
             ]);
             $persetujuan->createPengujianDetail($validated['user_ids'], $persetujuan->id);
             // Ambil detail persetujuan setelah dibuat
-            $persetujuanDetails = PersetujuanPengujianDetail::where('persetujuan_pengujian_id', $persetujuan->id)->get();
+            $persetujuanDetails = PersetujuanPengujianModel::where('persetujuan_pengujian_id', $persetujuan->id)->get();
 
             // Update status pengembangan dan pengajuan
             $pengembangan = Pengembangan::find($validated['pengembangan_id']);

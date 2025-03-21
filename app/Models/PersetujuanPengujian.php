@@ -13,11 +13,11 @@ class PersetujuanPengujian extends Model
     public $incrementing = false;
     protected $keyType = 'string';
     protected $table = 'persetujuan_pengujian';
-    protected $fillable = ['id', 'pengujian_id'];
+    protected $fillable = ['id', 'pengujian_id','status'];
 
     public function details()
     {
-        return $this->hasMany(PersetujuanPengujianDetail::class, 'persetujuan_pengujian_id');
+        return $this->hasMany(PersetujuanPengujianModel::class, 'persetujuan_pengujian_id');
     }
 
     public function persetujuan_detail()
@@ -63,7 +63,7 @@ class PersetujuanPengujian extends Model
             }
 
             // Create an approval detail for this user
-            PersetujuanPengujianDetail::create([
+            PersetujuanPengujianModel::create([
                 'persetujuan_pengujian_id' => $this->id,
                 'user_id' => $user->id,
                 'status' => 'tidak_setuju',
@@ -79,7 +79,7 @@ class PersetujuanPengujian extends Model
             throw new \Exception('You must provide exactly 4 users for approval');
         }
 
-        $roles = ['user', 'admin', 'mqr', 'kepala cabang'];
+        $roles = ['user', 'admin', 'qmr', 'kepala cabang'];
 
         foreach ($userIds as $index => $userId) {
             $user = User::find($userId); // Find user by ID
@@ -90,7 +90,7 @@ class PersetujuanPengujian extends Model
             }
 
             // Create an approval detail for this user
-            PersetujuanPengujianDetail::create([
+            PersetujuanPengujianModel::create([
                 'persetujuan_pengujian_id' => $pengujian_id,
                 'user_id' => $user->id,
                 'status' => 'tidak_setuju',
@@ -99,25 +99,5 @@ class PersetujuanPengujian extends Model
                 'role' => $roles[$index] ?? 'user',
             ]);
         }
-    }
-}
-
-class PersetujuanPengujianDetail extends Model
-{
-    use HasFactory, HasUuids;
-
-    public $incrementing = false;
-    protected $keyType = 'string';
-    protected $table = 'persetujuan_pengujian_details';
-    protected $fillable = ['id', 'persetujuan_pengujian_id', 'user_id', 'status', 'catatan', 'signature'];
-
-    // public function persetujuan()
-    // {
-    //     return $this->belongsTo(PersetujuanPengujian::class, 'persetujuan_pengujian_id');
-    // }
-
-    public function persetujuanPengujian()
-    {
-        return $this->belongsTo(PersetujuanPengujian::class);
     }
 }

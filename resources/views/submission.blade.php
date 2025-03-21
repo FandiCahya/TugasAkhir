@@ -5,10 +5,6 @@
             <div class="card-body">
                 <h4 class="card-title">Pengajuan</h4>
 
-                <!-- Button to Open Add pengajuan Modal -->
-                {{-- <button class="btn btn-success btn-sm mb-3" data-bs-toggle="modal" data-bs-target="#addPengajuanModal">Tambah
-                    Pengajuan</button> --}}
-
                 <!-- Search Input -->
                 <input type="text" id="search" class="form-control mb-3" placeholder="Search by name sistem..." />
 
@@ -32,6 +28,7 @@
                             <!-- Data will be dynamically filled here using JavaScript -->
                         </tbody>
                     </table>
+                    <div id="pagination-controls" class="mt-3 d-flex justify-content-center"></div>
                 </div>
             </div>
         </div>
@@ -221,6 +218,8 @@
         let pengajuan = []; // Array to hold fetched pengajuan
         let editPengajuanId = null;
         let addPengembangan = null;
+        let currentPage = 1;
+        const rowsPerPage = 5;
 
         // Fetch Pengajuan from API
         function fetchPengajuan(query = '') {
@@ -236,7 +235,7 @@
                                 .toLowerCase()));
                         }
 
-                        renderTable(pengajuan); // Render tabel dengan data pengajuan
+                        renderTable(pengajuan, currentPage); // Render tabel dengan data pengajuan
                     } else {
                         alert('Gagal memuat data pengajuan');
                     }
@@ -245,29 +244,77 @@
         }
 
         // Render data in the table
-        function renderTable(pengajuan) {
+        function renderTable(pengajuan, page = 1) {
             const tableBody = document.querySelector('#pengajuan-table tbody');
-            tableBody.innerHTML = ''; // Clear the existing table body
-            pengajuan.forEach(p => {
+            tableBody.innerHTML = ''; // Bersihkan tabel sebelum merender
+
+            // Hitung total halaman
+            const totalPages = Math.ceil(pengajuan.length / rowsPerPage);
+
+            // Tentukan indeks awal dan akhir untuk slicing data
+            const startIndex = (page - 1) * rowsPerPage;
+            const endIndex = startIndex + rowsPerPage;
+
+            // Ambil data sesuai halaman
+            const paginatedData = pengajuan.slice(startIndex, endIndex);
+
+            // Render baris tabel
+            paginatedData.forEach(p => {
                 const row = document.createElement('tr');
                 row.innerHTML = `
-                    <td>${p.nama_sistem}</td>
-                    <td>${p.user ? p.user.name : ''}</td>
-                    <td>${p.user ? p.user.devisi : ''}</td>
-                    <td>${p.jenis}</td>
-                    <td>${p.rencana_anggaran}</td>
-                    <td>${p.masalah}</td>
-                    <td>${p.output}</td>
-                    <td>${p.status}</td>
-                    <td>
-                        <button class="btn btn-warning btn-sm" onclick="editPengajuan('${p.id}')" style="margin: 5px;">Edit</button>
-                        <button class="btn btn-danger btn-sm" onclick="deletePengajuan('${p.id}')" style="margin: 5px;">Delete</button>
-                        ${p.status === 'accepted' ? `<button class="btn btn-success btn-sm" onclick="showPengembangan('${p.id}')" style="margin: 5px;">Pengembangan</button>` : ''}
-                    </td>
-
-                `;
+            <td>${p.nama_sistem}</td>
+            <td>${p.user ? p.user.name : ''}</td>
+            <td>${p.user ? p.user.devisi : ''}</td>
+            <td>${p.jenis}</td>
+            <td>${p.rencana_anggaran}</td>
+            <td>${p.masalah}</td>
+            <td>${p.output}</td>
+            <td>${p.status}</td>
+            <td>
+                <button class="btn btn-warning btn-sm" onclick="editPengajuan('${p.id}')" style="margin: 5px;">Edit</button>
+                <button class="btn btn-danger btn-sm" onclick="deletePengajuan('${p.id}')" style="margin: 5px;">Delete</button>
+                ${p.status === 'accepted' ? `<button class="btn btn-success btn-sm" onclick="showPengembangan('${p.id}')" style="margin: 5px;">Pengembangan</button>` : ''}
+            </td>
+        `;
                 tableBody.appendChild(row);
             });
+
+            // Render Pagination Controls
+            renderPaginationControls(totalPages);
+        }
+
+        function changePage(page) {
+            currentPage = page;
+            renderTable(pengajuan, currentPage); // Pastikan pakai pengajuan, bukan data
+        }
+
+        function renderPaginationControls(totalPages) {
+            const paginationContainer = document.querySelector('#pagination-controls');
+            paginationContainer.innerHTML = '';
+
+            if (totalPages <= 1) return; // Jangan tampilkan pagination jika hanya ada 1 halaman
+
+            let paginationHTML = '';
+
+            // Tombol Previous
+            if (currentPage > 1) {
+                paginationHTML +=
+                    `<button onclick="changePage(${currentPage - 1})" class="btn btn-secondary mx-1">Previous</button>`;
+            }
+
+            // Tombol angka halaman
+            for (let i = 1; i <= totalPages; i++) {
+                paginationHTML +=
+                    `<button onclick="changePage(${i})" class="btn ${i === currentPage ? 'btn-secondary' : 'btn-outline-secondary'} mx-1">${i}</button>`;
+            }
+
+            // Tombol Next
+            if (currentPage < totalPages) {
+                paginationHTML +=
+                    `<button onclick="changePage(${currentPage + 1})" class="btn btn-secondary mx-1">Next</button>`;
+            }
+
+            paginationContainer.innerHTML = paginationHTML;
         }
 
         // Show Pengembangan

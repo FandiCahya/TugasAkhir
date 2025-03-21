@@ -6,7 +6,7 @@
                 <h4 class="card-title">Pengujian</h4>
 
                 <!-- Search Input -->
-                <input type="text" id="search" class="form-control mb-3" placeholder="Search by .." />
+                <input type="text" id="search" class="form-control mb-3" placeholder="Search by perangkat.." />
 
                 <div class="table-responsive pt-3">
                     <table class="table table-bordered" id="pengujian-table">
@@ -26,6 +26,7 @@
 
                         </tbody>
                     </table>
+                    <div id="pagination-controls" class="mt-3 d-flex justify-content-center"></div>
                 </div>
             </div>
         </div>
@@ -201,11 +202,11 @@
                             </div>
                         </div>
 
-                        <!-- MQR Section -->
+                        <!-- qmr Section -->
                         <div class="mb-3">
-                            <label class="form-label"><strong>MQR</strong></label>
-                            <div id="mqrUsers" class="form-check">
-                                <!-- MQR users will be populated here dynamically -->
+                            <label class="form-label"><strong>QMR</strong></label>
+                            <div id="qmrUsers" class="form-check">
+                                <!-- qmr users will be populated here dynamically -->
                             </div>
                         </div>
 
@@ -289,6 +290,8 @@
         let editPengujianId = null;
         let addPengujian = null;
         let users = [];
+        let currentPage = 1;
+        const rowsPerPage = 5;
 
         function fetchUsers() {
             fetch('/api/users') // Adjust the API endpoint accordingly
@@ -314,7 +317,7 @@
             const roles = {
                 admin: document.getElementById('adminUsers'),
                 user: document.getElementById('userUsers'),
-                mqr: document.getElementById('mqrUsers'),
+                qmr: document.getElementById('qmrUsers'),
                 kepalacabang: document.getElementById('kepalaCabangUsers')
             };
 
@@ -466,11 +469,11 @@
                         // Filter berdasarkan query pencarian jika ada
                         if (query) {
                             pengujian = pengujian.filter(p =>
-                                p.nama_sistem.toLowerCase().includes(query.toLowerCase())
+                                p.perangkat_lunak.toLowerCase().includes(query.toLowerCase())
                             );
                         }
 
-                        renderTable(pengujian);
+                        renderTable(pengujian,currentPage);
                     } else {
                         alert('Gagal memuat data pengujian');
                     }
@@ -478,11 +481,21 @@
                 .catch(error => console.error('Error:', error));
         }
 
-        function renderTable(pengujian) {
+        function renderTable(pengujian,page = 1) {
             const tableBody = document.querySelector('#pengujian-table tbody');
             tableBody.innerHTML = ''; // Clear the existing table body
 
-            pengujian.forEach(p => {
+            // Hitung total halaman
+            const totalPages = Math.ceil(pengujian.length / rowsPerPage);
+
+            // Tentukan indeks awal dan akhir untuk slicing data
+            const startIndex = (page - 1) * rowsPerPage;
+            const endIndex = startIndex + rowsPerPage;
+
+            // Ambil data sesuai halaman
+            const paginatedData = pengujian.slice(startIndex, endIndex);
+
+            paginatedData.forEach(p => {
                 const row = document.createElement('tr');
                 row.innerHTML = `
             <td>${p.tanggal}</td>
@@ -503,6 +516,41 @@
         `;
                 tableBody.appendChild(row);
             });
+            renderPaginationControls(totalPages);
+        }
+
+        function changePage(page) {
+            currentPage = page;
+            renderTable(pengembangan, currentPage); // Pastikan pakai pengajuan, bukan data
+        }
+
+        function renderPaginationControls(totalPages) {
+            const paginationContainer = document.querySelector('#pagination-controls');
+            paginationContainer.innerHTML = '';
+
+            if (totalPages <= 1) return; // Jangan tampilkan pagination jika hanya ada 1 halaman
+
+            let paginationHTML = '';
+
+            // Tombol Previous
+            if (currentPage > 1) {
+                paginationHTML +=
+                    `<button onclick="changePage(${currentPage - 1})" class="btn btn-secondary mx-1">Previous</button>`;
+            }
+
+            // Tombol angka halaman
+            for (let i = 1; i <= totalPages; i++) {
+                paginationHTML +=
+                    `<button onclick="changePage(${i})" class="btn ${i === currentPage ? 'btn-secondary' : 'btn-outline-secondary'} mx-1">${i}</button>`;
+            }
+
+            // Tombol Next
+            if (currentPage < totalPages) {
+                paginationHTML +=
+                    `<button onclick="changePage(${currentPage + 1})" class="btn btn-secondary mx-1">Next</button>`;
+            }
+
+            paginationContainer.innerHTML = paginationHTML;
         }
 
         function deletePengujian(id) {
@@ -716,6 +764,9 @@
                 });
         });
 
+        document.getElementById('search').addEventListener('input', function(event) {
+            fetchPengujian(event.target.value); // Re-fetch pengajuan with search query
+        });
         // Fetch the users when the page loads
         fetchUsers();
         fetchPengujian();

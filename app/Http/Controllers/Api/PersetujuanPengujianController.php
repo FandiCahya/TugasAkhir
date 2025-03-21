@@ -16,7 +16,6 @@ class PersetujuanPengujianController extends Controller
     public function showall(Request $request)
     {
         try {
-            // $data = PersetujuanPengujianModel::all();
             $query = PersetujuanPengujianModel::query();
             $persetujuanId = $request->get('persetujuanId');
             $userId = $request->get('user_id');
@@ -38,152 +37,31 @@ class PersetujuanPengujianController extends Controller
                         'status' => $item->status,
                         'catatan' => $item->catatan,
                         'signature' => $item->signature,
-                        'role' => $item->role,
-                        'persetujuan_pengujian' => [
-                            'id' => $item->persetujuanPengujian->id ?? null, // Check if pengujian is not null
-                            'status' => $item->status ?? null,
-                            'created_at' => $item->persetujuanPengujian->created_at ?? null,
-                            'updated_at' => $item->persetujuanPengujian->updated_at ?? null,
-                            'pengujian' => [
-                                'id' => $item->persetujuanPengujian->pengujian->id ?? null, // Check if pengujian is not null
-                                'perangkat_lunak' => $item->persetujuanPengujian->pengujian->perangkat_lunak ?? null,
-                                'versi' => $item->persetujuanPengujian->pengujian->versi ?? null,
-                                'tujuan' => $item->persetujuanPengujian->pengujian->tujuan ?? null,
-                                'metode' => $item->persetujuanPengujian->pengujian->metode ?? null,
-                                'tanggal' => $item->persetujuanPengujian->pengujian->tanggal ?? null,
-                                'pengembangan' => [
-                                    'id' => $item->persetujuanPengujian->pengujian->pengembangan->id ?? null,
-                                    'tanggal_mulai' => $item->persetujuanPengujian->pengujian->pengembangan->tanggal_mulai ?? null,
-                                    'tanggal_selesai' => $item->persetujuanPengujian->pengujian->pengembangan->tanggal_selesai ?? null,
-                                    'tahap' => $item->persetujuanPengujian->pengujian->pengembangan->tahap ?? null,
-                                    'persentase' => $item->persetujuanPengujian->pengujian->pengembangan->persentase ?? null,
-                                    'keterangan' => $item->persetujuanPengujian->pengujian->pengembangan->keterangan ?? null,
-                                    'status' => $item->persetujuanPengujian->pengujian->pengembangan->status ?? null,
-                                    'pengajuan' => [
-                                        'id' => $item->persetujuanPengujian->pengujian->pengembangan->pengajuan->id ?? null,
-                                        'tgl' => $item->persetujuanPengujian->pengujian->pengembangan->pengajuan->tgl ?? null,
-                                        'nama_sistem' => $item->persetujuanPengujian->pengujian->pengembangan->pengajuan->nama_sistem ?? null,
-                                        'jenis' => $item->persetujuanPengujian->pengujian->pengembangan->pengajuan->jenis ?? null,
-                                        'rencana_anggaran' => $item->persetujuanPengujian->pengujian->pengembangan->pengajuan->rencana_anggaran ?? null,
-                                        'masalah' => $item->persetujuanPengujian->pengujian->pengembangan->pengajuan->masalah ?? null,
-                                        'output' => $item->persetujuanPengujian->pengujian->pengembangan->pengajuan->output ?? null,
-                                        'status' => $item->persetujuanPengujian->pengujian->pengembangan->pengajuan->status ?? null,
-                                        'created_at' => $item->persetujuanPengujian->pengujian->pengembangan->pengajuan->created_at ?? null,
-                                        'user' => [
-                                            'id' => $item->persetujuanPengujian->pengujian->pengembangan->pengajuan->user->id ?? null,
-                                            'name' => $item->persetujuanPengujian->pengujian->pengembangan->pengajuan->user->name ?? null,
-                                            'email' => $item->persetujuanPengujian->pengujian->pengembangan->pengajuan->user->email ?? null,
-                                            'devisi' => $item->persetujuanPengujian->pengujian->pengembangan->pengajuan->user->devisi ?? null,
-                                            'role' => $item->persetujuanPengujian->pengujian->pengembangan->pengajuan->user->role ?? null,
-                                            'created_at' => $item->persetujuanPengujian->pengujian->pengembangan->pengajuan->user->created_at ?? null,
-                                        ],
-                                    ],
-                                ],
-                            ],
-                        ],
-                        'user' => [
-                            'id' => $item->user->id ?? null, // Check if user is not null
-                            'name' => $item->user->name ?? null,
-                            'email' => $item->user->email ?? null,
-                        ],
+                        'persetujuan_pengujian' => $item->persetujuanPengujian ? [
+                            'id' => $item->persetujuanPengujian->id,
+                            'status' => $item->persetujuanPengujian->status,
+                            'created_at' => $item->persetujuanPengujian->created_at,
+                            'updated_at' => $item->persetujuanPengujian->updated_at,
+                        ] : null,
+                        'user' => $item->user ? [
+                            'id' => $item->user->id,
+                            'name' => $item->user->name,
+                            'email' => $item->user->email,
+                            'role' => $item->user->role,
+                            'devisi' => $item->user->devisi,
+                        ] : null,
                     ];
                 }),
             ]);
         } catch (\Exception $e) {
             // Return error details if something goes wrong
-            return response()->json(
-                [
-                    'success' => false,
-                    'message' => 'Something went wrong while fetching the data.',
-                    'error' => $e->getMessage(),
-                ],
-                500,
-            );
-        }
-    }
-
-    public function update(Request $request, $id)
-
-    {
-    try {
-        
-        // Validasi input
-        $request->validate([
-            'status' => 'required|string',
-            'catatan' => 'nullable|string',
-            'signature' => 'nullable|image|mimes:jpeg,png,jpg,gif|max:5048',
-        ]);
-
-        $persetujuanPengujian = PersetujuanPengujianModel::where('id', $id)->first();
-        if (!$persetujuanPengujian) {
             return response()->json([
                 'success' => false,
-                'payload' => null,
-                'error' => "Data tidak ditemukan untuk ID: $id"
-            ], 404);
+                'message' => 'Something went wrong while fetching the data.',
+                'error' => $e->getMessage(),
+            ], 500);
         }
-        
-        // Update data
-        $persetujuanPengujian->update([
-            'status' => $request->status,
-            'catatan' => $request->catatan,
-            'signature' => $this->handleSignatureUpload($request),
-        ]);
-
-        return response()->json(
-            [
-                'success' => true,
-                'payload' => $persetujuanPengujian,
-            ],
-            200 // Status 200 untuk update sukses
-        );
-        
-    } catch (ValidationException $e) {
-        // Jika validasi gagal
-        return response()->json(
-            [
-                'success' => false,
-                'payload' => [],
-                'error' => [
-                    'code' => 422,
-                    'message' => 'Validation failed',
-                    'details' => $e->errors(), // Menampilkan kesalahan validasi
-                ],
-            ],
-            422
-        );
-        
-    } catch (QueryException $e) {
-        // Jika ada masalah query database (misal: masalah foreign key)
-        return response()->json(
-            [
-                'success' => false,
-                'payload' => [],
-                'error' => [
-                    'code' => 400,
-                    'message' => 'Database query error',
-                    'details' => $e->getMessage(), // Menampilkan pesan error database
-                ],
-            ],
-            400
-        );
-        
-    } catch (\Exception $e) {
-        // Menangani error lainnya
-        return response()->json(
-            [
-                'success' => false,
-                'payload' => [],
-                'error' => [
-                    'code' => $e->getCode() ?: 500,
-                    'message' => $e->getMessage(),
-                ],
-            ],
-            $e->getCode() ?: 500
-        );
     }
-}
-
     public function createApproval(Request $request)
     {
         try {
@@ -252,22 +130,7 @@ class PersetujuanPengujianController extends Controller
             // Retrieve the associated PersetujuanPengujian model (for checking approval)
             $persetujuan = $persetujuanDetail->persetujuanPengujian;
 
-            // After each approval, check if all 4 users have approved
-            if ($this->checkIfAllApproved($persetujuan)) {
-                // If all users approved, set the status of PersetujuanPengujian to 'approved'
-                $persetujuan->update(['status' => 'approved']);
-
-                // Now update the Pengajuan status to 'finished'
-                $pengajuan = $persetujuan->pengujian->pengembangan->pengajuan; // Accessing Pengajuan through relationships
-
-                if ($pengajuan) {
-                    // Update the Pengajuan status to 'finished'
-                    $pengajuan->status = 'finished';
-                    $pengajuan->save(); // Save the changes to Pengajuan
-                }
-            }
-
-            // Check if there is any rejection
+             // Cek apakah ada yang menolak
             if ($this->checkIfRejected($persetujuan)) {
                 return response()->json(
                     [
@@ -275,7 +138,29 @@ class PersetujuanPengujianController extends Controller
                         'message' => 'Approval failed due to rejection from one or more users',
                         'data' => $persetujuan,
                     ],
-                    400,
+                    400
+                );
+            }
+
+            // Cek apakah semua user sudah menyetujui dan telah mengirimkan signature
+            if ($this->checkIfAllApproved($persetujuan)) {
+                $persetujuan->update(['status' => 'approved']);
+                Log::info('Updated status to approved: ' . $persetujuan->status);
+
+                // Update status Pengajuan menjadi "finished"
+                $pengajuan = $persetujuan->pengujian->pengembangan->pengajuan;
+                if ($pengajuan) {
+                    $pengajuan->update(['status' => 'finished']);
+                }
+                
+
+                return response()->json(
+                    [
+                        'success' => true,
+                        'message' => 'Approval completed successfully',
+                        'data' => $persetujuan,
+                    ],
+                    200
                 );
             }
 
@@ -310,18 +195,23 @@ class PersetujuanPengujianController extends Controller
             );
         }
     }
-
     // Helper method to check if all users approved
     protected function checkIfAllApproved($persetujuan)
     {
-        // Ensure all 4 users have approved and signed
-        return $persetujuan->details->where('status', 'setuju')->count() === 4 && $persetujuan->details->whereNotNull('signature')->count() === 4;
+        // Hitung jumlah persetujuan yang memiliki status "setuju" dan memiliki signature
+        $approvedCount = $persetujuan->details()->where('status', 'setuju')->whereNotNull('signature')->count();
+        Log::info('Approved count: ' . $approvedCount);
+        Log::info('Total Details Count: ' . $persetujuan->details()->count());
+        Log::info('All Details:', $persetujuan->details()->get()->toArray());
+
+        return $approvedCount === 4; // Pastikan ada 4 persetujuan lengkap
+
     }
 
     // Helper method to check if there is any rejection
     protected function checkIfRejected($persetujuan)
     {
-        return $persetujuan->details->where('status', 'tidak_setuju')->count() > 0;
+        return $persetujuan->details()->where('status', 'tidak_setuju')->exists();
     }
 
     // Handle image upload for signature
