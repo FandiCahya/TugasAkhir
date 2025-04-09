@@ -40,12 +40,13 @@
                 <!-- footer -->
                 @include('layouts.footer')
             </div>
+            
         </div>
 
 
 
     </div>
-
+    @stack('scripts')
     <!-- base:js -->
     <script src="{{ asset('assets/vendors/js/vendor.bundle.base.js') }}"></script>
     <!-- endinject -->
@@ -64,6 +65,8 @@
     <!-- Custom js for this page-->
     <script src="{{ asset('assets/js/dashboard.js') }}"></script>
     <!-- End custom js for this page-->
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
     
     
     <script>

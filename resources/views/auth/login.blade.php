@@ -24,7 +24,7 @@
         <!-- Error Message -->
         <div id="error-message" class="alert alert-danger d-none"></div>
 
-        <form id="loginForm" >
+        <form id="loginForm" method="POST">
             <!-- Email -->
             @csrf
             <div class="mb-3">
@@ -82,14 +82,17 @@
                     console.log('Token saved:', data.token);
 
                     // Redirect ke dashboard setelah login berhasil
+                    console.log("Redirecting to dashboard...");
                     window.location.href = '/dashboard';
                 } else {
                     // Menampilkan pesan error jika login gagal
+                    console.log("Login failed:", data);
                     document.getElementById('error-message').textContent = data.message || 'Login failed.';
                     document.getElementById('error-message').classList.remove('d-none');
                 }
             } catch (error) {
                 console.error(error);
+                console.error("Login error:", error);
                 document.getElementById('error-message').textContent = 'An error occurred during login.';
                 document.getElementById('error-message').classList.remove('d-none');
             }

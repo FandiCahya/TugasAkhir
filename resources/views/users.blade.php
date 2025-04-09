@@ -124,7 +124,7 @@
                         </div>
                         <div class="mb-3">
                             <label for="devisi" class="form-label">Division</label>
-                            <select class="form-control" id="devisi" name="devisi" required>
+                            <select class="form-control" id="edit-devisi" name="devisi" required>
                                 <option value="egov">E-Gov</option>
                                 <option value="opj">OPJ</option>
                                 <option value="legal">Legal</option>

@@ -393,6 +393,8 @@
                 output: document.getElementById('output').value,
                 status: document.getElementById('status').value,
             };
+
+            
             fetch('/api/pengajuan', {
                     method: 'POST',
                     headers: {

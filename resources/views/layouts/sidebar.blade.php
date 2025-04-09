@@ -59,6 +59,16 @@
             </a>
         </li>
         <li class="nav-item sidebar-category">
+            <p>Hasil</p>
+            <span></span>
+        </li>
+        <li class="nav-item">
+            <a class="nav-link" href="{{ route('laporan') }}" id="laporan-btn">
+                <i class="mdi mdi-file-document menu-icon"></i>
+                <span class="menu-title">Laporan</span>
+            </a>
+        </li>
+        <li class="nav-item sidebar-category">
             <p>Logout</p>
             <span></span>
         </li>

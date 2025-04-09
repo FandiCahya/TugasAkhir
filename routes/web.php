@@ -11,11 +11,9 @@ Route::middleware('guest')->get('/login', function () {
 Route::middleware('guest')->get('/', function () {
   return view('auth/login');
 });
-
 Route::view('/register', 'register')->name('register');
   // Jika Anda ingin halaman register
 Route::middleware('auth:sanctum')->post('logout', [AuthController::class, 'logout']);
-
 
 // Route::get('/dashboard', [DashboardController::class, 'index']);
 Route::get('/dashboard',function (){return view('dashboard');
@@ -45,8 +43,8 @@ Route::get('/approval',action: function (){return view('approval');
 Route::get('/history',action: function (){return view('history');
 })->name(name: 'history');
 
-Route::get('/logs',action: function (){return view('logs');
-})->name(name: 'logs');
+Route::get('/laporan',action: function (){return view('laporan');
+})->name(name: 'laporan');
 
 Route::middleware('auth')->group(function () {
   Route::get('/profile', [ProfileController::class, 'edit'])->name('profile.edit');

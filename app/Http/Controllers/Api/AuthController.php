@@ -9,6 +9,7 @@ use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Validator;
 use Exception;
 use Carbon\Carbon;
+use Illuminate\Support\Facades\Auth;
 
 class AuthController extends Controller
 {
@@ -35,11 +36,15 @@ class AuthController extends Controller
                 'password' => Hash::make($request->password),
             ]);
 
+            $token = $user->createToken('auth_token')->plainTextToken;
+
             // Response sukses dengan data pengguna
             return response()->json(
                 [
                     'message' => 'User created successfully.',
                     'user' => $user,
+                    'access_token' => $token,
+                    'token_type' => 'Bearer'
                 ],
                 201,
             );
@@ -66,13 +71,19 @@ class AuthController extends Controller
                 'password' => 'required|string|min:6',
             ]);
 
+            if (! Auth::attempt($request->only('email', 'password'))) {
+                return response()->json([
+                    'message' => 'Unauthorized'
+                ], 401);
+            }
+
             // Jika validasi gagal, kembalikan error
             if ($validator->fails()) {
                 return response()->json(['message' => 'Validation failed', 'errors' => $validator->errors()], 400);
             }
 
             // Cari user berdasarkan email
-            $user = User::where('email', $request->email)->first();
+            $user = User::where('email', $request->email)->firstOrFail();
 
             // Periksa apakah user ada dan password cocok
             if (!$user || !Hash::check($request->password, $user->password)) {
@@ -80,16 +91,16 @@ class AuthController extends Controller
             }
 
             // Buat token untuk user
-            $token = $user->createToken('YourAppName')->plainTextToken;
+            $token = $user->createToken('auth_token')->plainTextToken;
 
             // Menambahkan waktu kadaluarsa pada token (Jika diinginkan)
-            $expiresAt = Carbon::now()->addMinutes(60); // Token kedaluwarsa dalam 1 jam
+            // $expiresAt = Carbon::now()->addMinutes(60); // Token kedaluwarsa dalam 1 jam
 
             // Response dengan token dan data pengguna
             return response()->json([
                 'message' => 'Login successful',
-                'token' => $token,
-                'expires_at' => $expiresAt, // Sertakan waktu kadaluarsa dalam respons
+                'token' => $token,// Sertakan waktu kadaluarsa dalam respons
+                'token_type' => 'Bearer',
                 'user' => $user,
             ]);
         } catch (Exception $e) {

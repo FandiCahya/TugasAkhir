@@ -115,7 +115,7 @@
     let dashboard = [];
 
     function fetchUsers() {
-        const token = localStorage.getItem('token');
+        const token = localStorage.getItem('446|T8d3Hm7xxCEYB4PqueHpuI7rdl1GhnbaUHkdqdDi7acdf9a8');
         console.log(token);
         fetch('/api/users') // Adjust the API endpoint accordingly
             .then(response => response.json())
