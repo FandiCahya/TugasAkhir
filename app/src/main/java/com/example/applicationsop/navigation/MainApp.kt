@@ -1,5 +1,6 @@
 package com.example.applicationsop.navigation
 
+import ShowLaporanScreen
 import android.os.Build
 import androidx.annotation.RequiresApi
 import androidx.compose.runtime.Composable
@@ -386,6 +387,15 @@ fun MainApp(
                 }
             )
         }
+
+        composable("show_laporan_screen?id={id}") { backStackEntry ->
+            val id = backStackEntry.arguments?.getString("id")
+            ShowLaporanScreen(
+                navController = navController,
+                id = id
+            )
+        }
+
 
         ////////////////////////// Kacab ///////////////////////
 
