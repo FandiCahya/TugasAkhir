@@ -20,6 +20,7 @@ import com.example.applicationsop.models.Pengujian
 import com.example.applicationsop.presentation.component.header.HeaderWithSearch
 import com.example.applicationsop.presentation.component.listitem.ListPengujianItem
 import com.example.applicationsop.presentation.component.popup.DetailPopupPengujian
+import com.example.applicationsop.presentation.component.popup.RiwayatPopup
 import java.text.SimpleDateFormat
 import java.util.Date
 import java.util.Locale
@@ -93,20 +94,18 @@ fun HistoryAdmin(navController: NavController) {
         }
     }
 
-    // Show popup when selectedDetail is not null
-    if (showPopup) {
-        DetailPopupPengujian(
+    if (showPopup && selectedDetail != null) {
+        RiwayatPopup(
             onDismiss = { showPopup = false },
-            id = selectedDetail.id,
+            navController = navController, // Passing navController
+            id = selectedDetail.id, // Example, make sure to pass the actual data you need
             namaSistem = selectedDetail.namaSistem,
             versiPerangkat = selectedDetail.versiPerangkat,
             tujuanPengujian = selectedDetail.tujuanPengujian,
             metodePengujian = selectedDetail.metodePengujian,
             tanggalPengujian = selectedDetail.tanggalPengujian,
             pelaksanaPengujian = selectedDetail.pelaksanaPengujian,
-            status = selectedDetail.status,
-            persetujuanId = selectedDetail.persetujuanId,
-            navController = navController
+            status = selectedDetail.status
         )
     }
 }
