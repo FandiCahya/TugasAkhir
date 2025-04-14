@@ -5,7 +5,6 @@
 </p>
 
 <p align="center">
-  <a href="https://github.com/FandiCahya/magangMBKM/actions"><img src="https://github.com/FandiCahya/magangMBKM/workflows/tests/badge.svg" alt="Build Status"></a>
   <a href="https://packagist.org/packages/laravel/framework"><img src="https://img.shields.io/packagist/dt/laravel/framework" alt="Total Downloads"></a>
   <a href="https://packagist.org/packages/laravel/framework"><img src="https://img.shields.io/packagist/v/laravel/framework" alt="Latest Stable Version"></a>
   <a href="https://packagist.org/packages/laravel/framework"><img src="https://img.shields.io/packagist/l/laravel/framework" alt="License"></a>
@@ -22,13 +21,13 @@
 - ✅ CRUD User (Admin Panel)
 - ✅ Pengajuan Perangkat Lunak
 - ✅ Proses Pengembangan & Pengujian
-- ✅ Approval Multi-Level
+- ✅ Approval 4 User
 - ✅ Download Laporan PDF
 - ✅ Role-based access control
 
 ## 🚀 Tech Stack
 
-- Laravel 10.x
+- Laravel 11.x
 - MySQL
 - Bootstrap / Blade Templating
 - Laravel Sanctum (untuk API token)
