@@ -21,8 +21,9 @@ Route::post('login', [AuthController::class, 'login']);
 Route::post('register', [AuthController::class, 'register']);
 
 
+Route::middleware('auth:sanctum')->post('logout', [AuthController::class, 'logout']);
 // Logout route - pastikan user terautentikasi
-Route::post('logout', [AuthController::class, 'logout']);
+// Route::post('logout', [AuthController::class, 'logout']);
 Route::get('/dashboard', function (Request $request) {
     return view('dashboard', ['user' => $request->user()]);
 })->name('dashboard');

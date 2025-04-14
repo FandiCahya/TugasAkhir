@@ -14,8 +14,6 @@
                             <tr>
                                 <th style="width: 15%;">Nama Sistem <span id="sort-name" class="cursor-pointer">🔽</span>
                                 </th>
-                                <th style="width: 15%;">Nama User</th>
-                                <th style="width: 5%;">Devisi</th>
                                 <th style="width: 10%;">Jenis</th>
                                 <th style="width: 10%;">Rencana Anggaran</th>
                                 <th style="width: 15%;">Masalah</th>
@@ -153,67 +151,6 @@
         </div>
     </div>
 
-    {{-- Modal for Add Pengembangan --}}
-    <div class="modal fade" id="addPengembanganModal" tabindex="-1" aria-labelledby="addPengembanganModalLabel"
-        aria-hidden="true">
-        <div class="modal-dialog">
-            <div class="modal-content">
-                <div class="modal-header">
-                    <h5 class="modal-title" id="addPengembanganModalLabel">Add Pengembangan</h5>
-                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
-                </div>
-                <div class="modal-body">
-                    <form id="addPengembanganForm">
-                        @csrf
-                        <div class="mb-3">
-                            <label for="pengajuan_id" class="form-label">ID Pengajuan</label>
-                            <input type="text" class="form-control" id="pengajuan_id" required readonly>
-                        </div>
-                        <div class="mb-3">
-                            <label for="pengajuan" class="form-label">Nama Sistem</label>
-                            <input type="text" class="form-control" id="pengajuan" required readonly>
-                        </div>
-                        <div class="mb-3">
-                            <label for="user" class="form-label">User</label>
-                            <input type="text" class="form-control" id="user" required readonly>
-                        </div>
-                        <div class="mb-3">
-                            <label for="tgl_mulai" class="form-label">Tanggal Mulai</label>
-                            <input type="date" class="form-control" id="tgl_mulai" required>
-                        </div>
-                        <div class="mb-3">
-                            <label for="tgl_selesai" class="form-label">Tanggal Selesai</label>
-                            <input type="date" class="form-control" id="tgl_selesai" required>
-                        </div>
-                        <div class="mb-3">
-                            <label for="tahap" class="form-label">Tahap</label>
-                            <input type="text" class="form-control" id="tahap" required>
-                        </div>
-                        <div class="mb-3">
-                            <label for="persentase" class="form-label">persentase</label>
-                            <input type="text" class="form-control" id="persentase" required>
-                        </div>
-                        <div class="mb-3">
-                            <label for="keterangan" class="form-label">Keterangan</label>
-                            <textarea class="form-control" id="keterangan" required></textarea>
-                        </div>
-                        <div class="mb-3">
-                            <label for="status_pengembangan" class="form-label">Status Pengembangan</label>
-                            <select class="form-control" id="status_pengembangan" required>
-                                <option value="developed">Developed</option>
-                                <option value="finished">Finished</option>
-                            </select>
-                        </div>
-                    </form>
-                </div>
-                <div class="modal-footer">
-                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Tutup</button>
-                    <button type="button" class="btn btn-primary" id="addPengembanganBtn">Tambah Pengembangan</button>
-                </div>
-            </div>
-        </div>
-    </div>
-
     <script>
         let pengajuan = []; // Array to hold fetched pengajuan
         let editPengajuanId = null;
@@ -263,8 +200,6 @@
                 const row = document.createElement('tr');
                 row.innerHTML = `
             <td>${p.nama_sistem}</td>
-            <td>${p.user ? p.user.name : ''}</td>
-            <td>${p.user ? p.user.devisi : ''}</td>
             <td>${p.jenis}</td>
             <td>${p.rencana_anggaran}</td>
             <td>${p.masalah}</td>
@@ -317,55 +252,6 @@
             paginationContainer.innerHTML = paginationHTML;
         }
 
-        // Show Pengembangan
-        function showPengembangan(id) {
-            const p = pengajuan.find(p => p.id === id); // Find pengajuan by ID
-            // console.log("Hasil find:", p);
-            document.getElementById('pengajuan_id').value = p.id;
-            document.getElementById('pengajuan').value = p.nama_sistem;
-            document.getElementById('user').value = p.user.name;
-            // Show the modal
-            new bootstrap.Modal(document.getElementById('addPengembanganModal')).show();
-        }
-
-        // tambah Pengembangan
-        document.getElementById('addPengembanganBtn').addEventListener('click', function() {
-            const data = {
-                pengajuan_id: document.getElementById('pengajuan_id').value,
-                tanggal_mulai: document.getElementById('tgl_mulai').value,
-                tanggal_selesai: document.getElementById('tgl_selesai').value,
-                tahap: document.getElementById('tahap').value,
-                persentase: parseInt(document.getElementById('persentase').value) || 0,
-                keterangan: document.getElementById('keterangan').value,
-                status: document.getElementById('status_pengembangan').value,
-            };
-
-            // console.log("Data yang dikirim:", data); // Cek apakah datanya lengkap
-
-            fetch(`/api/pengembangan`, {
-                    method: 'POST',
-                    headers: {
-                        'Content-Type': 'application/json',
-                        'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').getAttribute(
-                            'content')
-                    },
-                    body: JSON.stringify(data)
-                })
-                .then(response => response.json())
-                .then(data => {
-                    if (data.success) {
-                        fetchPengajuan(); // Re-fetch pengajuan setelah update
-                        alert('Pengembangan berhasil ditambahkan');
-                        const modal = document.querySelector('#addPengembanganModal');
-                        const modalInstance = bootstrap.Modal.getInstance(modal);
-                        modalInstance.hide();
-                    } else {
-                        alert('Gagal menambahkan pengembangan');
-                    }
-                })
-                .catch(error => console.error('Error:', error));
-        });
-
         function editPengajuan(id) {
             const p = pengajuan.find(p => p.id === id); // Find pengajuan by ID
             document.getElementById('edit-tgl').value = p.tgl;
@@ -380,7 +266,6 @@
             // Show the modal
             new bootstrap.Modal(document.getElementById('editPengajuanModal')).show();
         }
-
 
         // Save new pengajuan
         document.getElementById('savePengajuanBtn').addEventListener('click', function() {

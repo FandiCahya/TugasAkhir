@@ -28,6 +28,7 @@
                             <!-- Data will be dynamically filled here using JavaScript -->
                         </tbody>
                     </table>
+                    <div id="pagination-controls" class="mt-3 d-flex justify-content-center"></div>
                 </div>
             </div>
         </div>
@@ -78,7 +79,7 @@
                                 <option value="corp">Corporate</option>
                                 <option value="finance">Finance</option>
                             </select>
-                        </div>                        
+                        </div>
                         <!-- Changed foto_profile to password -->
                         <div class="mb-3">
                             <label for="password" class="form-label">Password</label>
@@ -139,7 +140,7 @@
                                 <option value="corp">Corporate</option>
                                 <option value="finance">Finance</option>
                             </select>
-                        </div>                        
+                        </div>
                         <div class="mb-3">
                             <label for="edit-password" class="form-label">Password</label>
                             <input type="password" class="form-control" id="edit-password" required>
@@ -157,6 +158,8 @@
     <script>
         let users = []; // Array to hold fetched users
         let editUserId = null;
+        let currentPage = 1;
+        const rowsPerPage = 5;
 
         // Fetch users from the API
         function fetchUsers(query = '') {
@@ -171,7 +174,7 @@
                             users = users.filter(user => user.name.toLowerCase().includes(query.toLowerCase()));
                         }
 
-                        renderTable(users); // Render the filtered or all users
+                        renderTable(users, currentPage); // Render the filtered or all users
                     } else {
                         alert('Failed to load users');
                     }
@@ -180,10 +183,21 @@
         }
 
         // Render data in the table
-        function renderTable(users) {
+        function renderTable(users, page = 1) {
             const tableBody = document.querySelector('#users-table tbody');
             tableBody.innerHTML = ''; // Clear the existing table body
-            users.forEach(user => {
+
+            // Hitung total halaman
+            const totalPages = Math.ceil(users.length / rowsPerPage);
+
+            // Tentukan indeks awal dan akhir untuk slicing data
+            const startIndex = (page - 1) * rowsPerPage;
+            const endIndex = startIndex + rowsPerPage;
+
+            // Ambil data sesuai halaman
+            const paginatedData = users.slice(startIndex, endIndex);
+
+            paginatedData.forEach(user => {
                 const row = document.createElement('tr');
                 row.innerHTML = `
                     <td>${user.name}</td>
@@ -197,6 +211,41 @@
                 `;
                 tableBody.appendChild(row);
             });
+            renderPaginationControls(totalPages);
+        }
+
+        function changePage(page) {
+            currentPage = page;
+            renderTable(users, currentPage); // Pastikan pakai pengajuan, bukan data
+        }
+
+        function renderPaginationControls(totalPages) {
+            const paginationContainer = document.querySelector('#pagination-controls');
+            paginationContainer.innerHTML = '';
+
+            if (totalPages <= 1) return; // Jangan tampilkan pagination jika hanya ada 1 halaman
+
+            let paginationHTML = '';
+
+            // Tombol Previous
+            if (currentPage > 1) {
+                paginationHTML +=
+                    `<button onclick="changePage(${currentPage - 1})" class="btn btn-secondary mx-1">Previous</button>`;
+            }
+
+            // Tombol angka halaman
+            for (let i = 1; i <= totalPages; i++) {
+                paginationHTML +=
+                    `<button onclick="changePage(${i})" class="btn ${i === currentPage ? 'btn-secondary' : 'btn-outline-secondary'} mx-1">${i}</button>`;
+            }
+
+            // Tombol Next
+            if (currentPage < totalPages) {
+                paginationHTML +=
+                    `<button onclick="changePage(${currentPage + 1})" class="btn btn-secondary mx-1">Next</button>`;
+            }
+
+            paginationContainer.innerHTML = paginationHTML;
         }
 
         // Sorting functionality by division
