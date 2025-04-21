@@ -7,7 +7,6 @@ import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.material3.*
 import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.Edit
 import androidx.compose.material.icons.filled.ExitToApp
 import androidx.compose.material.icons.filled.History
 import androidx.compose.runtime.Composable
@@ -18,7 +17,6 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.navigation.NavController
 import com.example.applicationsop.ui.theme.Maroon
-import com.example.applicationsop.ui.theme.Putih
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.filled.Person
 import androidx.compose.runtime.getValue
@@ -36,7 +34,7 @@ import androidx.compose.ui.platform.LocalContext
 import android.widget.Toast
 
 @Composable
-fun ProfileScreen1(
+fun ProfileScreen(
     navController: NavController,
     token: String?,
     userId: String?,
@@ -45,10 +43,6 @@ fun ProfileScreen1(
     email: String?,
     devisi: String?
 ) {
-    var signaturePath by remember { mutableStateOf(androidx.compose.ui.graphics.Path()) }
-    var showSignaturePad by remember { mutableStateOf(false) }
-    var showSignatureValidDialog by remember { mutableStateOf(false) }
-
     var isLoggingOut by remember { mutableStateOf(false) }
 
     // Ambil context untuk menampilkan Toast
@@ -61,7 +55,7 @@ fun ProfileScreen1(
                 val success = logoutUser(token) // Perform logout
                 if (success) {
                     // Menampilkan Toast ketika logout berhasil
-                    clearUserData(context)
+                    UserUtils.clearUserData(context)
                     Toast.makeText(context, "Logout Berhasil", Toast.LENGTH_SHORT).show()
 
                     // Navigate to login after successful logout
@@ -250,15 +244,11 @@ fun ProfileScreen1(
     }
 }
 
-fun clearUserData(context: Context) {
-    val sharedPreferences = context.getSharedPreferences("MyPrefs", Activity.MODE_PRIVATE)
-    val editor = sharedPreferences.edit()
-    editor.clear() // Clear all stored data
-    editor.apply() // Commit the changes
+object UserUtils {
+    fun clearUserData(context: Context) {
+        val sharedPreferences = context.getSharedPreferences("MyPrefs", Activity.MODE_PRIVATE)
+        val editor = sharedPreferences.edit()
+        editor.clear() // Clear all stored data
+        editor.apply() // Commit the changes
+    }
 }
-
-
-
-
-
-

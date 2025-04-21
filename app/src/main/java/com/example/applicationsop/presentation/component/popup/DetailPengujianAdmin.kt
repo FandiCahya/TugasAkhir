@@ -254,15 +254,13 @@ fun DetailPopupPengujian(
                         }
                     }
 
-                    Spacer(modifier = Modifier.height(10.dp))
-
+                    Divider(modifier = Modifier.padding(vertical = 8.dp))
                     Spacer(modifier = Modifier.height(10.dp))
 
                     Row(
                         modifier = Modifier
-                            .fillMaxWidth()
-                            .padding(top = 15.dp),
-                        horizontalArrangement = Arrangement.spacedBy(10.dp, Alignment.CenterHorizontally) // Menyebar tombol dengan jarak yang sama
+                            .fillMaxWidth(),
+                        horizontalArrangement = Arrangement.spacedBy(100.dp, Alignment.CenterHorizontally) // Menyebar tombol dengan jarak yang sama
                     ) {
                         // Tombol See All
                         Button(

@@ -14,12 +14,20 @@ import androidx.compose.material.icons.filled.Close
 import androidx.compose.material.icons.filled.History
 import androidx.compose.material.icons.filled.Timer
 import androidx.compose.material.icons.filled.Verified
+import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
 import com.example.applicationsop.ui.theme.Maroon
 import com.example.applicationsop.ui.theme.Putih
 import com.example.applicationsop.ui.theme.ijo
 import com.example.applicationsop.ui.theme.abang
 import com.example.applicationsop.ui.theme.kuning
 import androidx.navigation.NavController
+import com.example.applicationsop.Api.fetchPengajuanList
+import com.example.applicationsop.Api.fetchPengembanganList
+import com.example.applicationsop.Api.fetchPengujianList
 import com.example.applicationsop.presentation.component.ProgressCard
 import com.example.applicationsop.presentation.component.ProgressCardRiwayat
 import com.example.applicationsop.presentation.component.SectionTitle
@@ -37,6 +45,21 @@ fun HomeQmrScreen(
     email: String?,
     devisi: String?
 ) {
+    var pendingCount by remember { mutableStateOf(0) }
+    var rejectedCount by remember { mutableStateOf(0) }
+    var acceptedCount by remember { mutableStateOf(0) }
+    var pengembanganCount by remember { mutableStateOf(0) }
+    var pengujianCount by remember { mutableStateOf(0) }
+
+    // Fetch jumlah data pengajuan
+    LaunchedEffect(Unit) {
+        pendingCount = fetchPengajuanList("pending").size
+        rejectedCount = fetchPengajuanList("rejected").size
+        acceptedCount = fetchPengajuanList("accepted").size
+        pengembanganCount = fetchPengembanganList().size
+        pengujianCount = fetchPengujianList(status_persetujuan = "approved").size
+    }
+
     Box(
         modifier = Modifier
             .fillMaxSize()
@@ -62,8 +85,12 @@ fun HomeQmrScreen(
 
             // Pengajuan Section
             SectionTitle("Pengajuan")
-            SubmissionSection(navController = navController)
-
+            SubmissionSection(
+                navController = navController,
+                pendingCount = pendingCount,
+                rejectedCount = rejectedCount,
+                acceptedCount = acceptedCount
+            )
             Spacer(modifier = Modifier.height(16.dp))
 
             // Garis tengah
@@ -75,13 +102,17 @@ fun HomeQmrScreen(
 
             // Progres Section
             SectionTitle("Progres")
-            ProgressSection(navController = navController)
+            ProgressSection(
+                navController = navController,
+                pengembanganCount = pengembanganCount,
+                pengujianCount = pengujianCount
+            )
         }
     }
 }
 
 @Composable
-fun SubmissionSection(navController: NavController) {
+fun SubmissionSection(navController: NavController, pendingCount: Int, rejectedCount: Int, acceptedCount: Int) {
     Row(
         modifier = Modifier
             .fillMaxWidth()
@@ -92,6 +123,7 @@ fun SubmissionSection(navController: NavController) {
         SubmissionCard(
             color = kuning,
             icon = Icons.Filled.Timer,
+            count = pendingCount,
             onClick = {
                 navController.navigate("list_pengajuanQmr1")
             }
@@ -101,6 +133,7 @@ fun SubmissionSection(navController: NavController) {
         SubmissionCard(
             color = abang,
             icon = Icons.Filled.Close,
+            count = rejectedCount,
             onClick = {
                 navController.navigate("list_pengajuanQmr2")
             }
@@ -110,6 +143,7 @@ fun SubmissionSection(navController: NavController) {
         SubmissionCard(
             color = ijo,
             icon = Icons.Filled.Verified,
+            count = acceptedCount,
             onClick = {
                 navController.navigate("list_pengajuanQmr3")
             }
@@ -119,15 +153,15 @@ fun SubmissionSection(navController: NavController) {
 
 
 @Composable
-fun ProgressSection(navController: NavController) {
+fun ProgressSection(navController: NavController, pengembanganCount: Int,pengujianCount: Int) {
     Column(
         modifier = Modifier
             .fillMaxWidth()
             .padding(horizontal = 16.dp) // Memberikan padding horizontal pada ProgressSection
     ) {
         // Menampilkan beberapa ProgressCard
-        ProgressCard("Pengembangan Admin", Icons.Filled.Timer, Maroon, count = null,navController)
-        ProgressCard("Pengujian Admin", Icons.Filled.History, Maroon, count = null,navController)
+        ProgressCard("Pengembangan Admin", Icons.Filled.Timer, Maroon, count = pengembanganCount,navController)
+        ProgressCard("Pengujian Admin", Icons.Filled.History, Maroon, count = pengujianCount,navController)
 
         // Garis tengah
         Divider(

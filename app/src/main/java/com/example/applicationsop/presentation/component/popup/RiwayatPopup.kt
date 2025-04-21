@@ -1,6 +1,5 @@
 package com.example.applicationsop.presentation.component.popup
 
-import android.os.Environment
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
@@ -16,6 +15,7 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
+import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.navigation.NavController
@@ -26,7 +26,6 @@ import generatePDF
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
-import java.io.File
 
 @Composable
 fun RiwayatPopup(
@@ -96,83 +95,147 @@ fun RiwayatPopup(
 
                 Divider(modifier = Modifier.padding(vertical = 8.dp))
 
-                // Isi detail
-                val labelStyle = Modifier.padding(bottom = 4.dp)
-                Column(modifier = Modifier.fillMaxWidth()) {
-                    Text("Tanggal Pengajuan: $tgl", labelStyle)
-                    Text("Nama Sistem: $namaSistem", labelStyle)
-                    Text("Jenis: $jenis", labelStyle)
-                    Text("Rencana Anggaran: $rencanaAnggaran", labelStyle)
-                    Text("Masalah: $masalah", labelStyle)
-                    Text("Output: $output", labelStyle)
-                    Text("Tanggal Mulai: ${tanggalMulai ?: "-"}", labelStyle)
-                    Text("Tanggal Selesai: ${tanggalSelesai ?: "-"}", labelStyle)
-                    Text("Tahap: ${tahap ?: "-"}", labelStyle)
-                    Text("Keterangan: ${keterangan ?: "-"}", labelStyle)
-                    Text("Perangkat Lunak: ${perangkatLunak ?: "-"}", labelStyle)
-                    Text("Versi Perangkat: ${versiPerangkat ?: "-"}", labelStyle)
-                    Text("Tujuan Pengujian: ${tujuanPengujian ?: "-"}", labelStyle)
-                    Text("Metode Pengujian: ${metodePengujian ?: "-"}", labelStyle)
-                    Text("Status: ${status ?: "-"}", labelStyle)
+                // Content
+                Column(
+                    modifier = Modifier.fillMaxWidth()
+                ) {
+                    // Row for Nama Sistem
+                    Row(
+                        modifier = Modifier.fillMaxWidth(),
+                        horizontalArrangement = Arrangement.SpaceBetween // Menggunakan SpaceBetween untuk jarak antar elemen
+                    ) {
+                        Column(modifier = Modifier.weight(1f)) {
+                            Text(
+                                "Tanggal Pengajuan",
+                                fontWeight = FontWeight.Bold,
+                                color = Color.Black
+                            )
+                        }
+                        Column(modifier = Modifier.weight(2f)) {
+                            Text(
+                                ": $tgl",
+                                color = Color.Black,
+                                maxLines = 1,
+                                overflow = TextOverflow.Ellipsis
+                            )
+                        }
+                    }
 
-                    Spacer(modifier = Modifier.height(12.dp))
+                    // Row for Versi Perangkat
+                    Row(
+                        modifier = Modifier.fillMaxWidth(),
+                        horizontalArrangement = Arrangement.SpaceBetween // Menggunakan SpaceBetween untuk jarak antar elemen
+                    ) {
+                        Column(modifier = Modifier.weight(1f)) {
+                            Text("Nama Sistem", fontWeight = FontWeight.Bold, color = Color.Black)
+                        }
+                        Column(modifier = Modifier.weight(2f)) {
+                            Text(
+                                ": $namaSistem",
+                                color = Color.Black,
+                                maxLines = 1,
+                                overflow = TextOverflow.Ellipsis
+                            )
+                        }
+                    }
 
-                    Text("Detail Persetujuan:", fontWeight = FontWeight.Bold)
-                    detailPersetujuan.forEach { detail ->
-                        Column(modifier = Modifier.padding(start = 8.dp, bottom = 6.dp)) {
-                            Text("- Catatan: ${detail.catatan}")
-                            Text("  Signature: ${detail.signature}")
-                            Text("  Status: ${detail.status}")
+                    // Row for Tujuan Pengujian
+                    Row(
+                        modifier = Modifier.fillMaxWidth(),
+                        horizontalArrangement = Arrangement.SpaceBetween // Menggunakan SpaceBetween untuk jarak antar elemen
+                    ) {
+                        Column(modifier = Modifier.weight(1f)) {
+                            Text("Jenis", fontWeight = FontWeight.Bold, color = Color.Black)
+                        }
+                        Column(modifier = Modifier.weight(2f)) {
+                            Text(
+                                ": $jenis",
+                                color = Color.Black,
+                                maxLines = 2,
+                                overflow = TextOverflow.Ellipsis
+                            )
+                        }
+                    }
 
+                    // Row for Metode Pengujian
+                    Row(
+                        modifier = Modifier.fillMaxWidth(),
+                        horizontalArrangement = Arrangement.SpaceBetween // Menggunakan SpaceBetween untuk jarak antar elemen
+                    ) {
+                        Column(modifier = Modifier.weight(1f)) {
+                            Text(
+                                "Rencana Anggaran",
+                                fontWeight = FontWeight.Bold,
+                                color = Color.Black
+                            )
+                        }
+                        Column(modifier = Modifier.weight(2f)) {
+                            Text(
+                                ": $rencanaAnggaran",
+                                color = Color.Black,
+                                maxLines = 2,
+                                overflow = TextOverflow.Ellipsis
+                            )
+                        }
+                    }
+
+                    // Row for Tanggal Pengujian
+                    Row(
+                        modifier = Modifier.fillMaxWidth(),
+                        horizontalArrangement = Arrangement.SpaceBetween // Menggunakan SpaceBetween untuk jarak antar elemen
+                    ) {
+                        Column(modifier = Modifier.weight(1f)) {
+                            Text("Masalah", fontWeight = FontWeight.Bold, color = Color.Black)
+                        }
+                        Column(modifier = Modifier.weight(2f)) {
+                            Text(
+                                ": $masalah",
+                                color = Color.Black,
+                                maxLines = 2,
+                                overflow = TextOverflow.Ellipsis
+                            )
+                        }
+                    }
+
+                    // Row for Pelaksana Pengujian
+                    Row(
+                        modifier = Modifier.fillMaxWidth(),
+                        horizontalArrangement = Arrangement.SpaceBetween // Menggunakan SpaceBetween untuk jarak antar elemen
+                    ) {
+                        Column(modifier = Modifier.weight(1f)) {
+                            Text("Output", fontWeight = FontWeight.Bold, color = Color.Black)
+                        }
+                        Column(modifier = Modifier.weight(2f)) {
+                            Text(
+                                ": $output",
+                                color = Color.Black,
+                                maxLines = 1,
+                                overflow = TextOverflow.Ellipsis
+                            )
                         }
                     }
                 }
+                Divider(modifier = Modifier.padding(top = 8.dp))
+            }
 
-                Spacer(modifier = Modifier.height(16.dp))
-
-                // Buttons
-                Row(
+            // Buttons
+            Row(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .padding(end = 16.dp, bottom = 16.dp),
+                horizontalArrangement = Arrangement.End
+            ) {
+                Button(
+                    onClick = {
+                        navController.navigate("show_laporan_screen?id=$id")
+                    },
                     modifier = Modifier
-                        .fillMaxWidth()
-                        .padding(top = 15.dp),
-                    horizontalArrangement = Arrangement.spacedBy(70.dp, Alignment.CenterHorizontally)
+                        .width(120.dp)
+                        .shadow(4.dp, RoundedCornerShape(16.dp)),
+                    colors = ButtonDefaults.buttonColors(containerColor = biru),
+                    shape = RoundedCornerShape(16.dp)
                 ) {
-                    Button(
-                        onClick = {
-                            val directory = context.getExternalFilesDir(null)
-                            if (directory != null) {
-                                CoroutineScope(Dispatchers.IO).launch {
-                                    generatePDF(
-                                        context = context,
-                                        directory = directory,
-                                        id = id,
-                                        namaSistem = namaSistem,
-                                        versiPerangkat = versiPerangkat ?: "-",
-                                        tujuanPengujian = tujuanPengujian ?: "-",
-                                        metodePengujian = metodePengujian ?: "-",
-                                        tanggalPengujian = tgl,
-                                        pelaksanaPengujian = "-", // Tambahkan jika punya data
-                                        status = status ?: "-"
-                                    )
-                                }
-                            }
-                        }
-                    ) {
-                        Text("Download")
-                    }
-
-                    Button(
-                        onClick = {
-                            navController.navigate("show_laporan_screen?id=$id")
-                        },
-                        modifier = Modifier
-                            .width(120.dp)
-                            .shadow(4.dp, RoundedCornerShape(16.dp)),
-                        colors = ButtonDefaults.buttonColors(containerColor = biru),
-                        shape = RoundedCornerShape(16.dp)
-                    ) {
-                        Text("Laporan", color = Color.White)
-                    }
+                    Text("Laporan", color = Color.White)
                 }
             }
         }

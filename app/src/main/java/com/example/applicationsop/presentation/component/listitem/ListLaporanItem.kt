@@ -95,9 +95,6 @@ fun ListLaporanItem(
 
             Divider(color = Color.Gray, modifier = Modifier.padding(vertical = 4.dp))
 
-//            Text(text = "Masalah: $masalah", fontSize = 12.sp, color = Color.Gray)
-//            Text(text = "Metode: $metodePengujian", fontSize = 12.sp, color = Color.Gray)
-
             Spacer(modifier = Modifier.height(4.dp))
 
             Row(
@@ -111,7 +108,7 @@ fun ListLaporanItem(
                     color = when (status.lowercase(Locale.ROOT)) {
                         "pending" -> kuning
                         "rejected" -> abang
-                        "finishec" -> ijo
+                        "finished" -> ijo
                         else -> Color.Black
                     }
                 )
