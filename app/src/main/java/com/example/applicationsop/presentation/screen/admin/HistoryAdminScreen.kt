@@ -14,40 +14,43 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.navigation.NavController
-import com.example.applicationsop.Api.fetchPengujianList
+import com.example.applicationsop.Api.fetchLaporanList
 import com.example.applicationsop.data.DetailPengujian
-import com.example.applicationsop.models.Pengujian
+import com.example.applicationsop.models.Laporan
 import com.example.applicationsop.presentation.component.header.HeaderWithSearch
-import com.example.applicationsop.presentation.component.listitem.ListPengujianItem
-import com.example.applicationsop.presentation.component.popup.DetailPopupPengujian
+import com.example.applicationsop.presentation.component.listitem.ListLaporanItem
 import com.example.applicationsop.presentation.component.popup.RiwayatPopup
 import java.text.SimpleDateFormat
 import java.util.Date
 import java.util.Locale
+import android.util.Log
+import com.example.applicationsop.data.DetailLaporan
+
 
 @Composable
 fun HistoryAdmin(navController: NavController) {
     var showPopup by remember { mutableStateOf(false) }
-    var selectedDetail by remember { mutableStateOf(DetailPengujian(id = "")) }
-    var pengujianList by remember { mutableStateOf<List<Pengujian>>(emptyList()) }
+    var selectedDetail by remember { mutableStateOf(DetailLaporan("")) }
+    var laporanList by remember { mutableStateOf<List<Laporan>>(emptyList()) }
+
 
     LaunchedEffect(Unit) {
         // Fetching the data when the Composable is first launched
-        val fetchedPengujianList = fetchPengujianList() // Fetch the data
-        pengujianList = fetchedPengujianList // Updating the state
+        val fetchLaporanList = fetchLaporanList(status_pengajuan="finished") // Fetch the data
+        Log.d("FETCH_LAPORAN", fetchLaporanList.toString())
+        laporanList = fetchLaporanList // Updating the state
     }
     val dateFormat = SimpleDateFormat("yyyy-MM-dd", Locale.getDefault()) // Parsing the date format
     val todayDate = dateFormat.format(Date()) // Current date for fallback
     // Sort pengajuanList by tanggal
-    val sortedPengujianList = pengujianList.sortedByDescending { pengujian ->
+    val sortedLaporanList = laporanList.sortedByDescending { laporan ->
         try {
-            // Try to parse the date string to Date object
-            dateFormat.parse(pengujian.tanggal) ?: Date() // Return Date() if parsing fails
+            dateFormat.parse(laporan.pengajuan.tgl) ?: Date()
         } catch (e: Exception) {
-            // If parsing fails, use the current date as fallback
             Date()
         }
     }
+
     Column(
         modifier = Modifier
             .fillMaxSize()
@@ -59,34 +62,49 @@ fun HistoryAdmin(navController: NavController) {
 
         // List of pengujian items from fetched data
         LazyColumn(modifier = Modifier.fillMaxSize()) {
-            items(sortedPengujianList) { pengujian ->
-                val status = when (pengujian.pengembangan?.status?:"Tidak Tersedia") {
-                    "finished" -> "Pengembangan Selesai"
-                    else -> "Pengembangan Belum Selesai"
-                }
-                // Passing the data to ListPengujianItem composable
-                ListPengujianItem(
-                    perangkat_lunak = pengujian.perangkat_lunak,  // System name from Pengujian object
-                    versiPerangkat = pengujian.versi,  // Version from Pengujian object
-                    tujuanPengujian = pengujian.tujuan,  // Purpose from Pengujian object
-                    metodePengujian = pengujian.metode,  // Testing method from Pengujian object
-                    tanggalPengujian = pengujian.tanggal,  // Date of testing
-                    pelaksanaPengujian = pengujian.pelaksana?.name?:"Tidak Tersedia",  // Executor's name
-                    status = pengujian.status,
-                    persetujuanId = pengujian.persetujuan?.joinToString(", ") { it.id ?: "Tidak Tersedia" } ?: "Tidak Tersedia",
+            items(sortedLaporanList) { laporan ->
+                val pengajuan = laporan.pengajuan
+                val pengembangan = laporan.pengembangan
+                val pengujian = laporan.pengujian
+                val persetujuan = laporan.persetujuan_pengujian
+                val detailPersetujuan = laporan.persetujuan_pengujian_details
+                ListLaporanItem(
+                    tgl = pengajuan.tgl,
+                    nama_sistem = pengajuan.nama_sistem,
+                    jenis = pengajuan.jenis,
+                    rencana_anggaran = pengajuan.rencana_anggaran,
+                    masalah = pengajuan.masalah,
+                    output = pengajuan.output ,
+                    tanggal_mulai = pengembangan?.tanggal_mulai,
+                    tanggal_selesai = pengembangan?.tanggal_selesai,
+                    tahap = pengembangan?.tahap,
+                    keterangan = pengembangan?.keterangan,
+                    perangkat_lunak = pengujian?.perangkat_lunak,
+                    versiPerangkat = pengujian?.versi,
+                    tujuanPengujian = pengujian?.tujuan,
+                    metodePengujian = pengujian?.metode,
+                    detailPersetujuan = laporan.persetujuan_pengujian_details,
+                    status = pengajuan.status,
                     onClick = {
-                        // Populate selectedDetail with all required data
-                        selectedDetail = DetailPengujian(
-                            id = pengujian.id,
-                            namaSistem = pengujian.perangkat_lunak,
-                            versiPerangkat = pengujian.versi,
-                            tujuanPengujian = pengujian.tujuan,
-                            metodePengujian = pengujian.metode,
-                            tanggalPengujian = pengujian.tanggal,
-                            pelaksanaPengujian = pengujian.pelaksana?.name?:"Tidak Tersedia",
-                            status = pengujian.status,
-                            persetujuanId = pengujian.persetujuan?.joinToString(", ") { it.id ?: "Tidak Tersedia" } ?: "Tidak Tersedia",
-                            )
+                        selectedDetail = DetailLaporan(
+                            id = laporan.pengajuan.id,
+                            tgl = laporan.pengajuan.tgl,
+                            nama_sistem = laporan.pengajuan.nama_sistem,
+                            jenis = laporan.pengajuan.jenis,
+                            rencana_anggaran = laporan.pengajuan.rencana_anggaran,
+                            masalah = laporan.pengajuan.masalah,
+                            output = laporan.pengajuan.output,
+                            tanggal_mulai = laporan.pengembangan?.tanggal_mulai,
+                            tanggal_selesai = laporan.pengembangan?.tanggal_selesai,
+                            tahap = laporan.pengembangan?.tahap,
+                            keterangan = laporan.pengembangan?.keterangan,
+                            perangkat_lunak = laporan.pengujian?.perangkat_lunak,
+                            versiPerangkat = laporan.pengujian?.versi,
+                            tujuanPengujian = laporan.pengujian?.tujuan,
+                            metodePengujian = laporan.pengujian?.metode,
+                            detailPersetujuan = laporan.persetujuan_pengujian_details,
+                            status = laporan.pengajuan.status
+                        )
                         showPopup = true
                     }
                 )
@@ -97,14 +115,23 @@ fun HistoryAdmin(navController: NavController) {
     if (showPopup && selectedDetail != null) {
         RiwayatPopup(
             onDismiss = { showPopup = false },
-            navController = navController, // Passing navController
-            id = selectedDetail.id, // Example, make sure to pass the actual data you need
-            namaSistem = selectedDetail.namaSistem,
+            navController = navController,
+            id = selectedDetail.id,
+            tgl = selectedDetail.tgl,
+            namaSistem = selectedDetail.nama_sistem,
+            jenis = selectedDetail.jenis,
+            rencanaAnggaran = selectedDetail.rencana_anggaran,
+            masalah = selectedDetail.masalah,
+            output = selectedDetail.output,
+            tanggalMulai = selectedDetail.tanggal_mulai,
+            tanggalSelesai = selectedDetail.tanggal_selesai,
+            tahap = selectedDetail.tahap,
+            keterangan = selectedDetail.keterangan,
+            perangkatLunak = selectedDetail.perangkat_lunak,
             versiPerangkat = selectedDetail.versiPerangkat,
             tujuanPengujian = selectedDetail.tujuanPengujian,
             metodePengujian = selectedDetail.metodePengujian,
-            tanggalPengujian = selectedDetail.tanggalPengujian,
-            pelaksanaPengujian = selectedDetail.pelaksanaPengujian,
+            detailPersetujuan = selectedDetail.detailPersetujuan,
             status = selectedDetail.status
         )
     }

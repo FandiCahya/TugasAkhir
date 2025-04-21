@@ -1,6 +1,5 @@
 package com.example.applicationsop.presentation.component.popup
 
-import android.content.Context
 import android.os.Environment
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
@@ -8,13 +7,7 @@ import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Timer
-import androidx.compose.material3.Button
-import androidx.compose.material3.ButtonDefaults
-import androidx.compose.material3.Card
-import androidx.compose.material3.CardDefaults
-import androidx.compose.material3.Divider
-import androidx.compose.material3.Icon
-import androidx.compose.material3.Text
+import androidx.compose.material3.*
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -26,6 +19,7 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.navigation.NavController
+import com.example.applicationsop.models.PersetujuanPengujianDetail
 import com.example.applicationsop.ui.theme.Maroon
 import com.example.applicationsop.ui.theme.biru
 import generatePDF
@@ -39,40 +33,31 @@ fun RiwayatPopup(
     onDismiss: () -> Unit,
     navController: NavController,
     id: String,
+    tgl: String,
     namaSistem: String,
-    versiPerangkat: String,
-    tujuanPengujian: String,
-    metodePengujian: String,
-    tanggalPengujian: String,
-    pelaksanaPengujian: String,
-    status: String
+    jenis: String,
+    rencanaAnggaran: String,
+    masalah: String,
+    output: String,
+    tanggalMulai: String?,
+    tanggalSelesai: String?,
+    tahap: String?,
+    keterangan: String?,
+    perangkatLunak: String?,
+    versiPerangkat: String?,
+    tujuanPengujian: String?,
+    metodePengujian: String?,
+    detailPersetujuan: List<PersetujuanPengujianDetail>,
+    status: String?
 ) {
-    // Get the current context
     val context = LocalContext.current
-
-    // Dummy data
-    val id = "12345"
-    val namaSistem = "Sistem Pengujian A"
-    val versiPerangkat = "v1.2.0"
-    val tujuanPengujian = "Menguji kestabilan sistem"
-    val metodePengujian = "Black Box Testing"
-    val tanggalPengujian = "2025-03-21"
-    val pelaksanaPengujian = "John Doe"
-    val status = "finished"
-    val persetujuanId = "54321"
-
-    // Define directory for saving the PDF
-    val directory = File(Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_DOCUMENTS), "MyAppDocs")
-    if (!directory.exists()) {
-        directory.mkdirs() // Create directory if it doesn't exist
-    }
 
     Box(modifier = Modifier.fillMaxSize()) {
         Box(
             modifier = Modifier
                 .fillMaxSize()
-                .background(Color.Black.copy(alpha = 0.4f)) // Gelapkan background
-                .clickable { onDismiss() } // Menutup popup jika area gelap di klik
+                .background(Color.Black.copy(alpha = 0.4f))
+                .clickable { onDismiss() }
         )
 
         Card(
@@ -84,10 +69,9 @@ fun RiwayatPopup(
             shape = RoundedCornerShape(16.dp),
             colors = CardDefaults.cardColors(containerColor = Color.White)
         ) {
-            Column(
-                modifier = Modifier.padding(16.dp)
-            ) {
-                // Icon and Title
+            Column(modifier = Modifier.padding(16.dp)) {
+
+                // Header
                 Row(
                     modifier = Modifier
                         .fillMaxWidth()
@@ -102,22 +86,46 @@ fun RiwayatPopup(
                     )
                 }
                 Text(
-                    text = "Riwayat",
+                    text = "Detail Riwayat",
                     fontSize = 18.sp,
                     fontWeight = FontWeight.Bold,
                     color = Color.Black,
                     textAlign = TextAlign.Center,
-                    modifier = Modifier.padding(start = 130.dp)
+                    modifier = Modifier.fillMaxWidth()
                 )
 
-                // Line separator
                 Divider(modifier = Modifier.padding(vertical = 8.dp))
 
-                // Content
-                Column(
-                    modifier = Modifier.fillMaxWidth()
-                ) {
-                    // Rows for data...
+                // Isi detail
+                val labelStyle = Modifier.padding(bottom = 4.dp)
+                Column(modifier = Modifier.fillMaxWidth()) {
+                    Text("Tanggal Pengajuan: $tgl", labelStyle)
+                    Text("Nama Sistem: $namaSistem", labelStyle)
+                    Text("Jenis: $jenis", labelStyle)
+                    Text("Rencana Anggaran: $rencanaAnggaran", labelStyle)
+                    Text("Masalah: $masalah", labelStyle)
+                    Text("Output: $output", labelStyle)
+                    Text("Tanggal Mulai: ${tanggalMulai ?: "-"}", labelStyle)
+                    Text("Tanggal Selesai: ${tanggalSelesai ?: "-"}", labelStyle)
+                    Text("Tahap: ${tahap ?: "-"}", labelStyle)
+                    Text("Keterangan: ${keterangan ?: "-"}", labelStyle)
+                    Text("Perangkat Lunak: ${perangkatLunak ?: "-"}", labelStyle)
+                    Text("Versi Perangkat: ${versiPerangkat ?: "-"}", labelStyle)
+                    Text("Tujuan Pengujian: ${tujuanPengujian ?: "-"}", labelStyle)
+                    Text("Metode Pengujian: ${metodePengujian ?: "-"}", labelStyle)
+                    Text("Status: ${status ?: "-"}", labelStyle)
+
+                    Spacer(modifier = Modifier.height(12.dp))
+
+                    Text("Detail Persetujuan:", fontWeight = FontWeight.Bold)
+                    detailPersetujuan.forEach { detail ->
+                        Column(modifier = Modifier.padding(start = 8.dp, bottom = 6.dp)) {
+                            Text("- Catatan: ${detail.catatan}")
+                            Text("  Signature: ${detail.signature}")
+                            Text("  Status: ${detail.status}")
+
+                        }
+                    }
                 }
 
                 Spacer(modifier = Modifier.height(16.dp))
@@ -129,39 +137,32 @@ fun RiwayatPopup(
                         .padding(top = 15.dp),
                     horizontalArrangement = Arrangement.spacedBy(70.dp, Alignment.CenterHorizontally)
                 ) {
-                    // Tombol Download
                     Button(
                         onClick = {
-                            // Ensure directory exists
-                            val directory = context.getExternalFilesDir(null) // Now we use LocalContext.current
-
-                            // Call the generatePDF function with all the required parameters inside a coroutine scope
+                            val directory = context.getExternalFilesDir(null)
                             if (directory != null) {
                                 CoroutineScope(Dispatchers.IO).launch {
                                     generatePDF(
-                                        context,
-                                        directory,
-                                        id,
-                                        namaSistem,
-                                        versiPerangkat,
-                                        tujuanPengujian,
-                                        metodePengujian,
-                                        tanggalPengujian,
-                                        pelaksanaPengujian,
-                                        status
+                                        context = context,
+                                        directory = directory,
+                                        id = id,
+                                        namaSistem = namaSistem,
+                                        versiPerangkat = versiPerangkat ?: "-",
+                                        tujuanPengujian = tujuanPengujian ?: "-",
+                                        metodePengujian = metodePengujian ?: "-",
+                                        tanggalPengujian = tgl,
+                                        pelaksanaPengujian = "-", // Tambahkan jika punya data
+                                        status = status ?: "-"
                                     )
                                 }
                             }
-                        },
-                        content = {
-                            Text("Download")
                         }
-                    )
+                    ) {
+                        Text("Download")
+                    }
 
-                    // Tombol Show Laporan
                     Button(
                         onClick = {
-                            // Navigasi ke halaman laporan
                             navController.navigate("show_laporan_screen?id=$id")
                         },
                         modifier = Modifier
@@ -177,4 +178,3 @@ fun RiwayatPopup(
         }
     }
 }
-
