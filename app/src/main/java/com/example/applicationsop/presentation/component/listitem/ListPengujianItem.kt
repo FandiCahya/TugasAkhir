@@ -82,7 +82,7 @@ fun ListPengujianItem(
         ) {
             Icon(
                 imageVector = Icons.Filled.Assessment,
-                contentDescription = "Pengujian Iocn",
+                contentDescription = "Pengujian Icon",
                 modifier = Modifier.fillMaxSize() .padding(5.dp),
                 tint = Color.Black
             )
