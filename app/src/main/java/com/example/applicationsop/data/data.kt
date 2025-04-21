@@ -4,6 +4,7 @@ import com.example.applicationsop.models.Catatan
 import com.example.applicationsop.models.GetPengujianDetail
 import com.example.applicationsop.models.PengujianDetail
 import com.example.applicationsop.models.Persetujuan
+import com.example.applicationsop.models.PersetujuanPengujianDetail
 
 // Data class untuk menyimpan informasi detail usulan
 data class DetailInfo(
@@ -52,4 +53,25 @@ data class ScheduleItemFix(
     val progressPercentage: Int,
     val status: String
 )
+
+data class DetailLaporan(
+    val id: String,
+    val tgl: String = "",
+    val nama_sistem: String = "",
+    val jenis: String = "",
+    val rencana_anggaran: String = "",
+    val masalah: String = "",
+    val output: String = "",
+    val tanggal_mulai: String? = null,
+    val tanggal_selesai: String? = null,
+    val tahap: String? = null,
+    val keterangan: String? = null,
+    val perangkat_lunak: String? = null,
+    val versiPerangkat: String? = null,
+    val tujuanPengujian: String? = null,
+    val metodePengujian: String? = null,
+    val detailPersetujuan: List<PersetujuanPengujianDetail> = emptyList(),
+    val status: String? = null,
+)
+
 

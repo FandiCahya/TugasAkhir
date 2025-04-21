@@ -125,6 +125,7 @@ fun DetailPengujianAdmin(
     val context = LocalContext.current
     val userData = remember { UserUtils.getUserData(context) }
     val userId = userData["userId"]
+    print("User_id : $userId")
 
     var signatureFile by remember { mutableStateOf<File?>(null) }
     var capturedImage by remember { mutableStateOf<ImageBitmap?>(null) }
@@ -222,6 +223,8 @@ fun DetailPengujianAdmin(
                 .flatMap { it.persetujuan_detail.orEmpty() } // Hindari null dengan orEmpty()
                 .filter { it.disetujui_oleh?.id == userId } // Filter berdasarkan userId
                 .map { it.id ?: "-" } // Ambil ID, gunakan "-" jika null
+
+            println("ID yang sesuai dengan userId: $filteredPersetujuanDetailIds")
 
 
             // Form Fields Section
@@ -716,18 +719,6 @@ fun DetailPengujianAdmin(
                                     fontSize = 16.sp
                                 )
                             }
-
-                            // Tombol Tolak (Reject)
-//                            Button(
-//                                onClick = {
-//                                    showAlasanInput.value = true
-//                                },
-//                                modifier = Modifier.width(120.dp).shadow(4.dp, RoundedCornerShape(16.dp)),
-//                                colors = ButtonDefaults.buttonColors(containerColor = abang),
-//                                shape = RoundedCornerShape(16.dp)
-//                            ) {
-//                                Text("Tolak", color = Color.White)
-//                            }
                         }
 
                         // Show reason input if "Tolak" button is clicked
@@ -793,7 +784,7 @@ fun DetailPengujianAdmin(
                                     filteredPersetujuanDetailIds.forEach { id ->
                                         println("ID Persetujuan Detail: $id")
                                     }
-
+                                    println("ID yang sesuai dengan userId: $filteredPersetujuanDetailIds")
                                     val firstPersetujuanDetailId =
                                         filteredPersetujuanDetailIds.firstOrNull() ?: "-"
                                     println("ID pertama yang sesuai: $firstPersetujuanDetailId")
