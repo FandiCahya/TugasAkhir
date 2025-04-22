@@ -9,7 +9,7 @@ import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
 import com.example.applicationsop.loginScreen.LoginScreen
-import com.example.applicationsop.presentation.screen.ProfileScreen
+import com.example.applicationsop.presentation.screen.ProfileUser
 import com.example.applicationsop.presentation.screen.admin.DetailApproval
 import com.example.applicationsop.presentation.screen.admin.DetailPengujianAdmin
 import com.example.applicationsop.presentation.screen.admin.HistoryAdmin
@@ -204,7 +204,7 @@ fun MainApp(
             val email = backStackEntry.arguments?.getString("email")
             val devisi = backStackEntry.arguments?.getString("devisi")
 
-            ProfileScreen(
+            ProfileUser(
                 navController = navController,
                 token = token,
                 userId = userId,
