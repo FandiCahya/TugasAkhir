@@ -2,10 +2,14 @@ package com.example.applicationsop.presentation.component
 
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.offset
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.Icon
@@ -18,12 +22,14 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.navigation.NavController
+import com.example.applicationsop.ui.theme.PinkPudar
 
 @Composable
 fun ProgressCardRiwayat(
     title: String,
     icon: androidx.compose.ui.graphics.vector.ImageVector,
     color: Color,
+    count: Int? = null,
     navController: NavController,
 ) {
     // Mapping untuk menampilkan "Pengembangan" atau "Pengujian"
@@ -37,7 +43,7 @@ fun ProgressCardRiwayat(
         modifier = Modifier
             .fillMaxWidth()
             .padding(vertical = 10.dp)
-            .clickable{
+            .clickable {
                 if (title == "Riwayat Admin") {
                     navController.navigate("historyAdmin")
                 } else if (title == "Riwayat User") {
@@ -73,6 +79,33 @@ fun ProgressCardRiwayat(
                     .padding(start = 5.dp),
                 tint = Color.White // Mengatur warna ikon menjadi putih
             )
+        }
+    }
+
+    // Menampilkan badge notifikasi jika count > 0
+    if ((count ?: 0) > 0) {
+        Box(
+            modifier = Modifier
+                .size(24.dp)
+                .offset(x = 10.dp, y = (-10).dp) // Posisi badge
+        ) {
+            Card(
+                shape = CircleShape,
+                colors = CardDefaults.cardColors(containerColor = PinkPudar),
+                modifier = Modifier.size(24.dp)
+            ) {
+                Box(
+                    modifier = Modifier.fillMaxSize(), // Pastikan Box mengisi seluruh Card
+                    contentAlignment = Alignment.Center // Gunakan contentAlignment untuk mengatur posisi konten
+                ) {
+                    Text(
+                        text = count.toString(),
+                        color = Color.White,
+                        fontSize = 12.sp,
+                        fontWeight = FontWeight.Bold
+                    )
+                }
+            }
         }
     }
 }
