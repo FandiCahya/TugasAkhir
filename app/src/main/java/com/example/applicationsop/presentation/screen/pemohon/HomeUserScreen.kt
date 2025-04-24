@@ -67,6 +67,7 @@ fun HomeUserScreen(
     var acceptedCount by remember { mutableStateOf(0) }
     var pengembanganCount by remember { mutableStateOf(0) }
     var pengujianCount by remember { mutableStateOf(0) }
+    var riwayatCount by remember { mutableStateOf(0) }
 
     // Trigger visibility change after the composable is first shown
     LaunchedEffect(true) {
@@ -76,6 +77,7 @@ fun HomeUserScreen(
         acceptedCount = fetchPengajuanList("accepted", role, devisi).size
         pengembanganCount = fetchPengembanganSortList( role, devisi,userId).size
         pengujianCount = fetchPengujianList(user_id = userId,status_persetujuan = "approved").size
+        riwayatCount = fetchPengajuanList("finished").size
     }
 
     Box(
@@ -125,7 +127,9 @@ fun HomeUserScreen(
             ProgressSection(
                 navController = navController,
                 pengembanganCount=pengembanganCount,
-                pengujianCount=pengujianCount)
+                pengujianCount=pengujianCount,
+                riwayatCount = riwayatCount
+            )
         }
 
         // Animated FAB with sliding and fading animation
@@ -202,7 +206,7 @@ fun SubmissionSection(navController: NavController, roleUS: String?, devisiUS: S
 }
 
 @Composable
-fun ProgressSection(navController: NavController, pengembanganCount: Int, pengujianCount: Int) {
+fun ProgressSection(navController: NavController, pengembanganCount: Int, pengujianCount: Int, riwayatCount:Int) {
     Column(
         modifier = Modifier
             .fillMaxWidth()
@@ -223,6 +227,6 @@ fun ProgressSection(navController: NavController, pengembanganCount: Int, penguj
         )
 
         // Card Riwayat dengan Icon di bawah
-        ProgressCardRiwayat("Riwayat User", Icons.Filled.History, Maroon, navController)
+        ProgressCardRiwayat("Riwayat User", Icons.Filled.History, Maroon, count = riwayatCount, navController)
     }
 }

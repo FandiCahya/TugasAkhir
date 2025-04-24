@@ -51,6 +51,8 @@ fun HomeAdminScreen(
     var acceptedCount by remember { mutableStateOf(0) }
     var pengembanganCount by remember { mutableStateOf(0) }
     var pengujianCount by remember { mutableStateOf(0) }
+    var riwayatCount by remember { mutableStateOf(0)}
+
 
     // Fetch jumlah data pengajuan
     LaunchedEffect(Unit) {
@@ -59,6 +61,8 @@ fun HomeAdminScreen(
         acceptedCount = fetchPengajuanList("accepted").size
         pengembanganCount = fetchPengembanganList().size
         pengujianCount = fetchPengujianList(status_persetujuan = "approved").size
+        riwayatCount = fetchPengajuanList("finished").size
+
     }
 
     Box(
@@ -102,7 +106,7 @@ fun HomeAdminScreen(
 
             // Progres Section
             SectionTitle("Progres")
-            ProgressSection(navController = navController,pengembanganCount = pengembanganCount,pengujianCount=pengujianCount)
+            ProgressSection(navController = navController,pengembanganCount = pengembanganCount,pengujianCount=pengujianCount, riwayatCount = riwayatCount)
         }
     }
 }
@@ -149,7 +153,7 @@ fun SubmissionSection(navController: NavController, pendingCount: Int, rejectedC
 
 
 @Composable
-fun ProgressSection(navController: NavController,pengembanganCount: Int,pengujianCount: Int) {
+fun ProgressSection(navController: NavController,pengembanganCount: Int,pengujianCount: Int, riwayatCount: Int) {
     Column(
         modifier = Modifier
             .fillMaxWidth()
@@ -170,6 +174,6 @@ fun ProgressSection(navController: NavController,pengembanganCount: Int,pengujia
         )
 
         // Card Riwayat dengan Icon di bawah
-        ProgressCardRiwayat("Riwayat Admin", Icons.Filled.History, Maroon, navController)
+        ProgressCardRiwayat("Riwayat Admin", Icons.Filled.History, Maroon, count = riwayatCount, navController)
     }
 }
