@@ -64,6 +64,7 @@ import com.example.applicationsop.presentation.component.signaturepad.SignatureD
 import com.example.applicationsop.ui.theme.Maroon
 import com.example.applicationsop.ui.theme.Putih
 import com.example.applicationsop.ui.theme.ijo
+import io.ktor.client.statement.bodyAsText
 import kotlinx.coroutines.launch
 import java.io.File
 import java.text.SimpleDateFormat
@@ -806,10 +807,10 @@ fun DetailPengujianAdmin(
 
                                     val pengujianRequest = PersetujuanDetail(
                                         status = "setuju",
-                                        catatan = if (showAlasanInput.value) inputAlasan.value else ""
-
+                                        catatan = inputAlasan.value
                                     )
-                                    coroutineScope.launch {
+                                    println("Status: ${pengujianRequest.status}, Catatan: ${pengujianRequest.catatan}")
+                                     coroutineScope.launch {
                                         try {
                                             val response = updatePersetujuanPengujian(
                                                 firstPersetujuanDetailId,
@@ -853,6 +854,7 @@ fun DetailPengujianAdmin(
                                             println("Error: ${e.message}")
                                         }
                                     }
+                                    print("Status: ${pengujianRequest.status}, Catatan: ${pengujianRequest.catatan}")
 
                                 },
                                 buttonType = "submit"

@@ -1,5 +1,6 @@
 package com.example.applicationsop.presentation.component.popup
 
+import android.net.Uri
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
@@ -22,10 +23,11 @@ import androidx.navigation.NavController
 import com.example.applicationsop.models.PersetujuanPengujianDetail
 import com.example.applicationsop.ui.theme.Maroon
 import com.example.applicationsop.ui.theme.biru
-import generatePDF
-import kotlinx.coroutines.CoroutineScope
-import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.launch
+import androidx.activity.ComponentActivity
+import androidx.lifecycle.viewmodel.compose.viewModel
+import com.example.applicationsop.ViewModel.SharedPengujianViewModel
+import android.app.Activity
+
 
 @Composable
 fun RiwayatPopup(
@@ -50,6 +52,24 @@ fun RiwayatPopup(
     status: String?
 ) {
     val context = LocalContext.current
+    val activity = context as? Activity
+    val encodedNamaSistem = Uri.encode(namaSistem)
+    val encodedJenis = Uri.encode(jenis)
+    val encodedRencanaAnggaran = Uri.encode(rencanaAnggaran)
+    val encodedMasalah = Uri.encode(masalah)
+    val encodedOutput = Uri.encode(output)
+    val encodedTanggalMulai = Uri.encode(tanggalMulai ?: "")
+    val encodedTanggalSelesai = Uri.encode(tanggalSelesai ?: "")
+    val encodedTahap = Uri.encode(tahap ?: "")
+    val encodedKeterangan = Uri.encode(keterangan ?: "")
+    val encodedPerangkatLunak = Uri.encode(perangkatLunak ?: "")
+    val encodedVersiPerangkat = Uri.encode(versiPerangkat ?: "")
+    val encodedTujuanPengujian = Uri.encode(tujuanPengujian ?: "")
+    val encodedMetodePengujian = Uri.encode(metodePengujian ?: "")
+    val encodedStatus = Uri.encode(status ?: "")
+
+    val sharedViewModel = viewModel<SharedPengujianViewModel>(context as ComponentActivity)
+    sharedViewModel.detailPersetujuan.value = detailPersetujuan
 
     Box(modifier = Modifier.fillMaxSize()) {
         Box(
@@ -227,7 +247,22 @@ fun RiwayatPopup(
             ) {
                 Button(
                     onClick = {
-                        navController.navigate("show_laporan_screen?id=$id")
+                        navController.navigate("show_laporan_screen?id=$id&" +
+                                "namaSistem=$encodedNamaSistem&" +
+                                "jenis=$encodedJenis&" +
+                                "rencanaAnggaran=$encodedRencanaAnggaran&" +
+                                "masalah=$encodedMasalah&"+
+                                "output=$encodedOutput&"+
+                                "tanggalMulai=$encodedTanggalMulai&" +
+                                "tanggalSelesai=$encodedTanggalSelesai&" +
+                                "tahap=$encodedTahap&" +
+                                "keterangan=$encodedKeterangan&" +
+                                "perangkatLunak=$encodedPerangkatLunak&" +
+                                "versiPerangkat=$encodedVersiPerangkat&" +
+                                "tujuanPengujian=$encodedTujuanPengujian&" +
+                                "metodePengujian=$encodedMetodePengujian&" +
+                                "status=$encodedStatus&detailPersetujuan=$detailPersetujuan"
+                        )
                     },
                     modifier = Modifier
                         .width(120.dp)

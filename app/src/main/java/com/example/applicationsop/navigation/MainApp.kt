@@ -388,13 +388,31 @@ fun MainApp(
             )
         }
 
-        composable("show_laporan_screen?id={id}") { backStackEntry ->
-            val id = backStackEntry.arguments?.getString("id")
+        composable(
+            route = "show_laporan_screen?id={id}&namaSistem={namaSistem}&jenis={jenis}&rencanaAnggaran={rencanaAnggaran}&masalah={masalah}&output={output}&tanggalMulai={tanggalMulai}&tanggalSelesai={tanggalSelesai}&tahap={tahap}&keterangan={keterangan}&perangkatLunak={perangkatLunak}&versiPerangkat={versiPerangkat}&tujuanPengujian={tujuanPengujian}&metodePengujian={metodePengujian}&status={status}",
+        ) { backStackEntry ->
+            val args = backStackEntry.arguments
             ShowLaporanScreen(
                 navController = navController,
-                id = id
+                id = args?.getString("id"),
+                namaSistem = args?.getString("namaSistem"),
+                jenis = args?.getString("jenis"),
+                rencanaAnggaran = args?.getString("rencanaAnggaran"),
+                masalah = args?.getString("masalah"),
+                output = args?.getString("output"),
+                tanggalMulai = args?.getString("tanggalMulai"),
+                tanggalSelesai = args?.getString("tanggalSelesai"),
+                tahap = args?.getString("tahap"),
+                keterangan = args?.getString("keterangan"),
+                perangkatLunak = args?.getString("perangkatLunak"),
+                versiPerangkat = args?.getString("versiPerangkat"),
+                tujuanPengujian = args?.getString("tujuanPengujian"),
+                metodePengujian = args?.getString("metodePengujian"),
+                status = args?.getString("status")
+                // Untuk detailPersetujuan, gunakan ViewModel atau storage sementara
             )
         }
+
 
         ////////////////////////// Kacab ///////////////////////
 
