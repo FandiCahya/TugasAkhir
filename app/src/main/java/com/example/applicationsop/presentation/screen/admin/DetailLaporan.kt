@@ -18,9 +18,19 @@ import android.graphics.Paint
 import android.graphics.Typeface
 import android.graphics.pdf.PdfDocument
 import android.graphics.pdf.PdfDocument.PageInfo
+import androidx.compose.foundation.background
+import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.rememberScrollState
+import androidx.compose.foundation.verticalScroll
 import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.text.font.FontFamily
 import androidx.compose.ui.unit.dp
+import androidx.compose.ui.unit.sp
 import androidx.core.content.FileProvider
+import com.example.applicationsop.ui.theme.Putih
 import java.io.FileOutputStream
 
 fun generatePDF(
@@ -246,61 +256,130 @@ fun ShowLaporanScreen(
 ) {
     val context = LocalContext.current
 
-    // Sample data (in real cases, fetch this data from your backend or view model)
-    val namaSistem = ""
-    val versiPerangkat = ""
-    val tujuanPengujian = ""
-    val metodePengujian = ""
-    val tanggalPengujian = ""
-    val pelaksanaPengujian = ""
-    val status = ""
+    // Data statis (contoh data sementara)
+    val namaSistem = "Sistem Pengujian"
+    val versiPerangkat = "1.0.0"
+    val tujuanPengujian = "Mengetahui kelayakan sistem"
+    val metodePengujian = "Uji coba fungsional"
+    val tanggalPengujian = "2025-03-29"
+    val pelaksanaPengujian = "Tim Pengujian"
+    val status = "Belum selesai"
 
-    // Directory to store PDF file (Ensure this is a valid File)
+    // Directory untuk menyimpan file PDF
     val directory = context.getExternalFilesDir(null) ?: context.filesDir
     val filePath = File(directory, "Laporan_${id}.pdf")
 
-    // Generate PDF when the screen is loaded or when a button is clicked
-    LaunchedEffect(id) {
-        id?.let {
-            generatePDF(
-                context = context,
-                directory = directory,
-                id = it,
-                namaSistem = namaSistem,
-                versiPerangkat = versiPerangkat,
-                tujuanPengujian = tujuanPengujian,
-                metodePengujian = metodePengujian,
-                tanggalPengujian = tanggalPengujian,
-                pelaksanaPengujian = pelaksanaPengujian,
-                status = status
-            )
+    val scrollState = rememberScrollState()
+
+    // Menampilkan detail laporan statis
+    Column(
+        modifier = Modifier
+            .fillMaxSize()
+            .background(Putih)
+            .verticalScroll(scrollState)
+    ) {
+        val titleFont = FontFamily.Serif
+        val titleSize = 20.sp
+        val contentFont = FontFamily.SansSerif
+        val contentSize = 16.sp
+        val leftMargin = 16f
+        val valueMargin = 250f
+        val lineSpacing = 30f
+
+        // Informasi Pengajuan
+        Text(
+            text = "Informasi Pengajuan",
+            fontFamily = titleFont,
+            fontSize = titleSize,
+            modifier = Modifier.padding(bottom = 8.dp)
+        )
+
+        // Informasi Pengajuan content (Name: value format)
+        Text("Tanggal: 2025-03-25")
+        Text("Nama Sistem: SIPM")
+        Text("Jenis: Sistem Baru")
+        Text("Rencana Anggaran: Termasuk dalam perencanaan")
+        Text("Masalah: Sistem Penjadwalan Perbaikan Mesin")
+        Text("Output: Aplikasi dan Web")
+
+        Spacer(modifier = Modifier.height(16.dp))
+
+        // Informasi Pengembangan
+        Text(
+            text = "Informasi Pengembangan",
+            fontFamily = titleFont,
+            fontSize = titleSize,
+            modifier = Modifier.padding(bottom = 8.dp)
+        )
+
+        // Informasi Pengembangan content (Name: value format)
+        Text("Tanggal Mulai: 2025-03-18")
+        Text("Tanggal Selesai: 2025-03-24")
+        Text("Tahap: Penyelesaian, Testing, Analisis, Desain UI/UX, Pengerjaan")
+
+        Spacer(modifier = Modifier.height(16.dp))
+
+        // Informasi Pengujian
+        Text(
+            text = "Informasi Pengujian",
+            fontFamily = titleFont,
+            fontSize = titleSize,
+            modifier = Modifier.padding(bottom = 8.dp)
+        )
+
+        // Informasi Pengujian content (Name: value format)
+        Text("Tanggal: 2025-03-29")
+        Text("Perangkat Lunak: SIPM")
+        Text("Versi: 1.0")
+        Text("Tujuan: pengujian")
+        Text("Metode: watermark")
+
+        Spacer(modifier = Modifier.height(16.dp))
+
+        // Generate PDF saat layar dimuat atau saat tombol diklik
+        LaunchedEffect(id) {
+            id?.let {
+                generatePDF(
+                    context = context,
+                    directory = directory,
+                    id = it,
+                    namaSistem = namaSistem,
+                    versiPerangkat = versiPerangkat,
+                    tujuanPengujian = tujuanPengujian,
+                    metodePengujian = metodePengujian,
+                    tanggalPengujian = tanggalPengujian,
+                    pelaksanaPengujian = pelaksanaPengujian,
+                    status = status
+                )
+            }
+        }
+
+        // Tombol untuk membuka PDF yang dihasilkan
+        Button(
+            onClick = {
+                // Gunakan objek file yang telah dibuat di atas
+                if (filePath.exists()) {
+                    // Buka file PDF menggunakan Intent
+                    val pdfUri: Uri = FileProvider.getUriForFile(
+                        context,
+                        "com.example.applicationsop.fileprovider", // Pastikan ini sesuai
+                        filePath // Pastikan ini adalah file yang valid
+                    )
+
+                    val intent = Intent(Intent.ACTION_VIEW)
+                    intent.setDataAndType(pdfUri, "application/pdf")
+                    intent.flags = Intent.FLAG_ACTIVITY_NO_HISTORY
+                    intent.addFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION) // Memberikan izin untuk membaca
+                    context.startActivity(intent)
+                } else {
+                    Toast.makeText(context, "Laporan tidak ditemukan", Toast.LENGTH_SHORT).show()
+                }
+            },
+            modifier = Modifier.padding(16.dp)
+        ) {
+            Text("Buka Laporan PDF")
         }
     }
-
-    // Button to open the generated PDF
-    Button(
-        onClick = {
-            // Use the file object created above
-            if (filePath.exists()) {
-                // Open the PDF file (use Intent to view PDF)
-                val pdfUri: Uri = FileProvider.getUriForFile(
-                    context,
-                    "com.example.applicationsop.fileprovider", // Ensure this is correct
-                    filePath // Ensure this is a valid File
-                )
-
-                val intent = Intent(Intent.ACTION_VIEW)
-                intent.setDataAndType(pdfUri, "application/pdf")
-                intent.flags = Intent.FLAG_ACTIVITY_NO_HISTORY
-                intent.addFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION) // Provide read permission
-                context.startActivity(intent)
-            } else {
-                Toast.makeText(context, "Laporan tidak ditemukan", Toast.LENGTH_SHORT).show()
-            }
-        },
-        modifier = Modifier.padding(16.dp)
-    ) {
-        Text("Buka Laporan")
-    }
 }
+
 
