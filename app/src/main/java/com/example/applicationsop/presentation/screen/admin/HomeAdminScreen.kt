@@ -62,7 +62,6 @@ fun HomeAdminScreen(
         pengembanganCount = fetchPengembanganList().size
         pengujianCount = fetchPengujianList(status_persetujuan = "approved").size
         riwayatCount = fetchPengajuanList("finished").size
-
     }
 
     Box(

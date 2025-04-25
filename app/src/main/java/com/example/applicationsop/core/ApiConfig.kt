@@ -10,3 +10,7 @@ object ApiConfig {
 object UrlConfig {
     const val BASE_URL = "http://${Config.IP_ADDRESS}:${Config.PORT}/"
 }
+
+object urlSignature{
+    const val BASE_URL = "http://${Config.IP_ADDRESS}:${Config.PORT}/storage/"
+}

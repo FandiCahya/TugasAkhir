@@ -4,11 +4,14 @@ import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.offset
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
@@ -38,72 +41,70 @@ fun ProgressCardRiwayat(
         "Riwayat User" -> "Riwayat"
         else -> title
     }
-
-    Card(
+    Box(
         modifier = Modifier
             .fillMaxWidth()
             .padding(vertical = 10.dp)
             .clickable {
-                if (title == "Riwayat Admin") {
-                    navController.navigate("historyAdmin")
-                } else if (title == "Riwayat User") {
-                    navController.navigate("historyUser")
+                when (title) {
+                    "Riwayat Admin" -> navController.navigate("historyAdmin")
+                    "Riwayat User" -> navController.navigate("historyUser")
                 }
-            },
-        colors = CardDefaults.cardColors(
-            containerColor = color
-        ),
-        elevation = CardDefaults.cardElevation(10.dp) // Bayangan pada card
+            }
+    )
+    {
+        Card(
+        colors = CardDefaults.cardColors(containerColor = color),
+        elevation = CardDefaults.cardElevation(10.dp),
+        modifier = Modifier.fillMaxWidth()
     ) {
         Row(
             modifier = Modifier
                 .fillMaxWidth()
-                .padding(30.dp), // Padding di dalam card
-            verticalAlignment = Alignment.CenterVertically,
-            horizontalArrangement = Arrangement.Center
+                .height(100.dp)
+                .padding(25.dp),
+            verticalAlignment = Alignment.CenterVertically
         ) {
-            // Teks di tengah
+            Icon(
+                imageVector = icon,
+                contentDescription = displayTitle,
+                modifier = Modifier.size(40.dp),
+                tint = Color.White
+            )
+            Spacer(modifier = Modifier.width(16.dp))
             Text(
                 text = displayTitle,
                 fontSize = 16.sp,
                 fontWeight = FontWeight.Bold,
-                color = Color.White // Mengatur warna teks menjadi putih
-            )
-
-            // Ikon diletakkan di sebelah kanan teks
-            Icon(
-                imageVector = icon,
-                contentDescription = displayTitle,
-                modifier = Modifier
-                    .size(40.dp)
-                    .padding(start = 5.dp),
-                tint = Color.White // Mengatur warna ikon menjadi putih
+                color = Color.White
             )
         }
     }
 
-    // Menampilkan badge notifikasi jika count > 0
-    if ((count ?: 0) > 0) {
-        Box(
-            modifier = Modifier
-                .size(24.dp)
-                .offset(x = 10.dp, y = (-10).dp) // Posisi badge
-        ) {
-            Card(
-                shape = CircleShape,
-                colors = CardDefaults.cardColors(containerColor = PinkPudar),
-                modifier = Modifier.size(24.dp)
+        // Menampilkan badge notifikasi jika count > 0
+        if ((count ?: 0) > 0) {
+            Box(
+                modifier = Modifier
+                    .size(24.dp)
+                    .align(Alignment.TopEnd)
+                    .offset(x = 10.dp, y = (-10).dp) // Posisi badge
             ) {
-                Box(
-                    modifier = Modifier.fillMaxSize(), // Pastikan Box mengisi seluruh Card
-                    contentAlignment = Alignment.Center // Gunakan contentAlignment untuk mengatur posisi konten
+                Card(
+                    shape = CircleShape,
+                    colors = CardDefaults.cardColors(containerColor = PinkPudar),
+                    modifier = Modifier.size(24.dp)
                 ) {
-                    Text(
-                        text = count.toString(),
-                        color = Color.White,
-                        fontSize = 12.sp,
-                        fontWeight = FontWeight.Bold
-                    )
+                    Box(
+                        modifier = Modifier.fillMaxSize(), // Pastikan Box mengisi seluruh Card
+                        contentAlignment = Alignment.Center // Teks berada di tengah
+                    ) {
+                        Text(
+                            text = count.toString(),
+                            color = Color.White,
+                            fontSize = 12.sp,
+                            fontWeight = FontWeight.Bold
+                        )
+                    }
                 }
             }
         }

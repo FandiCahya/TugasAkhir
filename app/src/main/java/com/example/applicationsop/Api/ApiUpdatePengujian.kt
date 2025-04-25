@@ -63,7 +63,7 @@ suspend fun UpdatePersetujuanDiterima(id: String, persetujuanRequest: Persetujua
                 MultiPartFormDataContent(
                     formData {
                         append("status", persetujuanRequest.status ?: "")
-
+                        append("catatan", persetujuanRequest.catatan ?: "")
                         // Adding the signature image file as part of the form
                         append("signature", signatureFile.readBytes(), Headers.build {
                             append(HttpHeaders.ContentType, "image/png")  // Modify the content type based on the image format
