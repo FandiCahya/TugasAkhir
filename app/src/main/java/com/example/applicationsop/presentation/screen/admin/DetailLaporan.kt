@@ -295,7 +295,7 @@ fun ShowLaporanScreen(
         )
 
         // Informasi Pengajuan content (Name: value format)
-        Text("Tanggal: 2025-03-14")
+        Text("Tanggal: 2025-03-25")
         Text("Nama Sistem: SIPM")
         Text("Jenis: Sistem Baru")
         Text("Rencana Anggaran: Termasuk dalam perencanaan")
