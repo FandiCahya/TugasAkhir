@@ -448,7 +448,7 @@
         }
 
         function fetchPengujian(query = '') {
-            fetch('/api/pengujian')
+            fetch('/api/pengujian?pengajuanstatus=testing')
                 .then(response => response.json())
                 .then(data => {
                     // console.log('Data dari API:', data); // Debugging

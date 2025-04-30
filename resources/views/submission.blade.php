@@ -80,6 +80,9 @@
                                 <option value="pending">pending</option>
                                 <option value="accepted">Accepted</option>
                                 <option value="rejected">Rejected</option>
+                                <option value="developed">Developed</option>
+                                <option value="testing">Testing</option>
+                                <option value="finished">Finished</option>
                             </select>
                         </div>
                     </form>
@@ -134,6 +137,7 @@
                                 <option value="pending">pending</option>
                                 <option value="rejected">Rejected</option>
                                 <option value="accepted">Accepted</option>
+                                
                             </select>
                         </div>
                         <div class="mb-3" id="alasan-penolakan-div" style="display: none;">
@@ -160,7 +164,7 @@
 
         // Fetch Pengajuan from API
         function fetchPengajuan(query = '') {
-            fetch('/api/pengajuan')
+            fetch('/api/pengajuan?status=')
                 .then(response => response.json())
                 .then(data => {
                     if (data.success) {

@@ -24,6 +24,7 @@ class PengembanganController extends Controller
             $userId = $request->query->get('user_id');
             $role = $request->query->get('role'); // Mendapatkan filter role
             $devisi = $request->query->get('devisi'); // Mendapatkan filter devisi
+            $pengajuanstatus = $request->query->get('pengajuanstatus');
             $pengembanganQuery = Pengembangan::with('pengajuan', 'pengajuan.user');
             if ($keyword) {
                 $pengembanganQuery->where(function ($query) use ($keyword) {
@@ -33,6 +34,20 @@ class PengembanganController extends Controller
             if ($status) {
                 $pengembanganQuery->where('status', 'like', '%' . $status . '%');
             }
+            if ($pengajuanstatus) {
+                if (is_array($pengajuanstatus)) {
+                    // Kalau multiple status
+                    $pengembanganQuery->whereHas('pengajuan', function ($query) use ($pengajuanstatus) {
+                        $query->whereIn('status', $pengajuanstatus);
+                    });
+                } else {
+                    // Kalau hanya satu status
+                    $pengembanganQuery->whereHas('pengajuan', function ($query) use ($pengajuanstatus) {
+                        $query->where('status', 'like', '%' . $pengajuanstatus . '%');
+                    });
+                }
+            }
+            
 
             // Filter berdasarkan user_id
             if ($userId) {

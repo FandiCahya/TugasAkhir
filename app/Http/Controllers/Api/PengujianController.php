@@ -30,9 +30,11 @@ class PengujianController extends Controller
             $disetujuiOleh = $request->query->get('disetujui_oleh');
             $persetujuanId = $request->query->get(key: 'persetujuan_id');
             $statusPersetujuan = $request->query->get('status_persetujuan');
+            $pengajuanstatus = $request->query->get('pengajuanstatus');
 
             $pengujians = Pengujian::with([
                 'details',
+                'pengembangan.pengajuan',
                 'pengembangan.pengajuan.user',
                 'catatan', // Tambahkan relasi ke catatan
                 'persetujuan',
@@ -75,7 +77,19 @@ class PengujianController extends Controller
             if ($pengujianId) {
                 $pengujians->where('id', '=', $pengujianId);
             }
-            
+            if ($pengajuanstatus) {
+                if (is_array($pengajuanstatus)) {
+                    // Kalau multiple status
+                    $pengujians->whereHas('pengembangan.pengajuan', function ($query) use ($pengajuanstatus) {
+                        $query->whereIn('status', $pengajuanstatus);
+                    });
+                } else {
+                    // Kalau hanya satu status
+                    $pengujians->whereHas('pengembangan.pengajuan', function ($query) use ($pengajuanstatus) {
+                        $query->where('status', 'like', '%' . $pengajuanstatus . '%');
+                    });
+                }
+            }
             // Filter berdasarkan disetujui oleh user tertentu
             if ($disetujuiOleh) {
                 $pengujians->whereHas('persetujuan.persetujuan_detail.user', function ($query) use ($disetujuiOleh) {

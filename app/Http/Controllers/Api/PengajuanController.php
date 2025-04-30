@@ -38,6 +38,7 @@ class PengajuanController extends Controller
             if ($status) {
                 $pengajuanQuery->where('status', 'like', '%' . $status . '%');
             }
+            
              // Filter berdasarkan role pengguna
             if ($role) {
             $pengajuanQuery->whereHas('user', function ($query) use ($role) {

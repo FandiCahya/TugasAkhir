@@ -17,7 +17,6 @@
                                 <th>Catatan</th>
                                 <th>Signature</th>
                                 <th>Role</th>
-                                <th>Actions</th>
                             </tr>
                         </thead>
                         <tbody>
@@ -155,9 +154,6 @@
                 <td>${approval.catatan || '-'}</td>
                 <td><img src="/storage/${approval.signature}" alt="Signature" style="width: 50px; height: auto;"></td>
                 <td>${approval.user.role || '-'}</td>
-                <td class="action-buttons">
-                    <button class="btn btn-warning btn-sm" onclick="openApprovalModal('${approval.id}', '${approval.persetujuan_pengujian.id}')" style="margin: 5px;" data-bs-toggle="modal" data-bs-target="#approvalModal">Approve</button>
-                </td>
             `;
                     tableBody.appendChild(row);
                 });

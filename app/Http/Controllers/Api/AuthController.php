@@ -67,8 +67,8 @@ class AuthController extends Controller
         try {
             // Validasi input
             $validator = Validator::make($request->all(), [
-                'email' => 'required|string|email',
-                'password' => 'required|string|min:6',
+                'email' => 'required',
+                'password' => 'required',
             ]);
 
             if (! Auth::attempt($request->only('email', 'password'))) {

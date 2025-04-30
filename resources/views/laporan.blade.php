@@ -64,7 +64,7 @@
 
         // Fetch Laporan from API
         function fetchLaporan(query = '') {
-            fetch('/api/showall')
+            fetch('/api/showall?status_pengajuan=finished')
                 .then(response => response.json())
                 .then(data => {
                     if (data.success) {

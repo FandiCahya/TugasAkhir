@@ -20,10 +20,25 @@ class ShowController extends Controller
             $query = PersetujuanPengujian::query();
             $persetujuanId = $request->get('persetujuanId');
             $statusPengajuan = $request->get('status_pengajuan');
+            $role = $request->query->get('role');
+            $devisi = $request->query->get('devisi');
 
             if ($persetujuanId) {
                 $query->where('id', $persetujuanId);
             }
+
+            if ($role) {
+                $query->whereHas('pengujian.pengembangan.pengajuan.user', function ($q) use ($role) {
+                    $q->where('role', $role);
+                });
+            }
+            
+            if ($devisi) {
+                $query->whereHas('pengujian.pengembangan.pengajuan.user', function ($q) use ($devisi) {
+                    $q->where('devisi', $devisi);
+                });
+            }
+            
             // Filter berdasarkan status pengajuan
             if ($statusPengajuan) {
                 $query->whereHas('pengujian.pengembangan.pengajuan', function ($q) use ($statusPengajuan) {

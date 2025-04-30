@@ -134,7 +134,7 @@ class PersetujuanPengujianController extends Controller
             if ($this->checkIfRejected($persetujuan)) {
                 return response()->json(
                     [
-                        'success' => false,
+                        'success' => true,
                         'message' => 'Approval failed due to rejection from one or more users',
                         'data' => $persetujuan,
                     ],
@@ -180,7 +180,7 @@ class PersetujuanPengujianController extends Controller
                 [
                     'success' => true,
                     'message' => 'Approval submitted successfully, waiting for other users',
-                    'data' => $persetujuan,
+                    'data' => $persetujuan,$persetujuanDetail,
                 ],
                 200,
             );
@@ -211,7 +211,7 @@ class PersetujuanPengujianController extends Controller
     // Helper method to check if there is any rejection
     protected function checkIfRejected($persetujuan)
     {
-        return $persetujuan->details()->where('status', 'tidak_setuju')->exists();
+        return $persetujuan->details()->where('status', 'pending')->exists();
     }
 
     // Handle image upload for signature

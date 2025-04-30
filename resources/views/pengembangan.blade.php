@@ -150,7 +150,7 @@
         const rowsPerPage = 5;
 
         function fetchPengembangan(query = '') {
-            fetch('/api/pengembangan')
+            fetch('/api/pengembangan?pengajuanstatus=developing')
                 .then(response => response.json())
                 .then(data => {
                     if (data.success) {
