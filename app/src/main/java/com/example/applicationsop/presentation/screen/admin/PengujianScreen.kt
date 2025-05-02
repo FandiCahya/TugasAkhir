@@ -4,6 +4,11 @@ import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.Error
+import androidx.compose.material3.Icon
+import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
@@ -13,7 +18,10 @@ import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
+import androidx.compose.ui.Alignment
 import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.text.TextStyle
+import androidx.compose.ui.text.font.FontWeight
 import androidx.navigation.NavController
 import com.example.applicationsop.Api.fetchPengujianList
 import com.example.applicationsop.core.UserUtils
@@ -43,7 +51,8 @@ fun ListPengujianScreenAdmin(navController: NavController) {
 
     LaunchedEffect(Unit) {
         // Fetching the data when the Composable is first launched
-        val fetchedPengujianList = fetchPengujianList(status_persetujuan = "approved") // Fetch the data
+        val fetchedPengujianList =
+            fetchPengujianList(status_persetujuan = "approved") // Fetch the data
         pengujianList = fetchedPengujianList // Updating the state
     }
     val dateFormat = SimpleDateFormat("yyyy-MM-dd", Locale.getDefault()) // Parsing the date format
@@ -65,41 +74,75 @@ fun ListPengujianScreenAdmin(navController: NavController) {
         HeaderWithSearch(navController = navController, title = "Pengujian")
         Spacer(modifier = Modifier.height(20.dp))
 
+        if (sortedPengujianList.isEmpty()) {
+            Box(
+                modifier = Modifier
+                    .fillMaxSize()
+                    .padding(bottom = 100.dp)
+                    .wrapContentSize(Alignment.Center)
+            ) {
+                Column(horizontalAlignment = Alignment.CenterHorizontally) {
+                    // Add Icon with size adjustment
+                    Icon(
+                        imageVector = Icons.Default.Error, // Ganti dengan ikon yang diinginkan
+                        contentDescription = "No Pengajuan",
+                        modifier = Modifier
+                            .size(70.dp)
+                            .padding(bottom = 10.dp), // Sesuaikan ukuran ikon
+                        tint = Color.Gray
+                    )
 
-        // List of pengujian items from fetched data
-        LazyColumn(modifier = Modifier.fillMaxSize()) {
-            items(sortedPengujianList) { pengujian ->
-                val status = when (pengujian.pengembangan?.status?:"Tidak Tersedia") {
-                    "finished" -> "Pengembangan Selesai"
-                    else -> "Pengembangan Belum Selesai"
+                    // Add Text below the icon
+                    Text(
+                        text = "Tidak Ada Pengujian",
+                        color = Color.Gray,
+                        style = TextStyle(
+                            fontWeight = FontWeight.Bold,
+                            fontSize = MaterialTheme.typography.bodyLarge.fontSize
+                        )
+                    )
                 }
-                // Passing the data to ListPengujianItem composable
-                ListPengujianItem(
-                    perangkat_lunak = pengujian.perangkat_lunak,  // System name from Pengujian object
-                    versiPerangkat = pengujian.versi,  // Version from Pengujian object
-                    tujuanPengujian = pengujian.tujuan,  // Purpose from Pengujian object
-                    metodePengujian = pengujian.metode,  // Testing method from Pengujian object
-                    tanggalPengujian = pengujian.tanggal,  // Date of testing
-                    pelaksanaPengujian = pengujian.pelaksana?.name?:"Tidak Tersedia",  // Executor's name
-                    status = pengujian.status,
-                    persetujuanId = pengujian.persetujuan?.joinToString(", ") { it.id ?: "Tidak Tersedia" } ?: "Tidak Tersedia",
-
-                    onClick = {
-                        // Populate selectedDetail with all required data
-                        selectedDetail = DetailPengujian(
-                            id = pengujian.id,
-                            namaSistem = pengujian.perangkat_lunak,
-                            versiPerangkat = pengujian.versi,
-                            tujuanPengujian = pengujian.tujuan,
-                            metodePengujian = pengujian.metode,
-                            tanggalPengujian = pengujian.tanggal,
-                            pelaksanaPengujian = pengujian.pelaksana?.name?:"Tidak Tersedia",
-                            status = pengujian.status,
-                            persetujuanId = pengujian.persetujuan?.joinToString(", ") { it.id ?: "Tidak Tersedia" } ?: "Tidak Tersedia",
-                            )
-                        showPopup = true
+            }
+        } else {
+            LazyColumn(modifier = Modifier.fillMaxSize()) {
+                items(sortedPengujianList) { pengujian ->
+                    val status = when (pengujian.pengembangan?.status ?: "Tidak Tersedia") {
+                        "finished" -> "Pengembangan Selesai"
+                        else -> "Pengembangan Belum Selesai"
                     }
-                )
+                    // Passing the data to ListPengujianItem composable
+                    ListPengujianItem(
+                        perangkat_lunak = pengujian.perangkat_lunak,  // System name from Pengujian object
+                        versiPerangkat = pengujian.versi,  // Version from Pengujian object
+                        tujuanPengujian = pengujian.tujuan,  // Purpose from Pengujian object
+                        metodePengujian = pengujian.metode,  // Testing method from Pengujian object
+                        tanggalPengujian = pengujian.tanggal,  // Date of testing
+                        pelaksanaPengujian = pengujian.pelaksana?.name
+                            ?: "Tidak Tersedia",  // Executor's name
+                        status = pengujian.status,
+                        persetujuanId = pengujian.persetujuan?.joinToString(", ") {
+                            it.id ?: "Tidak Tersedia"
+                        } ?: "Tidak Tersedia",
+
+                        onClick = {
+                            // Populate selectedDetail with all required data
+                            selectedDetail = DetailPengujian(
+                                id = pengujian.id,
+                                namaSistem = pengujian.perangkat_lunak,
+                                versiPerangkat = pengujian.versi,
+                                tujuanPengujian = pengujian.tujuan,
+                                metodePengujian = pengujian.metode,
+                                tanggalPengujian = pengujian.tanggal,
+                                pelaksanaPengujian = pengujian.pelaksana?.name ?: "Tidak Tersedia",
+                                status = pengujian.status,
+                                persetujuanId = pengujian.persetujuan?.joinToString(", ") {
+                                    it.id ?: "Tidak Tersedia"
+                                } ?: "Tidak Tersedia",
+                            )
+                            showPopup = true
+                        }
+                    )
+                }
             }
         }
     }

@@ -24,6 +24,14 @@ import java.text.SimpleDateFormat
 import java.util.Date
 import java.util.Locale
 import android.util.Log
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.Error
+import androidx.compose.material3.Icon
+import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.Text
+import androidx.compose.ui.Alignment
+import androidx.compose.ui.text.TextStyle
+import androidx.compose.ui.text.font.FontWeight
 import com.example.applicationsop.data.DetailLaporan
 
 
@@ -36,7 +44,7 @@ fun HistoryAdmin(navController: NavController) {
 
     LaunchedEffect(Unit) {
         // Fetching the data when the Composable is first launched
-        val fetchLaporanList = fetchLaporanList(status_pengajuan="finished") // Fetch the data
+        val fetchLaporanList = fetchLaporanList(status_pengajuan = "finished") // Fetch the data
         Log.d("FETCH_LAPORAN", fetchLaporanList.toString())
         laporanList = fetchLaporanList // Updating the state
     }
@@ -60,54 +68,84 @@ fun HistoryAdmin(navController: NavController) {
         Spacer(modifier = Modifier.height(20.dp))
         var currentDate: String? = null
 
-        // List of pengujian items from fetched data
-        LazyColumn(modifier = Modifier.fillMaxSize()) {
-            items(sortedLaporanList) { laporan ->
-                val pengajuan = laporan.pengajuan
-                val pengembangan = laporan.pengembangan
-                val pengujian = laporan.pengujian
-                val persetujuan = laporan.persetujuan_pengujian
-                val detailPersetujuan = laporan.persetujuan_pengujian_details
-                ListLaporanItem(
-                    tgl = pengajuan.tgl,
-                    nama_sistem = pengajuan.nama_sistem,
-                    jenis = pengajuan.jenis,
-                    rencana_anggaran = pengajuan.rencana_anggaran,
-                    masalah = pengajuan.masalah,
-                    output = pengajuan.output ,
-                    tanggal_mulai = pengembangan?.tanggal_mulai,
-                    tanggal_selesai = pengembangan?.tanggal_selesai,
-                    tahap = pengembangan?.tahap,
-                    keterangan = pengembangan?.keterangan,
-                    perangkat_lunak = pengujian?.perangkat_lunak,
-                    versiPerangkat = pengujian?.versi,
-                    tujuanPengujian = pengujian?.tujuan,
-                    metodePengujian = pengujian?.metode,
-                    detailPersetujuan = laporan.persetujuan_pengujian_details,
-                    status = pengajuan.status,
-                    onClick = {
-                        selectedDetail = DetailLaporan(
-                            id = laporan.pengajuan.id,
-                            tgl = laporan.pengajuan.tgl,
-                            nama_sistem = laporan.pengajuan.nama_sistem,
-                            jenis = laporan.pengajuan.jenis,
-                            rencana_anggaran = laporan.pengajuan.rencana_anggaran,
-                            masalah = laporan.pengajuan.masalah,
-                            output = laporan.pengajuan.output,
-                            tanggal_mulai = laporan.pengembangan?.tanggal_mulai,
-                            tanggal_selesai = laporan.pengembangan?.tanggal_selesai,
-                            tahap = laporan.pengembangan?.tahap,
-                            keterangan = laporan.pengembangan?.keterangan,
-                            perangkat_lunak = laporan.pengujian?.perangkat_lunak,
-                            versiPerangkat = laporan.pengujian?.versi,
-                            tujuanPengujian = laporan.pengujian?.tujuan,
-                            metodePengujian = laporan.pengujian?.metode,
-                            detailPersetujuan = laporan.persetujuan_pengujian_details,
-                            status = laporan.pengajuan.status
+        if (sortedLaporanList.isEmpty()) {
+            Box(
+                modifier = Modifier
+                    .fillMaxSize()
+                    .padding(bottom = 100.dp)
+                    .wrapContentSize(Alignment.Center)
+            ) {
+                Column(horizontalAlignment = Alignment.CenterHorizontally) {
+                    // Add Icon with size adjustment
+                    Icon(
+                        imageVector = Icons.Default.Error, // Ganti dengan ikon yang diinginkan
+                        contentDescription = "No Pengajuan",
+                        modifier = Modifier
+                            .size(70.dp)
+                            .padding(bottom = 10.dp), // Sesuaikan ukuran ikon
+                        tint = Color.Gray
+                    )
+
+                    // Add Text below the icon
+                    Text(
+                        text = "Tidak Ada Riwayat",
+                        color = Color.Gray,
+                        style = TextStyle(
+                            fontWeight = FontWeight.Bold,
+                            fontSize = MaterialTheme.typography.bodyLarge.fontSize
                         )
-                        showPopup = true
-                    }
-                )
+                    )
+                }
+            }
+        } else {
+            LazyColumn(modifier = Modifier.fillMaxSize()) {
+                items(sortedLaporanList) { laporan ->
+                    val pengajuan = laporan.pengajuan
+                    val pengembangan = laporan.pengembangan
+                    val pengujian = laporan.pengujian
+                    val persetujuan = laporan.persetujuan_pengujian
+                    val detailPersetujuan = laporan.persetujuan_pengujian_details
+                    ListLaporanItem(
+                        tgl = pengajuan.tgl,
+                        nama_sistem = pengajuan.nama_sistem,
+                        jenis = pengajuan.jenis,
+                        rencana_anggaran = pengajuan.rencana_anggaran,
+                        masalah = pengajuan.masalah,
+                        output = pengajuan.output,
+                        tanggal_mulai = pengembangan?.tanggal_mulai,
+                        tanggal_selesai = pengembangan?.tanggal_selesai,
+                        tahap = pengembangan?.tahap,
+                        keterangan = pengembangan?.keterangan,
+                        perangkat_lunak = pengujian?.perangkat_lunak,
+                        versiPerangkat = pengujian?.versi,
+                        tujuanPengujian = pengujian?.tujuan,
+                        metodePengujian = pengujian?.metode,
+                        detailPersetujuan = laporan.persetujuan_pengujian_details,
+                        status = pengajuan.status,
+                        onClick = {
+                            selectedDetail = DetailLaporan(
+                                id = laporan.pengajuan.id,
+                                tgl = laporan.pengajuan.tgl,
+                                nama_sistem = laporan.pengajuan.nama_sistem,
+                                jenis = laporan.pengajuan.jenis,
+                                rencana_anggaran = laporan.pengajuan.rencana_anggaran,
+                                masalah = laporan.pengajuan.masalah,
+                                output = laporan.pengajuan.output,
+                                tanggal_mulai = laporan.pengembangan?.tanggal_mulai,
+                                tanggal_selesai = laporan.pengembangan?.tanggal_selesai,
+                                tahap = laporan.pengembangan?.tahap,
+                                keterangan = laporan.pengembangan?.keterangan,
+                                perangkat_lunak = laporan.pengujian?.perangkat_lunak,
+                                versiPerangkat = laporan.pengujian?.versi,
+                                tujuanPengujian = laporan.pengujian?.tujuan,
+                                metodePengujian = laporan.pengujian?.metode,
+                                detailPersetujuan = laporan.persetujuan_pengujian_details,
+                                status = laporan.pengajuan.status
+                            )
+                            showPopup = true
+                        }
+                    )
+                }
             }
         }
     }

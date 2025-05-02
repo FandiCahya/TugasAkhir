@@ -17,6 +17,14 @@ import com.example.applicationsop.Api.fetchPengembanganList
 import com.example.applicationsop.models.Pengembangan
 import com.example.applicationsop.presentation.screen.pemohon.ScheduleItem
 import androidx.compose.foundation.lazy.items
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.Error
+import androidx.compose.material3.Icon
+import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.Text
+import androidx.compose.ui.Alignment
+import androidx.compose.ui.text.TextStyle
+import androidx.compose.ui.text.font.FontWeight
 import com.example.applicationsop.presentation.component.header.HeaderWithSearch
 import com.example.applicationsop.presentation.component.listitem.ListPengembangan
 import com.example.applicationsop.presentation.component.popup.SchedulePopupUser
@@ -56,34 +64,64 @@ fun ListPengembanganKacab(navController: NavController) {
         HeaderWithSearch(navController = navController, title = "Pengembangan")
         Spacer(modifier = Modifier.height(20.dp))
 
-        // List of submissions
-        LazyColumn(modifier = Modifier.fillMaxSize()) {
-            // Use `items` to iterate over the list of `pengembanganList`
-            items(sortedPengembanganList) { pengembangan ->
+        if (sortedPengembanganList.isEmpty()) {
+            Box(
+                modifier = Modifier
+                    .fillMaxSize()
+                    .padding(bottom = 100.dp)
+                    .wrapContentSize(Alignment.Center)
+            ) {
+                Column(horizontalAlignment = Alignment.CenterHorizontally) {
+                    // Add Icon with size adjustment
+                    Icon(
+                        imageVector = Icons.Default.Error, // Ganti dengan ikon yang diinginkan
+                        contentDescription = "No Pengajuan",
+                        modifier = Modifier
+                            .size(70.dp)
+                            .padding(bottom = 10.dp), // Sesuaikan ukuran ikon
+                        tint = Color.Gray
+                    )
 
-                // Create a ScheduleItem from Pengembangan data
-                val scheduleItem = ScheduleItem(
-                    task = pengembangan.pengajuan.nama_sistem, // Nama sistem from Pengajuan
-                    id = pengembangan.id, // ID from Pengembangan
-                    startDate = pengembangan.tanggal_mulai, // Start date
-                    endDate = pengembangan.tanggal_selesai, // End date
-                    description = pengembangan.keterangan, // Description from Pengembangan
-                    stage = pengembangan.tahap, // Stage from Pengembangan
-                    progressPercentage = pengembangan.persentase, // Progress from Pengembangan
-                    status = if (pengembangan.persentase == 100) "testing" else "developed" // Logic for status based on progress
-                )
+                    // Add Text below the icon
+                    Text(
+                        text = "Tidak Ada Pengembangan",
+                        color = Color.Gray,
+                        style = TextStyle(
+                            fontWeight = FontWeight.Bold,
+                            fontSize = MaterialTheme.typography.bodyLarge.fontSize
+                        )
+                    )
+                }
+            }
+        } else {
+            LazyColumn(modifier = Modifier.fillMaxSize()) {
+                // Use `items` to iterate over the list of `pengembanganList`
+                items(sortedPengembanganList) { pengembangan ->
 
-                // Pass actual schedule data to the ListPengembangan composable
-                ListPengembangan(
-                    namaSistem = pengembangan.pengajuan.nama_sistem,
-                    status = pengembangan.status,
-                    startDate = pengembangan.tanggal_mulai,
-                    scheduleItem = scheduleItem,
-                    onClick = { clickedSchedule ->
-                        selectedScheduleItem = clickedSchedule // Set the selected schedule
-                        showPopup = true // Show the popup
-                    }
-                )
+                    // Create a ScheduleItem from Pengembangan data
+                    val scheduleItem = ScheduleItem(
+                        task = pengembangan.pengajuan.nama_sistem, // Nama sistem from Pengajuan
+                        id = pengembangan.id, // ID from Pengembangan
+                        startDate = pengembangan.tanggal_mulai, // Start date
+                        endDate = pengembangan.tanggal_selesai, // End date
+                        description = pengembangan.keterangan, // Description from Pengembangan
+                        stage = pengembangan.tahap, // Stage from Pengembangan
+                        progressPercentage = pengembangan.persentase, // Progress from Pengembangan
+                        status = if (pengembangan.persentase == 100) "testing" else "developed" // Logic for status based on progress
+                    )
+
+                    // Pass actual schedule data to the ListPengembangan composable
+                    ListPengembangan(
+                        namaSistem = pengembangan.pengajuan.nama_sistem,
+                        status = pengembangan.status,
+                        startDate = pengembangan.tanggal_mulai,
+                        scheduleItem = scheduleItem,
+                        onClick = { clickedSchedule ->
+                            selectedScheduleItem = clickedSchedule // Set the selected schedule
+                            showPopup = true // Show the popup
+                        }
+                    )
+                }
             }
         }
     }

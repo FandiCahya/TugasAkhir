@@ -84,7 +84,7 @@ fun ListPengajuanScreenDitolak(navController: NavController, role: String?, devi
                     Icon(
                         imageVector = Icons.Default.Error, // Ganti dengan ikon yang diinginkan
                         contentDescription = "No Pengajuan",
-                        modifier = Modifier.size(70.dp), // Sesuaikan ukuran ikon
+                        modifier = Modifier.size(70.dp) .padding(bottom = 10.dp), // Sesuaikan ukuran ikon
                         tint = Color.Gray
                     )
 
