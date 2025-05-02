@@ -13,7 +13,6 @@ import io.ktor.client.call.body
 import com.example.applicationsop.core.ApiConfig
 import io.ktor.client.engine.okhttp.*
 import io.ktor.client.plugins.HttpTimeout
-import io.ktor.client.plugins.*
 
 // Inisialisasi HttpClient dengan plugin ContentNegotiation untuk JSON
 val client = HttpClient(OkHttp) {

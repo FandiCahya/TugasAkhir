@@ -62,7 +62,6 @@ fun ListPengajuanQmr(navController: NavController) {
 
         Spacer(modifier = Modifier.height(20.dp))
 
-
         LazyColumn(modifier = Modifier.fillMaxSize()) {
             items(sortedPengajuanList) { pengajuan ->
 
