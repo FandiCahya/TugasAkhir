@@ -5,7 +5,7 @@
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <meta name="csrf-token" content="{{ csrf_token() }}">
-
+    
     <title>{{ config('app.name', 'Laravel') }}</title>
 
     <!-- Fonts -->
@@ -20,6 +20,10 @@
     <link rel="stylesheet" href="{{ asset('assets/css/style.css') }}">
     <!-- endinject -->
     <link rel="shortcut icon" href="{{ asset('assets/images/favicon.png') }}" />
+    {{-- Js Cookies --}}
+    <script src="https://cdn.jsdelivr.net/npm/js-cookie@3.0.1/dist/js.cookie.min.js"></script>
+    {{-- Swwetalert --}}
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
 
     <!-- Scripts -->
     {{-- @vite(['resources/css/app.css', 'resources/js/app.js']) --}}
@@ -40,7 +44,7 @@
                 <!-- footer -->
                 @include('layouts.footer')
             </div>
-            
+
         </div>
 
 
@@ -67,41 +71,11 @@
     <!-- End custom js for this page-->
 
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
-    
-    
-    <script>
-        document.getElementById('logout-btn').addEventListener('click', function(e) {
-            e.preventDefault();
 
-            // Konfirmasi logout
-            const confirmLogout = window.confirm('Are you sure you want to logout?');
 
-            if (confirmLogout) {
-                // Mengirim request logout ke API
-                fetch('/api/logout', {
-                        method: 'POST',
-                        headers: {
-                            'Content-Type': 'application/json',
-                            'Authorization': 'Bearer ' + localStorage.getItem(
-                            'token'), // Token diambil dari localStorage
-                        },
-                    })
-                    .then(response => {
-                        if (response.ok) {
-                            // Menghapus token dan mengarahkan pengguna ke halaman login
-                            localStorage.removeItem('token');
-                            window.location.href = '/login'; // Arahkan ke halaman login setelah logout berhasil
-                        } else {
-                            alert('Logout failed. Please try again.');
-                        }
-                    })
-                    .catch(error => {
-                        console.error('Error:', error);
-                        alert('An error occurred during logout.');
-                    });
-            }
-        });
-    </script>
+    <!-- Link to custom logout script -->
+    <script src="{{ asset('assets/js/logout.js') }}"></script>
+
 
 </body>
 

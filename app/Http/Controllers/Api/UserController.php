@@ -7,6 +7,7 @@ use App\Models\User;
 use Illuminate\Http\Request;
 use Illuminate\Validation\ValidationException;
 use Illuminate\Database\QueryException;
+use App\Http\Resources\GlobalResource;
 
 class UserController extends Controller
 {
@@ -19,26 +20,10 @@ class UserController extends Controller
             })->get();
 
             $users = User::all();
-            return response()->json(
-                [
-                    'success' => true,
-                    'payload' => $users,
-                ],
-                200,
-            );
+            return new GlobalResource(true, 'Berhasil mengambil data Users', $users);
         } catch (\Exception $e) {
             // Menangani error lainnya
-            return response()->json(
-                [
-                    'success' => false,
-                    'payload' => [],
-                    'error' => [
-                        'code' => $e->getCode() ?: 500,
-                        'message' => $e->getMessage(),
-                    ],
-                ],
-                $e->getCode() ?: 500,
-            );
+            return new GlobalResource(false, 'Terjadi kesalahan saat mengambil data pengguna. ', []);
         }
     }
 
@@ -63,54 +48,11 @@ class UserController extends Controller
                 'role' => $request->role,
             ]);
 
-            return response()->json(
-                [
-                    'success' => true,
-                    'payload' => $user,
-                ],
-                201,
-            );
+            return new GlobalResource(true, 'Data pengguna berhasil ditambahkan.', $user);
         } catch (ValidationException $e) {
-            // Jika validasi gagal
-            return response()->json(
-                [
-                    'success' => false,
-                    'payload' => [],
-                    'error' => [
-                        'code' => 422,
-                        'message' => 'Validation failed',
-                        'details' => $e->errors(), // Menampilkan kesalahan validasi
-                    ],
-                ],
-                422,
-            );
-        } catch (QueryException $e) {
-            // Jika ada masalah query database (misal: masalah foreign key)
-            return response()->json(
-                [
-                    'success' => false,
-                    'payload' => [],
-                    'error' => [
-                        'code' => 400,
-                        'message' => 'Database query error',
-                        'details' => $e->getMessage(), // Menampilkan pesan error database
-                    ],
-                ],
-                400,
-            );
+            return new GlobalResource(false, 'Validasi gagal. Silakan periksa kembali data yang dikirim.', []);
         } catch (\Exception $e) {
-            // Menangani error lainnya
-            return response()->json(
-                [
-                    'success' => false,
-                    'payload' => [],
-                    'error' => [
-                        'code' => $e->getCode() ?: 500,
-                        'message' => $e->getMessage(),
-                    ],
-                ],
-                $e->getCode() ?: 500,
-            );
+            return new GlobalResource(false, 'Terjadi kesalahan saat menambahkan data pengguna.', []);
         }
     }
 
@@ -128,83 +70,33 @@ class UserController extends Controller
                 'role' => 'in:user,admin,qmr,kepalacabang',
             ]);
 
-            $user->update(array_filter($request->only(['name', 'email', 'password', 'devisi', 'foto_profile', 'role'])));
+            $data = $request->only(['name', 'email', 'devisi', 'foto_profile', 'role']);
+            if ($request->filled('password')) {
+                $data['password'] = bcrypt($request->password);
+            }
 
-            return response()->json(
-                [
-                    'success' => true,
-                    'payload' => $user,
-                ],
-                201,
-            );
+            $user->update($data);
+
+            return new GlobalResource(true, 'Data pengguna berhasil diperbarui.', $user);
         } catch (ValidationException $e) {
-            // Jika validasi gagal
-            return response()->json(
-                [
-                    'success' => false,
-                    'payload' => [],
-                    'error' => [
-                        'code' => 422,
-                        'message' => 'Validation failed',
-                        'details' => $e->errors(), // Menampilkan kesalahan validasi
-                    ],
-                ],
-                422,
-            );
-        } catch (QueryException $e) {
-            // Jika ada masalah query database (misal: masalah foreign key)
-            return response()->json(
-                [
-                    'success' => false,
-                    'payload' => [],
-                    'error' => [
-                        'code' => 400,
-                        'message' => 'Database query error',
-                        'details' => $e->getMessage(), // Menampilkan pesan error database
-                    ],
-                ],
-                400,
-            );
+            return new GlobalResource(false, 'Validasi gagal. Silakan periksa kembali data yang dikirim.', []);
         } catch (\Exception $e) {
-            // Menangani error lainnya
-            return response()->json(
-                [
-                    'success' => false,
-                    'payload' => [],
-                    'error' => [
-                        'code' => $e->getCode() ?: 500,
-                        'message' => $e->getMessage(),
-                    ],
-                ],
-                $e->getCode() ?: 500,
-            );
+            return new GlobalResource(false, 'Terjadi kesalahan saat memperbarui data pengguna.', []);
         }
     }
 
     public function destroy($id)
     {
         try {
-            $user = User::findOrFail($id);
-            $user->delete();
-            return response()->json(
-                [
-                    'success' => true,
-                    'payload' => [],
-                ],
-                200,
-            );
+            $user = User::find($id);
+            if ($user) {
+                $user->delete();
+                return new GlobalResource(true, 'Data pengguna berhasil dihapus.', []);
+            } else {
+                return new GlobalResource(false, 'Data pengguna tidak ditemukan.', []);
+            }
         } catch (\Exception $e) {
-            return response()->json(
-                [
-                    'success' => false,
-                    'payload' => [],
-                    'error' => [
-                        'code' => $e->getCode() ?: 500,
-                        'message' => $e->getMessage(),
-                    ],
-                ],
-                $e->getCode() ?: 500,
-            );
+            return new GlobalResource(false, 'Terjadi kesalahan saat menghapus data pengguna.', []);
         }
     }
 }
