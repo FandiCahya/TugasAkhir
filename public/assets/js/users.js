@@ -2,10 +2,20 @@ let UsersData = [];
 let filteredData = [];
 let currentPage = 1;
 const itemsPerPage = 10;
+// Fungsi untuk mengambil token
+const getAuthToken = () => localStorage.getItem('token'); 
+
 
 // 1. Ambil data dari API
 function loadUsersData() {
-    fetch('/api/users', { headers: { 'Accept': 'application/json' } })
+    const token = getAuthToken();
+    console.log("Token di Users: ", token);
+    fetch('/api/users', {
+            headers: {
+            'Accept': 'application/json',
+            'Authorization': `Bearer ${token}`
+            }
+        })
         .then(res => res.json())
         .then(json => {
             // console.log("Data dari API:", json);
@@ -13,6 +23,7 @@ function loadUsersData() {
                 return Swal.fire('Error', 'ada kesalahan hit api users', 'error');
             }
             UsersData = json.data;
+            // console.log("Data Users: ", UsersData);
             filteredData = UsersData;    // awalnya filter = semua data
             currentPage = 1;
             renderTable();
@@ -44,7 +55,7 @@ function renderTable() {
             hour12: false // jika ingin format 24 jam
             });
         const tr = document.createElement('tr');
-        console.log(item)
+        // console.log(item)
         tr.innerHTML = `
         <td class="text-center">${item.name}</td>
         <td class="text-center">${item.email}</td>
@@ -52,10 +63,10 @@ function renderTable() {
         <td class="text-center">${item.devisi}</td>
         <td class="text-center">${formattedDate}</td>
         <td class="text-center">
-            <button class="btn btn-sm btn-primary" onclick='openEditModal(${JSON.stringify(item)})'>Edit</button>
-
+            <button class="btn btn-sm btn-primary me-1" onclick='openEditModal(${JSON.stringify(item)})'>Edit</button>
             <button class="btn btn-sm btn-danger" onclick="deleteUsers('${item.id}')">Delete</button>
         </td>
+
         `;
         tbody.appendChild(tr);
     });
@@ -101,6 +112,7 @@ function searchUsers() {
 
 // Hapus Data
 function deleteUsers(id) {
+    const token = getAuthToken();
     Swal.fire({
         title: 'Yakin ingin menghapus?',
         text: 'Data yang dihapus tidak bisa dikembalikan!',
@@ -116,6 +128,7 @@ function deleteUsers(id) {
                 method: 'DELETE',
                 headers: {
                     'Accept': 'application/json',
+                    'Authorization': `Bearer ${token}`, // Tambahkan token di header
                     'X-CSRF-TOKEN': csrfToken
                 }
             })
@@ -165,6 +178,7 @@ document.addEventListener('DOMContentLoaded', loadUsersData);
 // 9. Event listener untuk tombol tambah dan edit user
 document.getElementById('submitUserBtn').addEventListener('click', function (e) {
     // Ambil nilai dari form
+    const token = getAuthToken();
     const id = document.getElementById('user-id').value;
     const method = id ? 'PUT' : 'POST';
     const url = id ? `/api/users/${id}` : '/api/users';
@@ -183,6 +197,7 @@ document.getElementById('submitUserBtn').addEventListener('click', function (e) 
         headers: {
             'Content-Type': 'application/json',
             'Accept': 'application/json',
+            'Authorization': `Bearer ${token}`, // Tambahkan token di header
             'X-CSRF-TOKEN': csrfToken
         },
         body: JSON.stringify(data)
@@ -221,4 +236,3 @@ document.getElementById('submitUserBtn').addEventListener('click', function (e) 
         Swal.fire('Error', 'Terjadi kesalahan saat menyimpan data.', 'error');
     });
 });
-

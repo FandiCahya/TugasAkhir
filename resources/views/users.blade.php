@@ -12,7 +12,8 @@
                 <!-- Search Input -->
                 <input type="text" id="search" class="form-control form-control-sm mb-3 me-2" placeholder="Search..."
                     onkeyup="searchUsers()" />
-
+                
+                <!-- Desktop View (Table) -->
                 <div class="table-responsive">
                     <table class="table table-striped" id="users-table">
                         <thead>
@@ -44,7 +45,6 @@
 @push('scripts')
     <script>
         const csrfToken = "{{ csrf_token() }}";
-        const token = Cookies.get('token') || ''; // kalau pakai auth header
     </script>
     <!-- Custom Script -->
     <script src="{{ asset('assets/js/users.js') }}"></script>

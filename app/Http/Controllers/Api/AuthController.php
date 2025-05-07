@@ -44,7 +44,7 @@ class AuthController extends Controller
                     'message' => 'User created successfully.',
                     'user' => $user,
                     'access_token' => $token,
-                    'token_type' => 'Bearer'
+                    'token_type' => 'Bearer',
                 ],
                 201,
             );
@@ -67,39 +67,34 @@ class AuthController extends Controller
         try {
             // Validasi input
             $validator = Validator::make($request->all(), [
-                'email' => 'required',
-                'password' => 'required',
+                'email' => ['required', 'email'],
+                'password' => ['required'],
             ]);
 
-            if (! Auth::attempt($request->only('email', 'password'))) {
-                return response()->json([
-                    'message' => 'Unauthorized'
-                ], 401);
-            }
-
-            // Jika validasi gagal, kembalikan error
             if ($validator->fails()) {
-                return response()->json(['message' => 'Validation failed', 'errors' => $validator->errors()], 400);
+                return response()->json(['message' => 'Validasi Gagal', 'errors' => $validator->errors()], 422);
             }
 
+            // Attempt login
+
+            if (!Auth::attempt($request->only('email', 'password'))) {
+                return response()->json(['message' => 'Invalid credentials'], 401);
+            }
             // Cari user berdasarkan email
             $user = User::where('email', $request->email)->firstOrFail();
 
             // Periksa apakah user ada dan password cocok
             if (!$user || !Hash::check($request->password, $user->password)) {
-                return response()->json(['message' => 'Invalid credentials'], 401);
+                return response()->json(['message' => 'Password tidak sesuai'], 401);
             }
 
             // Buat token untuk user
             $token = $user->createToken('auth_token')->plainTextToken;
 
-            // Menambahkan waktu kadaluarsa pada token (Jika diinginkan)
-            // $expiresAt = Carbon::now()->addMinutes(60); // Token kedaluwarsa dalam 1 jam
-
             // Response dengan token dan data pengguna
             return response()->json([
-                'message' => 'Login successful',
-                'token' => $token,// Sertakan waktu kadaluarsa dalam respons
+                'message' => 'Login Berhasil',
+                'token' => $token,
                 'token_type' => 'Bearer',
                 'user' => $user,
             ]);
@@ -124,7 +119,7 @@ class AuthController extends Controller
             });
 
             // Response sukses
-            return response()->json(['message' => 'Logged out successfully.']);
+            return response()->json(['message' => 'Berhasil Logout.']);
         } catch (Exception $e) {
             // Tangani exception dan kirimkan pesan error
             return response()->json(

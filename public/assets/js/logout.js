@@ -3,14 +3,14 @@ document.getElementById('logout-btn').addEventListener('click', function(e) {
 
     // Konfirmasi logout dengan SweetAlert2
     Swal.fire({
-        title: 'Are you sure?',
-        text: 'Do you really want to logout?',
+        title: 'Yakin Ingin Keluar?',
+        text: 'Apakah Anda yakin ingin keluar?',
         icon: 'warning',
         showCancelButton: true,
         confirmButtonColor: '#3085d6',
         cancelButtonColor: '#d33',
-        confirmButtonText: 'Yes, logout!',
-        cancelButtonText: 'Cancel'
+        confirmButtonText: 'Ya, Saya Yakin!',
+        cancelButtonText: 'Batal'
     }).then((result) => {
         if (result.isConfirmed) {
             // Mengirim request logout ke API
@@ -25,14 +25,20 @@ document.getElementById('logout-btn').addEventListener('click', function(e) {
                     if (response.ok) {
                         // Menghapus token dan mengarahkan pengguna ke halaman login
                         localStorage.removeItem('token');
-                        window.location.href = '/login'; // Arahkan ke halaman login setelah logout berhasil
+                        Swal.fire(
+                            'Berhasil!',
+                            'Anda telah keluar.',
+                            'success'
+                        ).then(() => {
+                            window.location.href = '/login'; // Arahkan ke halaman login setelah logout berhasil
+                        });
                     } else {
-                        Swal.fire('Logout Failed', 'Please try again.', 'error');
+                        Swal.fire('Logout Gagal', 'Silakan coba lagi.', 'error');
                     }
                 })
                 .catch(error => {
                     console.error('Error:', error);
-                    Swal.fire('Error', 'An error occurred during logout.', 'error');
+                    Swal.fire('Error', 'Terjadi kesalahan saat logout.', 'error');
                 });
         }
     });

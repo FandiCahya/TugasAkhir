@@ -2,6 +2,7 @@
 <html lang="en">
 
 <head>
+
     <!-- Required meta tags -->
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
@@ -14,6 +15,25 @@
     <link rel="stylesheet" href="{{ asset('assets/css/style.css') }}">
     <!-- endinject -->
     <link rel="shortcut icon" href="{{ asset('assets/images/favicon.png') }}" />
+    <style>
+        .content-wrapper {
+            background-image: url('{{ asset('assets/images/background.jpg') }}');
+            background-size: cover;
+            background-position: center;
+            background-repeat: no-repeat;
+            min-height: 100vh;
+        }
+
+        .auth-form-light {
+            background-color: rgba(255, 255, 255, 0.9);
+            /* agar form tetap readable */
+            border-radius: 10px;
+        }
+    </style>
+    {{-- Js Cookies --}}
+    <script src="https://cdn.jsdelivr.net/npm/js-cookie@3.0.1/dist/js.cookie.min.js"></script>
+    {{-- Swwetalert --}}
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
 </head>
 
 <body>
@@ -40,7 +60,7 @@
                                     <input type="password" class="form-control form-control-lg" id="password"
                                         name="password" autocomplete="current-password" required placeholder="Password">
                                     <small id="passwordError" class="text-danger"></small>
-                                </div>                                
+                                </div>
                                 <div class="mt-3">
                                     <!-- Login Button -->
                                     <button type="submit" class="btn btn-primary w-100">Login</button>
@@ -66,59 +86,7 @@
     <script src="{{ asset('assets/js/template.js') }}"></script>
 
     <!-- JS and Fetch API for login -->
-    <script>
-        document.getElementById('loginForm').addEventListener('submit', async function(e) {
-            e.preventDefault();
-
-            // Clear previous errors
-            document.getElementById('emailError').textContent = '';
-            document.getElementById('passwordError').textContent = '';
-            document.getElementById('error-message').classList.add('d-none');
-
-            const formData = new FormData(this);
-
-            try {
-                const response = await fetch('/api/login', {
-                    method: 'POST',
-                    body: formData,
-                    headers: {
-                        'Accept': 'application/json',
-                        'X-XSRF-TOKEN': getCookie('XSRF-TOKEN') // Include CSRF token
-                    },
-                    credentials: 'include' // Ensure cookies are sent
-                });
-
-                const data = await response.json();
-
-                if (response.ok) {
-                    // Jika login berhasil, simpan token ke localStorage
-                    localStorage.setItem('token', data.token);
-                    console.log('Token saved:', data.token);
-
-                    // Redirect ke dashboard setelah login berhasil
-                    console.log("Redirecting to dashboard...");
-                    window.location.href = '/dashboard';
-                } else {
-                    // Menampilkan pesan error jika login gagal
-                    console.log("Login failed:", data);
-                    document.getElementById('error-message').textContent = data.message || 'Login failed.';
-                    document.getElementById('error-message').classList.remove('d-none');
-                }
-            } catch (error) {
-                console.error(error);
-                console.error("Login error:", error);
-                document.getElementById('error-message').textContent = 'An error occurred during login.';
-                document.getElementById('error-message').classList.remove('d-none');
-            }
-        });
-
-        // Fungsi untuk mengambil CSRF token dari cookie
-        function getCookie(name) {
-            let value = "; " + document.cookie;
-            let parts = value.split("; " + name + "=");
-            if (parts.length === 2) return parts.pop().split(";").shift();
-        }
-    </script>
+    <script src="{{ asset('assets/js/login.js') }}"></script>
 </body>
 
 </html>

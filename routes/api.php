@@ -22,13 +22,14 @@ Route::post('register', [AuthController::class, 'register']);
 
 
 Route::middleware('auth:sanctum')->post('logout', [AuthController::class, 'logout']);
-// Logout route - pastikan user terautentikasi
-// Route::post('logout', [AuthController::class, 'logout']);
-Route::get('/dashboard', function (Request $request) {
-    return view('dashboard', ['user' => $request->user()]);
-})->name('dashboard');
 
-Route::resource('users', UserController::class);
+
+Route::middleware('auth:sanctum')->group(function () {
+    Route::resource('users', UserController::class);
+});
+
+
+// Route::resource('users', UserController::class);
 Route::resource('pengajuan', PengajuanController::class);
 Route::resource('pengembangan', PengembanganController::class);
 Route::resource('pengujian',PengujianController::class);
