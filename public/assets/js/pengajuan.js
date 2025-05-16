@@ -8,7 +8,7 @@ const getAuthToken = () => localStorage.getItem('token');
 // Ambil data pengajuan dari API
 function loadPengajuanData() {
     const token = getAuthToken();
-    console.log("Token di Pengajuan: ", token);
+    // console.log("Token di Pengajuan: ", token);
     fetch('/api/pengajuan', {
         headers: {
             'Accept': 'application/json',
@@ -21,7 +21,7 @@ function loadPengajuanData() {
             return Swal.fire('Error', 'Gagal memuat data pengajuan', 'error');
         }
         PengajuanData = json.payload;
-        console.log("Data Pengajuan: ", PengajuanData);
+        // console.log("Data Pengajuan: ", PengajuanData);
         filteredData = PengajuanData;
         currentPage = 1;
         renderTable();

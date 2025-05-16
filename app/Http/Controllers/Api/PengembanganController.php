@@ -19,108 +19,83 @@ class PengembanganController extends Controller
     public function index(Request $request)
     {
         try {
-            $keyword = $request->query->get('keyword');
-            $status = $request->query->get('status');
-            $userId = $request->query->get('user_id');
-            $role = $request->query->get('role'); // Mendapatkan filter role
-            $devisi = $request->query->get('devisi'); // Mendapatkan filter devisi
-            $pengajuanstatus = $request->query->get('pengajuanstatus');
-            $pengembanganQuery = Pengembangan::with('pengajuan', 'pengajuan.user');
-            if ($keyword) {
-                $pengembanganQuery->where(function ($query) use ($keyword) {
-                    $query->where('tahap', 'like', '%' . $keyword . '%')->orWhere('keterangan', 'like', '%' . $keyword . '%');
-                });
+            $query = Pengembangan::with('pengajuan.user');
+
+            // Filter keyword pada tahap dan keterangan
+            if ($keyword = $request->query('keyword')) {
+                $query->where(fn($q) => $q->where('tahap', 'like', "%$keyword%")->orWhere('keterangan', 'like', "%$keyword%"));
             }
-            if ($status) {
-                $pengembanganQuery->where('status', 'like', '%' . $status . '%');
+
+            if ($status = $request->query('status')) {
+                $query->where('status', 'like', "%$status%");
             }
-            if ($pengajuanstatus) {
-                if (is_array($pengajuanstatus)) {
-                    // Kalau multiple status
-                    $pengembanganQuery->whereHas('pengajuan', function ($query) use ($pengajuanstatus) {
-                        $query->whereIn('status', $pengajuanstatus);
-                    });
+
+            if ($pengajuanStatus = $request->query('pengajuanstatus')) {
+                if (is_array($pengajuanStatus)) {
+                    $query->whereHas('pengajuan', fn($q) => $q->whereIn('status', $pengajuanStatus));
                 } else {
-                    // Kalau hanya satu status
-                    $pengembanganQuery->whereHas('pengajuan', function ($query) use ($pengajuanstatus) {
-                        $query->where('status', 'like', '%' . $pengajuanstatus . '%');
-                    });
+                    $query->whereHas('pengajuan', fn($q) => $q->where('status', 'like', "%$pengajuanStatus%"));
                 }
             }
-            
 
-            // Filter berdasarkan user_id
-            if ($userId) {
-                $pengembanganQuery->whereHas('pengajuan.user', function ($query) use ($userId) {
-                    $query->where('id', '=', $userId); // Memfilter berdasarkan id user
-                });
+            // Filter berdasarkan relasi pengajuan.user: user_id, role, devisi
+            $filters = ['user_id' => 'id', 'role' => 'role', 'devisi' => 'devisi'];
+            foreach ($filters as $reqKey => $col) {
+                if ($val = $request->query($reqKey)) {
+                    $query->whereHas('pengajuan.user', fn($q) => $q->where($col, 'like', "%$val%"));
+                }
             }
 
-            // Filter berdasarkan role
-            if ($role) {
-                $pengembanganQuery->whereHas('pengajuan.user', function ($query) use ($role) {
-                    $query->where('role', 'like', '%' . $role . '%'); // Memfilter berdasarkan role user
-                });
-            }
+            $data = $query->get();
 
-            // Filter berdasarkan devisi
-            if ($devisi) {
-                $pengembanganQuery->whereHas('pengajuan.user', function ($query) use ($devisi) {
-                    $query->where('devisi', 'like', '%' . $devisi . '%'); // Memfilter berdasarkan devisi user
-                });
-            }
-
-            // Ambil data pengajuan setelah diterapkan filter jika ada
-            $pengembangan = $pengembanganQuery->get();
-
-            // $users = pengembangan::all();
-            return response()->json(
-                [
-                    'success' => true,
-                    'payload' => $pengembangan->map(function ($item) {
-                        return [
-                            'id' => $item->id,
-                            'tanggal_mulai' => $item->tanggal_mulai,
-                            'tanggal_selesai' => $item->tanggal_selesai,
-                            'tahap' => $item->tahap,
-                            'persentase' => $item->persentase,
-                            'keterangan' => $item->keterangan,
-                            'status' => $item->status,
-                            'updated_at' => $item->updated_at,
-                            'created_at' => $item->created_at,
-                            'pengajuan' => [
-                                'id' => $item->pengajuan->id ?? null,
-                                'tgl' => $item->pengajuan->tgl ?? null,
-                                'nama_sistem' => $item->pengajuan->nama_sistem ?? null,
-                                'jenis' => $item->pengajuan->jenis ?? null,
-                                'rencana_anggaran' => $item->pengajuan->rencana_anggaran ?? null,
-                                'masalah' => $item->pengajuan->masalah ?? null,
-                                'output' => $item->pengajuan->output ?? null,
-                                'tanda_tangan' => $item->pengajuan->tanda_tangan ?? null,
-                                'alasan_penolakan' => $item->pengajuan->alasan_penolakan ?? null,
-                                'status' => $item->pengajuan->status ?? null,
-                                'user' => [
-                                    'id' => $item->user->id ?? null,
-                                    'name' => $item->user->name ?? null,
-                                    'email' => $item->user->email ?? null,
-                                    'role' => $item->user->role ?? null,
-                                    'devisi' => $item->user->devisi ?? null,
-                                ],
-                            ],
-                        ];
-                    }),
-                ],
-                200,
-            );
+            return response()->json([
+                'success' => true,
+                'message' => 'Data pengembangan berhasil diambil.',
+                'payload' => $data->map(
+                    fn($item) => [
+                        'id' => $item->id,
+                        'tanggal_mulai' => $item->tanggal_mulai,
+                        'tanggal_selesai' => $item->tanggal_selesai,
+                        'tahap' => $item->tahap,
+                        'persentase' => $item->persentase,
+                        'keterangan' => $item->keterangan,
+                        'status' => $item->status,
+                        'updated_at' => $item->updated_at,
+                        'created_at' => $item->created_at,
+                        'pengajuan' => $item->pengajuan
+                            ? [
+                                'id' => $item->pengajuan->id,
+                                'tgl' => $item->pengajuan->tgl,
+                                'nama_sistem' => $item->pengajuan->nama_sistem,
+                                'jenis' => $item->pengajuan->jenis,
+                                'rencana_anggaran' => $item->pengajuan->rencana_anggaran,
+                                'masalah' => $item->pengajuan->masalah,
+                                'output' => $item->pengajuan->output,
+                                'tanda_tangan' => $item->pengajuan->tanda_tangan,
+                                'alasan_penolakan' => $item->pengajuan->alasan_penolakan,
+                                'status' => $item->pengajuan->status,
+                                'user' => $item->pengajuan->user
+                                    ? [
+                                        'id' => $item->pengajuan->user->id,
+                                        'name' => $item->pengajuan->user->name,
+                                        'email' => $item->pengajuan->user->email,
+                                        'role' => $item->pengajuan->user->role,
+                                        'devisi' => $item->pengajuan->user->devisi,
+                                    ]
+                                    : null,
+                            ]
+                            : null,
+                    ],
+                ),
+            ]);
         } catch (\Exception $e) {
-            // Menangani error lainnya
             return response()->json(
                 [
                     'success' => false,
                     'payload' => [],
                     'error' => [
                         'code' => $e->getCode() ?: 500,
-                        'message' => $e->getMessage(),
+                        'message' => 'Terjadi kesalahan saat mengambil data pengembangan.',
                     ],
                 ],
                 $e->getCode() ?: 500,
@@ -170,6 +145,7 @@ class PengembanganController extends Controller
             return response()->json(
                 [
                     'success' => true,
+                    'message' => 'Data pengembangan berhasil disimpan.',
                     'payload' => $pengembangan,
                 ],
                 201,
@@ -182,7 +158,7 @@ class PengembanganController extends Controller
                     'payload' => [],
                     'error' => [
                         'code' => 422,
-                        'message' => 'Validation failed',
+                        'message' => 'Gagal melakukan validasi',
                         'details' => $e->errors(), // Menampilkan kesalahan validasi
                     ],
                 ],
@@ -195,7 +171,8 @@ class PengembanganController extends Controller
                     'success' => false,
                     'error' => [
                         'code' => $e->getCode(),
-                        'message' => $e->getMessage(),
+                        'message' => 'Gagal melakukan query',
+                        'details' => $e->getMessage(),
                     ],
                 ],
                 $e->getCode() ?: 500,
@@ -207,7 +184,8 @@ class PengembanganController extends Controller
                     'success' => false,
                     'error' => [
                         'code' => $e->getCode() ?: 500,
-                        'message' => $e->getMessage(),
+                        'message' => 'Gagal melakukan penyimpanan data',
+                        'details' => $e->getMessage(),
                     ],
                 ],
                 $e->getCode() ?: 500,
@@ -227,10 +205,7 @@ class PengembanganController extends Controller
     /**
      * Show the form for editing the specified resource.
      */
-    public function edit(Pengembangan $pengembangan)
-    {
-        //
-    }
+    public function edit(Pengembangan $pengembangan) {}
 
     /**
      * Update the specified resource in storage.
@@ -255,6 +230,7 @@ class PengembanganController extends Controller
             return response()->json(
                 [
                     'success' => true,
+                    'message' => 'Data pengembangan berhasil diperbarui.',
                     'payload' => $pengembangan,
                 ],
                 200,
@@ -267,7 +243,7 @@ class PengembanganController extends Controller
                     'payload' => [],
                     'error' => [
                         'code' => 422,
-                        'message' => 'Validation failed',
+                        'message' => 'Gagal melakukan validasi',
                         'details' => $e->errors(), // Menampilkan kesalahan validasi
                     ],
                 ],
@@ -280,7 +256,8 @@ class PengembanganController extends Controller
                     'success' => false,
                     'error' => [
                         'code' => $e->getCode(),
-                        'message' => $e->getMessage(),
+                        'message' => 'Gagal melakukan query',
+                        'details' => $e->getMessage(),
                     ],
                 ],
                 $e->getCode() ?: 500,
@@ -292,7 +269,8 @@ class PengembanganController extends Controller
                     'success' => false,
                     'error' => [
                         'code' => $e->getCode() ?: 500,
-                        'message' => $e->getMessage(),
+                        'message' => 'Gagal melakukan penyimpanan data',
+                        'details' => $e->getMessage(),
                     ],
                 ],
                 $e->getCode() ?: 500,
@@ -323,7 +301,8 @@ class PengembanganController extends Controller
                     'success' => false,
                     'error' => [
                         'code' => $e->getCode(),
-                        'message' => $e->getMessage(),
+                        'message' => 'Gagal melakukan query',
+                        'details' => $e->getMessage(),
                     ],
                 ],
                 $e->getCode() ?: 500,
@@ -335,7 +314,8 @@ class PengembanganController extends Controller
                     'success' => false,
                     'error' => [
                         'code' => $e->getCode() ?: 500,
-                        'message' => $e->getMessage(),
+                        'message' => 'Gagal melakukan penghapusan data',
+                        'details' => $e->getMessage(),
                     ],
                 ],
                 $e->getCode() ?: 500,

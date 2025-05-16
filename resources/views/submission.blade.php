@@ -5,7 +5,7 @@
             <div class="card-body">
                 <h4 class="card-title">Pengajuan</h4>
 
-                {{-- <!-- Button to Open Add User Modal -->
+                {{-- <!-- Button to Open Add Pengajuan Modal -->
                 <button type="button" class="btn btn-success btn-sm mb-3" onclick="openAddModal()">Tambah Pengajuan</button> --}}
 
                 <!-- Search Input -->
