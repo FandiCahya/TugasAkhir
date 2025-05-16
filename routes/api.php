@@ -26,11 +26,12 @@ Route::middleware('auth:sanctum')->post('logout', [AuthController::class, 'logou
 
 Route::middleware('auth:sanctum')->group(function () {
     Route::resource('users', UserController::class);
+    Route::resource('pengajuan', PengajuanController::class);
 });
 
 
 // Route::resource('users', UserController::class);
-Route::resource('pengajuan', PengajuanController::class);
+
 Route::resource('pengembangan', PengembanganController::class);
 Route::resource('pengujian',PengujianController::class);
 Route::resource('pengujian-detail',PengujianDetailController::class);

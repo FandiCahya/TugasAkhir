@@ -29,7 +29,7 @@ document.getElementById('loginForm').addEventListener('submit', async function(e
             Swal.fire({
                 icon: 'success',
                 title: 'Login Berhasil!',
-                text: 'Anda akan diarahkan ke dashboard...',
+                text: 'Anda Berhasil Login',
                 timer: 2000,
                 showConfirmButton: false
             }).then(() => {

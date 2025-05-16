@@ -5,8 +5,12 @@
             <div class="card-body">
                 <h4 class="card-title">Pengajuan</h4>
 
+                {{-- <!-- Button to Open Add User Modal -->
+                <button type="button" class="btn btn-success btn-sm mb-3" onclick="openAddModal()">Tambah Pengajuan</button> --}}
+
                 <!-- Search Input -->
-                <input type="text" id="search" class="form-control mb-3" placeholder="Search by name sistem..." />
+                <input type="text" id="search" class="form-control form-control-sm mb-3 me-2" placeholder="Search..."
+                    onkeyup="searchPengajuan()" />
 
                 <div class="table-responsive pt-3">
                     <table class="table table-bordered" id="pengajuan-table">
@@ -20,369 +24,30 @@
                                 <th style="width: 10%;">Output</th>
                                 <th style="width: 10%;">Status</th>
                                 <th style="width: 15%;">Actions</th>
+                                <th style="width: 15%;">Tanggal Pengajuan</th>
                             </tr>
                         </thead>
-                        <tbody>
+                        <tbody id="pengajuan-list">
                             <!-- Data will be dynamically filled here using JavaScript -->
                         </tbody>
                     </table>
-                    <div id="pagination-controls" class="mt-3 d-flex justify-content-center"></div>
+                    <div class="d-flex justify-content-between mt-3">
+                        <button class="btn btn-primary btn-sm ms-3 py-2 px-3" onclick="prevPage()">Prev</button>
+                        <button class="btn btn-primary btn-sm me-3 py-2 px-3" onclick="nextPage()">Next</button>
+                    </div>
                 </div>
             </div>
         </div>
     </div>
 
-    <!-- Modal for Adding Pengajuan -->
-    <div class="modal fade" id="addPengajuanModal" tabindex="-1" aria-labelledby="addPengajuanModalLabel"
-        aria-hidden="true">
-        <div class="modal-dialog">
-            <div class="modal-content">
-                <div class="modal-header">
-                    <h5 class="modal-title" id="addPengajuanModalLabel">Tambah Pengajuan Baru</h5>
-                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
-                </div>
-                <div class="modal-body">
-                    <form id="addPengajuanForm">
-                        @csrf
-                        <div class="mb-3">
-                            <label for="tgl" class="form-label">Tanggal Pengajuan</label>
-                            <input type="date" class="form-control" id="tgl" required>
-                        </div>
-                        <div class="mb-3">
-                            <label for="nama_sistem" class="form-label">Nama Sistem</label>
-                            <input type="text" class="form-control" id="nama_sistem" required>
-                        </div>
-                        <div class="mb-3">
-                            <label for="jenis" class="form-label">Jenis Pengajuan</label>
-                            <select class="form-control" id="jenis" required>
-                                <option value="sistem_baru">Sistem Baru</option>
-                                <option value="pengembangan">Pengembangan</option>
-                            </select>
-                        </div>
-                        <div class="mb-3">
-                            <label for="rencana_anggaran" class="form-label">Rencana Anggaran</label>
-                            <select class="form-control" id="rencana_anggaran" required>
-                                <option value="termasuk_dalam_perencanaan">Termasuk dalam Perencanaan</option>
-                                <option value="tidak_termasuk_perencanaan">Tidak Termasuk dalam Perencanaan</option>
-                            </select>
-                        </div>
-                        <div class="mb-3">
-                            <label for="masalah" class="form-label">Masalah yang Dihadapi</label>
-                            <textarea class="form-control" id="masalah" rows="3" required></textarea>
-                        </div>
-                        <div class="mb-3">
-                            <label for="output" class="form-label">Output yang Diharapkan</label>
-                            <textarea class="form-control" id="output" rows="3" required></textarea>
-                        </div>
-                        <div class="mb-3">
-                            <label for="status" class="form-label">Status Pengajuan</label>
-                            <select class="form-control" id="status" required>
-                                <option value="pending">pending</option>
-                                <option value="accepted">Accepted</option>
-                                <option value="rejected">Rejected</option>
-                                <option value="developed">Developed</option>
-                                <option value="testing">Testing</option>
-                                <option value="finished">Finished</option>
-                            </select>
-                        </div>
-                    </form>
-                </div>
-                <div class="modal-footer">
-                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Tutup</button>
-                    <button type="button" class="btn btn-primary" id="savePengajuanBtn">Simpan Pengajuan</button>
-                </div>
-            </div>
-        </div>
-    </div>
-
-    <!-- Modal for Editing Pengajuan -->
-    <div class="modal fade" id="editPengajuanModal" tabindex="-1" aria-labelledby="editPengajuanModalLabel"
-        aria-hidden="true">
-        <div class="modal-dialog">
-            <div class="modal-content">
-                <div class="modal-header">
-                    <h5 class="modal-title" id="editPengajuanModalLabel">Edit Pengajuan</h5>
-                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
-                </div>
-                <div class="modal-body">
-                    <form id="editPengajuanForm">
-                        @csrf
-                        <div class="mb-3">
-                            <label for="tgl" class="form-label">Tanggal Pengajuan</label>
-                            <input type="text" class="form-control" id="edit-tgl" required readonly>
-                        </div>
-                        <div class="mb-3">
-                            <label for="nama_sistem" class="form-label">Nama Sistem</label>
-                            <input type="text" class="form-control" id="edit-nama_sistem" required readonly>
-                        </div>
-                        <div class="mb-3">
-                            <label for="jenis" class="form-label">Jenis Pengajuan</label>
-                            <input type="text" class="form-control" id="edit-jenis" required readonly>
-                        </div>
-                        <div class="mb-3">
-                            <label for="rencana_anggaran" class="form-label">Rencana Anggaran</label>
-                            <input type="text" class="form-control" id="edit-rencana_anggaran" required readonly>
-                        </div>
-                        <div class="mb-3">
-                            <label for="masalah" class="form-label">Masalah yang Dihadapi</label>
-                            <textarea class="form-control" id="edit-masalah" rows="3" required readonly></textarea>
-                        </div>
-                        <div class="mb-3">
-                            <label for="output" class="form-label">Output yang Diharapkan</label>
-                            <textarea class="form-control" id="edit-output" rows="3" required readonly></textarea>
-                        </div>
-                        <div class="mb-3">
-                            <label for="status" class="form-label">Status Pengajuan</label>
-                            <select class="form-control" id="edit-status" required>
-                                <option value="pending">pending</option>
-                                <option value="rejected">Rejected</option>
-                                <option value="accepted">Accepted</option>
-                                
-                            </select>
-                        </div>
-                        <div class="mb-3" id="alasan-penolakan-div" style="display: none;">
-                            <label for="alasan_penolakan" class="form-label">Alasan Penolakan</label>
-                            <textarea class="form-control" id="edit-alasan_penolakan" rows="3"></textarea>
-                        </div>
-
-                    </form>
-                </div>
-                <div class="modal-footer">
-                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Tutup</button>
-                    <button type="button" class="btn btn-primary" id="updatePengajuanBtn">Update Pengajuan</button>
-                </div>
-            </div>
-        </div>
-    </div>
-
-    <script>
-        let pengajuan = []; // Array to hold fetched pengajuan
-        let editPengajuanId = null;
-        let addPengembangan = null;
-        let currentPage = 1;
-        const rowsPerPage = 5;
-
-        // Fetch Pengajuan from API
-        function fetchPengajuan(query = '') {
-            fetch('/api/pengajuan?status=')
-                .then(response => response.json())
-                .then(data => {
-                    if (data.success) {
-                        pengajuan = data.payload;
-
-                        // Filter berdasarkan query pencarian jika ada
-                        if (query) {
-                            pengajuan = pengajuan.filter(p => p.nama_sistem.toLowerCase().includes(query
-                                .toLowerCase()));
-                        }
-
-                        renderTable(pengajuan, currentPage); // Render tabel dengan data pengajuan
-                    } else {
-                        alert('Gagal memuat data pengajuan');
-                    }
-                })
-                .catch(error => console.error('Error:', error));
-        }
-
-        // Render data in the table
-        function renderTable(pengajuan, page = 1) {
-            const tableBody = document.querySelector('#pengajuan-table tbody');
-            tableBody.innerHTML = ''; // Bersihkan tabel sebelum merender
-
-            // Hitung total halaman
-            const totalPages = Math.ceil(pengajuan.length / rowsPerPage);
-
-            // Tentukan indeks awal dan akhir untuk slicing data
-            const startIndex = (page - 1) * rowsPerPage;
-            const endIndex = startIndex + rowsPerPage;
-
-            // Ambil data sesuai halaman
-            const paginatedData = pengajuan.slice(startIndex, endIndex);
-
-            // Render baris tabel
-            paginatedData.forEach(p => {
-                const row = document.createElement('tr');
-                row.innerHTML = `
-            <td>${p.nama_sistem}</td>
-            <td>${p.jenis}</td>
-            <td>${p.rencana_anggaran}</td>
-            <td>${p.masalah}</td>
-            <td>${p.output}</td>
-            <td>${p.status}</td>
-            <td>
-                <button class="btn btn-warning btn-sm" onclick="editPengajuan('${p.id}')" style="margin: 5px;">Edit</button>
-                <button class="btn btn-danger btn-sm" onclick="deletePengajuan('${p.id}')" style="margin: 5px;">Delete</button>
-                ${p.status === 'accepted' ? `<button class="btn btn-success btn-sm" onclick="showPengembangan('${p.id}')" style="margin: 5px;">Pengembangan</button>` : ''}
-            </td>
-        `;
-                tableBody.appendChild(row);
-            });
-
-            // Render Pagination Controls
-            renderPaginationControls(totalPages);
-        }
-
-        function changePage(page) {
-            currentPage = page;
-            renderTable(pengajuan, currentPage); // Pastikan pakai pengajuan, bukan data
-        }
-
-        function renderPaginationControls(totalPages) {
-            const paginationContainer = document.querySelector('#pagination-controls');
-            paginationContainer.innerHTML = '';
-
-            if (totalPages <= 1) return; // Jangan tampilkan pagination jika hanya ada 1 halaman
-
-            let paginationHTML = '';
-
-            // Tombol Previous
-            if (currentPage > 1) {
-                paginationHTML +=
-                    `<button onclick="changePage(${currentPage - 1})" class="btn btn-secondary mx-1">Previous</button>`;
-            }
-
-            // Tombol angka halaman
-            for (let i = 1; i <= totalPages; i++) {
-                paginationHTML +=
-                    `<button onclick="changePage(${i})" class="btn ${i === currentPage ? 'btn-secondary' : 'btn-outline-secondary'} mx-1">${i}</button>`;
-            }
-
-            // Tombol Next
-            if (currentPage < totalPages) {
-                paginationHTML +=
-                    `<button onclick="changePage(${currentPage + 1})" class="btn btn-secondary mx-1">Next</button>`;
-            }
-
-            paginationContainer.innerHTML = paginationHTML;
-        }
-
-        function editPengajuan(id) {
-            const p = pengajuan.find(p => p.id === id); // Find pengajuan by ID
-            document.getElementById('edit-tgl').value = p.tgl;
-            document.getElementById('edit-nama_sistem').value = p.nama_sistem;
-            document.getElementById('edit-jenis').value = p.jenis;
-            document.getElementById('edit-rencana_anggaran').value = p.rencana_anggaran;
-            document.getElementById('edit-masalah').value = p.masalah;
-            document.getElementById('edit-output').value = p.output;
-            document.getElementById('edit-status').value = p.status;
-            editPengajuanId = id;
-
-            // Show the modal
-            new bootstrap.Modal(document.getElementById('editPengajuanModal')).show();
-        }
-
-        // Save new pengajuan
-        document.getElementById('savePengajuanBtn').addEventListener('click', function() {
-            const data = {
-                tgl: document.getElementById('tgl').value,
-                nama_sistem: document.getElementById('nama_sistem').value,
-                jenis: document.getElementById('jenis').value,
-                rencana_anggaran: document.getElementById('rencana_anggaran').value,
-                masalah: document.getElementById('masalah').value,
-                output: document.getElementById('output').value,
-                status: document.getElementById('status').value,
-            };
-
-            
-            fetch('/api/pengajuan', {
-                    method: 'POST',
-                    headers: {
-                        'Content-Type': 'application/json',
-                        'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').getAttribute(
-                            'content')
-                    },
-                    body: JSON.stringify(data)
-                })
-                .then(response => response.json())
-                .then(data => {
-                    if (data.success) {
-                        fetchPengajuan(); // Re-fetch pengajuan setelah menambah data
-                        alert('Pengajuan berhasil ditambahkan');
-                    } else {
-                        alert('Gagal menambahkan pengajuan');
-                    }
-                })
-                .catch(error => console.error('Error:', error));
-        });
-
-        // Update pengajuan
-        document.getElementById('updatePengajuanBtn').addEventListener('click', function() {
-            const data = {
-                nama_sistem: document.getElementById('edit-nama_sistem').value,
-                jenis: document.getElementById('edit-jenis').value,
-                rencana_anggaran: document.getElementById('edit-rencana_anggaran').value,
-                masalah: document.getElementById('edit-masalah').value,
-                output: document.getElementById('edit-output').value,
-                status: document.getElementById('edit-status').value,
-            };
-
-            fetch(`/api/pengajuan/${editPengajuanId}`, {
-                    method: 'PUT',
-                    headers: {
-                        'Content-Type': 'application/json',
-                        'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').getAttribute(
-                            'content')
-                    },
-                    body: JSON.stringify(data)
-                })
-                .then(response => response.json())
-                .then(data => {
-                    if (data.success) {
-                        fetchPengajuan(); // Re-fetch pengajuan setelah update
-                        alert('Pengajuan berhasil diupdate');
-                        let editModal = bootstrap.Modal.getInstance(document.getElementById(
-                            'editPengajuanModal'));
-                        if (editModal) {
-                            editModal.hide();
-                        }
-                    } else {
-                        alert('Gagal mengupdate pengajuan');
-                    }
-                })
-                .catch(error => console.error('Error:', error));
-        });
-
-        // Delete pengajuan
-        function deletePengajuan(id) {
-            if (confirm('Yakin ingin menghapus pengajuan ini?')) {
-                fetch(`/api/pengajuan/${id}`, {
-                        method: 'DELETE',
-                        headers: {
-                            'Content-Type': 'application/json',
-                            'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').getAttribute('content')
-                        },
-                    })
-                    .then(response => response.json())
-                    .then(data => {
-                        if (data.success) {
-                            fetchPengajuan(); // Re-fetch pengajuan setelah hapus
-                            alert('Pengajuan berhasil dihapus');
-                        } else {
-                            alert('Gagal menghapus pengajuan');
-                        }
-                    })
-                    .catch(error => console.error('Error:', error));
-            }
-        }
-
-        // Search functionality
-        document.getElementById('search').addEventListener('input', function(event) {
-            fetchPengajuan(event.target.value); // Re-fetch pengajuan with search query
-        });
-
-        document.getElementById('edit-status').addEventListener('change', function() {
-            const status = this.value;
-            const alasanDiv = document.getElementById('alasan-penolakan-div');
-
-            // Jika status = "rejected", tampilkan alasan penolakan
-            if (status === 'rejected') {
-                alasanDiv.style.display = 'block';
-            } else {
-                alasanDiv.style.display = 'none';
-            }
-        });
-
-        // Fetch pengajuan initially
-        fetchPengajuan();
-    </script>
+    <!-- Memanggil modal Add dan Edit dari partials -->
+    @include('modals.modal-pengajuan')
 @endsection
+
+@push('scripts')
+    <script>
+        const csrfToken = "{{ csrf_token() }}";
+    </script>
+    <!-- Custom Script -->
+    <script src="{{ asset('assets/js/pengajuan.js') }}"></script>
+@endpush

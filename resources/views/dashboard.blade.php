@@ -3,72 +3,83 @@
 @section('content')
     <div class="content-wrapper">
         <div class="row">
-            <!-- Card 1: Facebook Color -->
+            <!-- Card 1: Jumlah Users -->
             <div class="col-md-4 col-sm-6 grid-margin stretch-card">
-                <div class="card bg-facebook d-flex align-items-center">
-                    <div class="card-body py-5 text-center">
-                        <i class="mdi mdi-account-multiple text-white icon-lg"></i>
-                        <div class="ms-3 mt-3">
-                            <h5 id="count-users" class="text-white font-weight-bold">{{ $counts['users'] }}</h5>
-                            <p class="mt-2 text-white card-text">Jumlah Users</p>
+                <div class="card bg-facebook shadow" style="border-radius: 1rem;">
+                    <div class="card-body py-5 d-flex justify-content-between align-items-center">
+                        <!-- Teks di kiri -->
+                        <div class="ms-3">
+                            <h3 id="count-users" class="text-white fw-bold mb-2">{{ $counts['users'] }}</h3>
+                            <p class="text-white fs-5 mb-0">Jumlah Users</p>
                         </div>
+                        <!-- Icon di kanan -->
+                        <i class="mdi mdi-account-multiple text-white" style="font-size: 4rem;"></i>
                     </div>
                 </div>
             </div>
-        
+
             <!-- Card 2: Pengajuan-->
             <div class="col-md-4 col-sm-6 grid-margin stretch-card">
-                <div class="card" style="background-color: #db4437; color: white;">
-                    <div class="card-body py-5 text-center">
-                        <i class="mdi mdi-note-plus text-white icon-lg"></i>
-                        <div class="ms-3 mt-3">
-                            <h5 id="count-pengajuan" class="text-white font-weight-bold">{{ $counts['pengajuan'] }}</h5>
-                            <p class="mt-2 text-white card-text">Jumlah Pengajuan</p>
+                <div class="card shadow" style="border-radius: 1rem; background-color: #7da0fa; color: white;">
+                    <div class="card-body py-5 d-flex justify-content-between align-items-center">
+                        <!-- Teks di kiri -->
+                        <div class="ms-3">
+                            <h3 id="count-pengajuan" class="text-white fw-bold mb-2">{{ $counts['pengajuan'] }}</h3>
+                            <p class="text-white fs-5 mb-0">Jumlah Pengajuan</p>
                         </div>
+                        <!-- Icon di kanan -->
+                        <i class="mdi mdi-note-plus text-white" style="font-size: 4rem;"></i>
                     </div>
                 </div>
             </div>
-        
+
             <!-- Card 3: Pengembangan -->
             <div class="col-md-4 col-sm-6 grid-margin stretch-card">
-                <div class="card bg-twitter d-flex align-items-center">
-                    <div class="card-body py-5 text-center">
-                        <i class="mdi mdi-settings text-white icon-lg"></i>
-                        <div class="ms-3 mt-3">
-                            <h5 id="count-pengembangan" class="text-white font-weight-bold">{{ $counts['pengembangan'] }}</h5>
-                            <p class="mt-2 text-white card-text">Jumlah Pengembangan</p>
+                <div class="card shadow" style="border-radius: 1rem; background-color: #265deb; color: white;">
+                    <div class="card-body py-5 d-flex justify-content-between align-items-center">
+                        <!-- Teks di kiri -->
+                        <div class="ms-3">
+                            <h3 id="count-pengembangan" class="text-white fw-bold mb-2">{{ $counts['pengembangan'] }}</h3>
+                            <p class="text-white fs-5 mb-0">Jumlah Pengembangan</p>
                         </div>
+                        <!-- Icon di kanan -->
+                        <i class="mdi mdi-code-tags text-white" style="font-size: 4rem;"></i>
                     </div>
                 </div>
             </div>
-        
+
+
             <!-- Card 4: Pengujian -->
             <div class="col-md-4 col-sm-6 grid-margin stretch-card">
-                <div class="card bg-youtube d-flex align-items-center">
-                    <div class="card-body py-5 text-center">
-                        <i class="mdi mdi-check-decagram text-white icon-lg"></i>
-                        <div class="ms-3 mt-3">
-                            <h5 id="count-pengujian" class="text-white font-weight-bold">{{ $counts['pengujian'] }}</h5>
-                            <p class="mt-2 text-white card-text">Jumlah Pengujian</p>
+                <div class="card shadow" style="border-radius: 1rem; background-color: #2b3b63; color: white;">
+                    <div class="card-body py-5 d-flex justify-content-between align-items-center">
+                        <!-- Teks di kiri -->
+                        <div class="ms-3">
+                            <h3 id="count-pengujian" class="text-white fw-bold mb-2">{{ $counts['pengujian'] }}</h3>
+                            <p class="text-white fs-5 mb-0">Jumlah Pengujian</p>
                         </div>
+                        <!-- Icon di kanan -->
+                        <i class="mdi mdi-clipboard-text text-white" style="font-size: 4rem;"></i>
                     </div>
                 </div>
             </div>
-        
+
             <!-- Card 5: Approval -->
             <div class="col-md-4 col-sm-6 grid-margin stretch-card">
-                <div class="card bg-linkedin d-flex align-items-center">
-                    <div class="card-body py-5 text-center">
-                        <i class="mdi mdi-checkbox-multiple-marked-circle-outline text-white icon-lg"></i>
-                        <div class="ms-3 mt-3">
-                            <h5 id="count-approval" class="text-white font-weight-bold">{{ $counts['persetujuan_pengujian'] }}</h5>
-                            <p class="mt-2 text-white card-text">Jumlah Approval</p>
+                <div class="card shadow" style="border-radius: 1rem; background-color: #687bad; color: white;">
+                    <div class="card-body py-5 d-flex justify-content-between align-items-center">
+                        <!-- Teks di kiri -->
+                        <div class="ms-3">
+                            <h3 id="count-approval" class="text-white fw-bold mb-2">{{ $counts['persetujuan_pengujian'] }}</h3>
+                            <p class="text-white fs-5 mb-0">Jumlah Persetujuan</p>
                         </div>
+                        <!-- Icon di kanan -->
+                        <i class="mdi mdi-checkbox-multiple-marked-circle-outline text-white" style="font-size: 4rem;"></i>
                     </div>
                 </div>
             </div>
         </div>
-        
+
         <div class="col-lg-12 grid-margin stretch-card">
             <div class="card">
                 <div class="card-body">
@@ -111,4 +122,3 @@
     <!-- Custom Script -->
     <script src="{{ asset('assets/js/home.js') }}"></script>
 @endpush
-

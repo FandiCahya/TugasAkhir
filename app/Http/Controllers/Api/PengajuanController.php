@@ -60,6 +60,7 @@ class PengajuanController extends Controller
             return response()->json(
                 [
                     'success' => true,
+                    'message' => 'Berhasil mengambil data Pengajuan',
                     'payload' => $pengajuan->map(function ($item) {
                         return [
                             'id' => $item->id,
@@ -94,7 +95,7 @@ class PengajuanController extends Controller
                     'payload' => [],
                     'error' => [
                         'code' => $e->getCode() ?: 500,
-                        'message' => $e->getMessage(),
+                        'message' => 'Terjadi kesalahan saat mengambil data pengajuan. ',
                     ],
                 ],
                 $e->getCode() ?: 500,
@@ -140,6 +141,7 @@ class PengajuanController extends Controller
             return response()->json(
                 [
                     'success' => true,
+                    'message' => 'Pengajuan berhasil ditambahkan',
                     'payload' => $usulan,
                 ],
                 201,
@@ -152,7 +154,7 @@ class PengajuanController extends Controller
                     'payload' => [],
                     'error' => [
                         'code' => 422,
-                        'message' => 'Validation failed',
+                        'message' => 'Kesalahan Validasi',
                         'details' => $e->errors(), // Menampilkan kesalahan validasi
                     ],
                 ],
@@ -166,7 +168,7 @@ class PengajuanController extends Controller
                     'payload' => [],
                     'error' => [
                         'code' => 400,
-                        'message' => 'Database query error',
+                        'message' => 'Kesalahan Query Database',
                         'details' => $e->getMessage(), // Menampilkan pesan error database
                     ],
                 ],
@@ -180,7 +182,8 @@ class PengajuanController extends Controller
                     'payload' => [],
                     'error' => [
                         'code' => $e->getCode() ?: 500,
-                        'message' => $e->getMessage(),
+                        'message' => 'Terjadi kesalahan saat menambahkan pengajuan.',
+                        'details' => $e->getMessage(),
                     ],
                 ],
                 $e->getCode() ?: 500,
@@ -188,9 +191,7 @@ class PengajuanController extends Controller
         }
     }
 
-    /**
-     * Display the specified resource.
-     */
+
     public function show($id)
     {
         $usulan = Pengajuan::where('id', $id)->where('user_id', Auth::id())->firstOrFail();
@@ -202,9 +203,6 @@ class PengajuanController extends Controller
      */
     public function edit(Pengajuan $pengajuan) {}
 
-    /**
-     * Update the specified resource in storage.
-     */
     public function update(Request $request, $id)
     {
         try {
@@ -226,6 +224,7 @@ class PengajuanController extends Controller
             return response()->json(
                 [
                     'success' => true,
+                    'message' => 'Pengajuan berhasil diperbarui',
                     'payload' => $usulan,
                 ],
                 201,
@@ -238,7 +237,7 @@ class PengajuanController extends Controller
                     'payload' => [],
                     'error' => [
                         'code' => 422,
-                        'message' => 'Validation failed',
+                        'message' => 'Kesalahan Validasi',
                         'details' => $e->errors(), // Menampilkan kesalahan validasi
                     ],
                 ],
@@ -252,7 +251,7 @@ class PengajuanController extends Controller
                     'payload' => [],
                     'error' => [
                         'code' => 400,
-                        'message' => 'Database query error',
+                        'message' => 'Kesalahan Query Database',
                         'details' => $e->getMessage(), // Menampilkan pesan error database
                     ],
                 ],
@@ -266,7 +265,8 @@ class PengajuanController extends Controller
                     'payload' => [],
                     'error' => [
                         'code' => $e->getCode() ?: 500,
-                        'message' => $e->getMessage(),
+                        'message' => 'Terjadi kesalahan saat memperbarui pengajuan.',
+                        'details' => $e->getMessage(),
                     ],
                 ],
                 $e->getCode() ?: 500,
@@ -287,7 +287,7 @@ class PengajuanController extends Controller
                     'success' => true,
                     'payload' => [
                         'code' => '200',
-                        'message' => 'Delete Pengajuan Successfully',
+                        'message' => 'Pengajuan berhasil dihapus',
                     ],
                 ],
                 200,
@@ -299,7 +299,8 @@ class PengajuanController extends Controller
                     'payload' => [],
                     'error' => [
                         'code' => $e->getCode() ?: 500,
-                        'message' => $e->getMessage(),
+                        'message' => 'Terjadi kesalahan saat menghapus pengajuan.',
+                        'details' => $e->getMessage(),
                     ],
                 ],
                 $e->getCode() ?: 500,
