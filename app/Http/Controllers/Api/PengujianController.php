@@ -102,6 +102,7 @@ class PengujianController extends Controller
             return response()->json(
                 [
                     'success' => true,
+                    'message' => 'Data pengujian berhasil diambil',
                     'payload' => $pengujians->map(function ($item) {
                         return [
                             'id' => $item->id,
@@ -202,7 +203,8 @@ class PengujianController extends Controller
                     'payload' => [],
                     'error' => [
                         'code' => $e->getCode() ?: 500,
-                        'message' => $e->getMessage(),
+                        'message' => 'Gagal mengambil data pengujian',
+                        'details' => $e->getMessage(),
                     ],
                 ],
                 $e->getCode() ?: 500,
@@ -388,7 +390,7 @@ class PengujianController extends Controller
                     'success' => false,
                     'error' => [
                         'code' => 422,
-                        'message' => 'Validation failed',
+                        'message' => 'gagal Validasi',
                         'details' => $e->errors(),
                     ],
                 ],
@@ -400,7 +402,8 @@ class PengujianController extends Controller
                     'success' => false,
                     'error' => [
                         'code' => $e->getCode(),
-                        'message' => $e->getMessage(),
+                        'message' => 'Gagal menyimpan data pengujian',
+                        'details' => $e->getMessage(),
                     ],
                 ],
                 500,
@@ -411,7 +414,8 @@ class PengujianController extends Controller
                     'success' => false,
                     'error' => [
                         'code' => 500,
-                        'message' => $e->getMessage(),
+                        'message' => 'Gagal menyimpan data pengujian',
+                        'details' => $e->getMessage(),
                     ],
                 ],
                 500,
