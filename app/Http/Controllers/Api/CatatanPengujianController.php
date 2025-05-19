@@ -18,6 +18,7 @@ class CatatanPengujianController extends Controller
             return response()->json(
                 [
                     'success' => true,
+                    'message' => 'Berhasil mendapatkan data catatan pengujian',
                     'payload' => $data->map(function ($item) {
                         return [
                             'id' => $item->id,
@@ -76,7 +77,7 @@ class CatatanPengujianController extends Controller
                 [
                     'success' => true,
                     'payload' => $catatanPengujian,
-                    'error' => null,
+                    'message' => 'Berhasil menambahkan catatan pengujian',
                 ],
                 201,
             );
@@ -184,7 +185,7 @@ class CatatanPengujianController extends Controller
                 [
                     'success' => true,
                     'payload' => $catatanPengujian,
-                    'error' => null,
+                    'message' => 'Berhasil memperbarui catatan pengujian',
                 ],
                 200,
             );
@@ -223,7 +224,7 @@ class CatatanPengujianController extends Controller
                 [
                     'success' => true,
                     'payload' => 'Catatan Pengujian Delete Successfully',
-                    'error' => null,
+                    'message' => 'Berhasil menghapus catatan pengujian',
                 ],
                 200,
             ); // Change 204 to 200 to include a response body
