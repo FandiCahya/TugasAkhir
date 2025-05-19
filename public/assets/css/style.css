@@ -11420,7 +11420,13 @@ fieldset:disabled .btn {
   color: #fff;
   background-color: #6640b2;
   border-color: #6640b2;
+  padding: clamp(6px, 1vw, 12px) clamp(12px, 2vw, 24px);
+  margin: 0.25rem 0.5rem; 
+  border-radius: 4px;
+  cursor: pointer; 
+  transition: background-color 0.3s ease;
 }
+
 
 .btn-primary:hover {
   color: #fff;
@@ -11576,6 +11582,11 @@ fieldset:disabled .btn {
   color: #000;
   background-color: #ffbf36;
   border-color: #ffbf36;
+  padding: clamp(6px, 1vw, 12px) clamp(12px, 2vw, 24px);
+  margin: 0.25rem 0.5rem;
+  border-radius: 4px;
+  cursor: pointer;
+  transition: background-color 0.3s ease;
 }
 
 .btn-warning:hover {
@@ -11615,6 +11626,11 @@ fieldset:disabled .btn {
   color: #000;
   background-color: #f83e37;
   border-color: #f83e37;
+  padding: clamp(6px, 1vw, 12px) clamp(12px, 2vw, 24px);
+  margin: 0.25rem 0.5rem;
+  border-radius: 4px;
+  cursor: pointer;
+  transition: background-color 0.3s ease;
 }
 
 .btn-danger:hover {

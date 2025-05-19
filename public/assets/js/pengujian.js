@@ -51,8 +51,6 @@ document.getElementById('addDetailBtn').addEventListener('click', function () {
     container.appendChild(detailRow);
     detailIndex++;
 });
-
-
 // Hapus row detail jika tombol "×" ditekan
 document.getElementById('pengujian_detail_container').addEventListener('click', function (e) {
     if (e.target.classList.contains('remove-detail-btn')) {
@@ -233,7 +231,7 @@ function renderTable() {
             <td>${item.tujuan}</td>
             <td>${item.metode}</td>
             <td>
-                <button class="btn btn-sm btn-secondary me-2" onclick='openEditModal(${JSON.stringify(item)})'>Edit</button>
+                <button class="btn btn-sm btn-warning me-2" onclick='openEditModal(${JSON.stringify(item)})'>Edit</button>
                 <button class="btn btn-sm btn-danger" onclick="deletePengujian('${item.id}')">Delete</button>
             </td>
         `;
@@ -267,12 +265,12 @@ function nextPage() {
 function searchPengujian() {
     const q = document.getElementById('search').value.trim().toLowerCase();
     filteredData = PengujianData.filter(item =>
-        item.name_sistem.toLowerCase().includes(q) ||
-        item.perangkat.toLowerCase().includes(q) ||
+        item.perangkat_lunak.toLowerCase().includes(q) ||
+        item.pengembangan.pengajuan.nama_sistem.toLowerCase().includes(q) ||
         item.versi.toLowerCase().includes(q) ||
         item.tujuan.toLowerCase().includes(q) ||
         item.metode.toLowerCase().includes(q) ||
-        item.detail.toLowerCase().includes(q) ||
+        item.status.toLowerCase().includes(q) ||
         new Date(item.tanggal).toLocaleDateString('id-ID').toLowerCase().includes(q)
     );
     currentPage = 1;

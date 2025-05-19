@@ -18,6 +18,7 @@ class PengujianDetailController extends Controller
             return response()->json(
                 [
                     'success' => true,
+                    'message' => 'Berhasil mendapatkan data pengujian detail',
                     'payload' => $data->map(function ($item) {
                         return [
                             'id' => $item->id,
@@ -76,7 +77,7 @@ class PengujianDetailController extends Controller
                 [
                     'success' => true,
                     'payload' => $pengujianDetail,
-                    'error' => null,
+                    'message' => 'Berhasil menambahkan data pengujian detail',
                 ],
                 201,
             );
@@ -165,7 +166,7 @@ class PengujianDetailController extends Controller
                 [
                     'success' => true,
                     'payload' => $pengujianDetail,
-                    'error' => null,
+                    'message' => 'Berhasil memperbarui data pengujian detail',
                 ],
                 200,
             );
@@ -217,7 +218,7 @@ class PengujianDetailController extends Controller
                 [
                     'success' => true,
                     'payload' => "Delete Pengujian Detail Successfully",
-                    'error' => null,
+                    'message' => 'Berhasil menghapus data pengujian detail',
                 ],
                 204,
             );
