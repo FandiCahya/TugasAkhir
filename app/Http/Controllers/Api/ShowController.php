@@ -50,6 +50,7 @@ class ShowController extends Controller
 
             return response()->json([
                 'success' => true,
+                'message' => 'Berhasil mendapatkan data persetujuan pengujian',
                 'payload' => $data->map(function ($item) {
                     return [
                         'pengajuan' => [

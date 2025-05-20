@@ -31,6 +31,7 @@ class PersetujuanPengujianController extends Controller
             // Return the data as a JSON response
             return response()->json([
                 'success' => true,
+                'message' => 'Berhasil mendapatkan data persetujuan pengujian',
                 'payload' => $data->map(function ($item) {
                     return [
                         'id' => $item->id,
@@ -135,7 +136,7 @@ class PersetujuanPengujianController extends Controller
                 return response()->json(
                     [
                         'success' => true,
-                        'message' => 'Approval failed due to rejection from one or more users',
+                        'message' => 'Persetujuan ditolak',
                         'data' => $persetujuan,
                     ],
                     400
@@ -157,7 +158,7 @@ class PersetujuanPengujianController extends Controller
                 return response()->json(
                     [
                         'success' => true,
-                        'message' => 'Approval completed successfully',
+                        'message' => 'Persetujuan selesai',
                         'data' => $persetujuan,
                     ],
                     200
@@ -169,7 +170,7 @@ class PersetujuanPengujianController extends Controller
                 return response()->json(
                     [
                         'success' => true,
-                        'message' => 'Approval completed successfully',
+                        'message' => 'Persetujuan selesai',
                         'data' => $persetujuan,
                     ],
                     200,
@@ -179,7 +180,7 @@ class PersetujuanPengujianController extends Controller
             return response()->json(
                 [
                     'success' => true,
-                    'message' => 'Approval submitted successfully, waiting for other users',
+                    'message' => 'Persetujuan berhasil, Tunggu persetujuan dari user lainnya',
                     'data' => $persetujuan,$persetujuanDetail,
                 ],
                 200,
