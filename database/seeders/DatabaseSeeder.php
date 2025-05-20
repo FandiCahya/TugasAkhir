@@ -18,7 +18,7 @@ class DatabaseSeeder extends Seeder
         // Jalankan FormulirUsulanSeeder
         $this->call(UserSeeder::class);
         $this->call(PengajuanSeeder::class);
-        $this->call(PengembanganSeeder::class);
-        $this->call(PengujianSeeder::class);
+        // $this->call(PengembanganSeeder::class);
+        // $this->call(PengujianSeeder::class);
     }
 }
