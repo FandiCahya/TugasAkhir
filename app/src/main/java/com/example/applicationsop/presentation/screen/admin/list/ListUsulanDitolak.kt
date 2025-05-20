@@ -43,7 +43,6 @@ fun ListPengajuanScreenAdmin2(navController: NavController) {
     @Composable
     fun refreshList() {
         LaunchedEffect(Unit) {
-            // Fetching the data when the Composable is first launched
             val fetchedPengajuanList = fetchPengajuanList("rejected") // Fetch the data
             pengajuanList = fetchedPengajuanList // Updating the state
         }
@@ -62,6 +61,8 @@ fun ListPengajuanScreenAdmin2(navController: NavController) {
             Date()
         }
     }
+
+    refreshList()
 
     Column(
         modifier = Modifier
