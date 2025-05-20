@@ -7,7 +7,7 @@
                 <h4 class="card-title">Data Users</h4>
 
                 <!-- Button to Open Add User Modal -->
-                <button type="button" class="btn btn-success btn-sm mb-3" onclick="openAddModal()">Tambah User</button>
+                <button type="button" class="btn btn-primary btn-sm mb-3" onclick="openAddModal()">Tambah User</button>
 
                 <!-- Search Input -->
                 <input type="text" id="search" class="form-control form-control-sm mb-3 me-2" placeholder="Search..."

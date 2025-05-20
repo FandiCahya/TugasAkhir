@@ -64,7 +64,7 @@ function renderTable() {
             <td class="text-center">${item.status}</td>
             <td class="text-center">${createdAt}</td>
             <td class="text-center">
-                <button class="btn btn-sm btn-secondary me-2" onclick='openEditModal(${JSON.stringify(item)})'>Edit</button>
+                <button class="btn btn-sm btn-warning me-2" onclick='openEditModal(${JSON.stringify(item)})'>Edit</button>
                 <button class="btn btn-sm btn-danger" onclick="deletePengajuan('${item.id}')">Delete</button>
             </td>
         `;
