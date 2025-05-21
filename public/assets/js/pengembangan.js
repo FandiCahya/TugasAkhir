@@ -7,7 +7,7 @@ const getAuthToken = () => localStorage.getItem('token');
 
     function loadPengajuanOptions() {
     const token = getAuthToken();
-    fetch('/api/pengajuan', {
+    fetch('/api/pengajuan?status=accepted', {
         headers: {
         'Accept': 'application/json',
         'Authorization': `Bearer ${token}`

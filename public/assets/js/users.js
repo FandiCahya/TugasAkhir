@@ -9,7 +9,7 @@ const getAuthToken = () => localStorage.getItem('token');
 // 1. Ambil data dari API
 function loadUsersData() {
     const token = getAuthToken();
-    console.log("Token di Users: ", token);
+    // console.log("Token di Users: ", token);
     fetch('/api/users', {
             headers: {
             'Accept': 'application/json',

@@ -8,7 +8,7 @@ const getAuthToken = () => localStorage.getItem('token');
 // 1. Ambil data dari API
 function loadDetailPengujianData() {
     const token = getAuthToken();
-    console.log("Token di DetailPengujian: ", token);
+    // console.log("Token di DetailPengujian: ", token);
     fetch('/api/pengujian-detail', {
             headers: {
             'Accept': 'application/json',
@@ -22,7 +22,7 @@ function loadDetailPengujianData() {
                 return Swal.fire('Error', 'ada kesalahan hit api Detail Pengujian', 'error');
             }
             DetailPengujianData = json.payload;
-            console.log("Data DetailPengujian: ", DetailPengujianData);
+            // console.log("Data DetailPengujian: ", DetailPengujianData);
             filteredData = DetailPengujianData;    // awalnya filter = semua data
             currentPage = 1;
             renderTable();

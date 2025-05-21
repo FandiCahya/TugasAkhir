@@ -60,7 +60,7 @@ document.getElementById('pengujian_detail_container').addEventListener('click', 
 
 function loadPengembanganOptions() {
     const token = getAuthToken();
-    fetch('/api/pengembangan', {
+    fetch('/api/pengembangan?status=finished', {
         headers: {
         'Accept': 'application/json',
         'Authorization': `Bearer ${token}`
@@ -69,7 +69,7 @@ function loadPengembanganOptions() {
     .then(res => res.json())
     .then(res => {
         if (res.success) {
-            console.log('Pengembangan:', res.payload);
+            // console.log('Pengembangan:', res.payload);
         const select = document.getElementById('pengembangan_id');
         select.innerHTML = '<option value="">-- Pilih pengembangan --</option>';
         res.payload.forEach(pengembangan => {
@@ -96,7 +96,7 @@ function loadUsersOptions() {
     })
     .then(res => res.json())
     .then(response => {
-        console.log('Raw response data:', response);
+        // console.log('Raw response data:', response);
 
         if (response.success && Array.isArray(response.data)) {
             const pelaksanaSelect = document.getElementById('pelaksana_id');
@@ -186,8 +186,6 @@ function loadUsersOptions() {
         console.error('Error load Users:', err);
     });
 }
-
-
 function loadPengujianData() {
     const token = getAuthToken();
     fetch('/api/pengujian', {
@@ -202,7 +200,7 @@ function loadPengujianData() {
             return Swal.fire('Error', 'Gagal memuat data pengujian', 'error');
         }
         PengujianData = json.payload;
-        console.log('PengujianData:', PengujianData);
+        // console.log('PengujianData:', PengujianData);
         filteredData = PengujianData;
         currentPage = 1;
         renderTable();
@@ -406,7 +404,7 @@ function openEditModal(item) {
     // Tampilkan nama pelaksana di readonly input
     document.getElementById('pelaksana_readonly').value = item.pelaksana?.name || '(Tidak diketahui)';
 
-    console.log('Set pelaksana_id_hidden:', document.getElementById('pelaksana_id_hidden').value);
+    // console.log('Set pelaksana_id_hidden:', document.getElementById('pelaksana_id_hidden').value);
 
     
     document.getElementById('pengujianModalLabel').textContent = 'Edit Pengujian';
@@ -420,7 +418,7 @@ document.addEventListener('DOMContentLoaded', loadPengujianData);
 document.getElementById('savePengujianBtn').addEventListener('click', function () {
     const token = getAuthToken();
     const id = document.getElementById('pengujian_id').value;
-    console.log('ID Pengujian:', id);
+    // console.log('ID Pengujian:', id);
     const url = id ? `/api/pengujian/${id}` : '/api/pengujian';
     const method = id ? 'PUT' : 'POST';
 
@@ -435,26 +433,9 @@ document.getElementById('savePengujianBtn').addEventListener('click', function (
     } else if (pelaksanaReadOnlyContainer.style.display !== 'none') {
         pelaksanaId = document.getElementById('pelaksana_id_hidden').value;
     }
-    console.log('Pelaksana ID:', pelaksanaId);
+    // console.log('Pelaksana ID:', pelaksanaId);
 
 
-//     const data = {    
-//         pengembangan_id: document.getElementById('pengembangan_id').value,
-//     perangkat_lunak: document.getElementById('perangkat_lunak').value,
-//     versi: document.getElementById('versi')?.value || '',
-//     tujuan: document.getElementById('tujuan').value,
-//     metode: document.getElementById('metode').value,
-//     tanggal: document.getElementById('tanggal').value,
-//     pelaksana_id: pelaksanaId,
-//     user_ids: Array.from(document.querySelectorAll('input[name="user_ids[]"]:checked')).map(cb => cb.value),
-
-//     pengujian_detail: [],
-//     catatan: {
-//             uraian: document.getElementById('catatan_uraian').value,
-//             rencana_tindak_lanjut: document.getElementById('catatan_rencana').value,
-//             penanggung_jawab_id: document.getElementById('penanggung_jawab_id').value,
-//         },
-// };
     const data = {    
     
     perangkat_lunak: document.getElementById('perangkat_lunak').value,
@@ -466,7 +447,7 @@ document.getElementById('savePengujianBtn').addEventListener('click', function (
 };
 
     if (!id) {  // artinya tambah
-        pengembangan_id: document.getElementById('pengembangan_id').value;
+    data.pengembangan_id = document.getElementById('pengembangan_id').value;
     data.user_ids = Array.from(document.querySelectorAll('input[name="user_ids[]"]:checked')).map(cb => cb.value);
 
     data.pengujian_detail = [];
@@ -484,30 +465,21 @@ document.getElementById('savePengujianBtn').addEventListener('click', function (
         data.pengujian_detail.push(detail);
     });
 
-    data.catatan = {
-        uraian: document.getElementById('catatan_uraian').value,
-        rencana_tindak_lanjut: document.getElementById('catatan_rencana').value,
-        penanggung_jawab_id: document.getElementById('penanggung_jawab_id').value,
-    };
+        const catatanUraian = document.getElementById('catatan_uraian').value.trim();
+        const catatanRencana = document.getElementById('catatan_rencana').value.trim();
+        const catatanPenanggungJawab = document.getElementById('penanggung_jawab_id').value;
+
+        if (catatanUraian || catatanRencana || catatanPenanggungJawab) {
+            data.catatan = {
+                uraian: catatanUraian,
+                rencana_tindak_lanjut: catatanRencana,
+                penanggung_jawab_id: catatanPenanggungJawab,
+            };
+        }
+
     }
-    // Ambil data detail pengujian dengan urut berdasarkan index
-    // const rows = document.querySelectorAll('.pengujian-detail-row');
-    // rows.forEach((row, index) => {
-    //     const detail = {};
-    //     // Ambil input/select di row ini
-    //     const inputs = row.querySelectorAll('input, select');
-    //     inputs.forEach(input => {
-    //         // contoh: pengujian_detail[0][nama_uji] -> ambil "nama_uji"
-    //         const match = input.name.match(/\[([^\]]+)\]$/);
-    //         if (match) {
-    //             const key = match[1];
-    //             detail[key] = input.value;
-    //         }
-    //     });
-    //     data.pengujian_detail.push(detail);
-    //     console.log('Detail Pengujian:', detail);
-    // });
-    console.log('Data stringify:', JSON.stringify(data));    
+
+    // console.log('Data stringify:', JSON.stringify(data));    
     fetch(url, {
         method: method,
         headers: {

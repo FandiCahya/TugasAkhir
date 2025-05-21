@@ -11504,6 +11504,11 @@ fieldset:disabled .btn {
   color: #000;
   background-color: #00d082;
   border-color: #00d082;
+  padding: clamp(6px, 1vw, 12px) clamp(12px, 2vw, 24px);
+  margin: 0.25rem 0.5rem; 
+  border-radius: 4px;
+  cursor: pointer; 
+  transition: background-color 0.3s ease;
 }
 
 .btn-success:hover {

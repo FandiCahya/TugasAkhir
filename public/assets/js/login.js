@@ -25,7 +25,7 @@ document.getElementById('loginForm').addEventListener('submit', async function(e
         if (response.ok && data.token) {
             // Simpan token ke localStorage
             localStorage.setItem('token', data.token);
-            console.log('Token:', data.token);
+            // console.log('Token:', data.token);
             Swal.fire({
                 icon: 'success',
                 title: 'Login Berhasil!',

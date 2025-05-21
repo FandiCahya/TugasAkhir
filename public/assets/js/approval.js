@@ -3,7 +3,7 @@ let filteredData = [];
 let currentPage = 1;
 const itemsPerPage = 3;
 const getAuthToken = () => localStorage.getItem('token');
-console.log("Token di Approval: ", getAuthToken());
+// console.log("Token di Approval: ", getAuthToken());
 let isDrawing = false;
 let lastX = 0;
 let lastY = 0;
@@ -60,7 +60,7 @@ function loadApprovalData() {
         }
 
         ApprovalData = json.payload;
-        console.log("Data Approval: ", ApprovalData);
+        // console.log("Data Approval: ", ApprovalData);
         filteredData = ApprovalData;
         currentPage = 1;
         renderTable();
@@ -186,7 +186,10 @@ function searchApproval() {
     filteredData = ApprovalData.filter(item =>
         (item.status || '').toLowerCase().includes(q) ||
         (item.catatan || '').toLowerCase().includes(q) ||
-        (item.user?.name || '').toLowerCase().includes(q)
+        (item.pengujian.perangkat_lunak || '').toLowerCase().includes(q) ||
+            item.persetujuan_pengujian_details.some(detail =>
+        (detail.user?.name || '').toLowerCase().includes(q)
+    )
     );
     currentPage = 1;
     renderTable();
@@ -231,7 +234,7 @@ function deleteApproval(id) {
 }
 
 function openEditModal(item) {
-    console.log("Item yang diedit: ", item);
+    // console.log("Item yang diedit: ", item);
     document.getElementById('approval_id').value = item.id;
     document.getElementById('status').value = item.status;
     document.getElementById('catatan').value = item.catatan || '';
