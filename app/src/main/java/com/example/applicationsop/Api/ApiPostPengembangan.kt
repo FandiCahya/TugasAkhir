@@ -1,5 +1,6 @@
 package com.example.applicationsop.Api
 
+import android.content.Context
 import io.ktor.client.*
 import io.ktor.client.request.*
 import io.ktor.client.plugins.contentnegotiation.*
@@ -8,8 +9,8 @@ import io.ktor.client.engine.okhttp.OkHttp
 import io.ktor.http.*
 import io.ktor.serialization.kotlinx.json.*
 import com.example.applicationsop.core.ApiConfig
+import com.example.applicationsop.core.UserUtils
 import kotlinx.serialization.json.Json
-import io.ktor.client.call.body
 import io.ktor.client.statement.HttpResponse
 import com.example.applicationsop.models.PengembanganRequest
 import io.ktor.client.statement.bodyAsText
@@ -25,29 +26,31 @@ val PostPengembangan = HttpClient(OkHttp) {
 }
 
 // Function to submit Pengembangan via POST request
-suspend fun postPengembangan(pengembanganRequest: PengembanganRequest): HttpResponse {
+suspend fun postPengembangan(context: Context, pengembanganRequest: PengembanganRequest): HttpResponse {
     return try {
-        // Make the POST request to the API
+        val userData = UserUtils.getUserData(context)
+        val token = userData["token"]
+
         val response: HttpResponse = PostPengembangan.post("${ApiConfig.BASE_URL}pengembangan") {
             contentType(ContentType.Application.Json)
-            setBody(pengembanganRequest)  // Send the PengembanganRequest as body
+            headers {
+                append(HttpHeaders.Authorization, "Bearer $token")
+            }
+            setBody(pengembanganRequest)
         }
 
-        // Handle successful response
+        val responseBody = response.bodyAsText()
         if (response.status.value in 200..299) {
-            val responseBody = response.bodyAsText()
             println("Successfully submitted Pengembangan!")
-            println("Failed to submit Pengembangan: $responseBody")
-
         } else {
-            val responseBody = response.bodyAsText()  // Mengambil body response untuk debug
             println("Failed to submit Pengembangan: $responseBody")
         }
 
-        response  // Return the response object to check the result
+        response
 
     } catch (e: Exception) {
-        e.printStackTrace()  // Log the exception
+        e.printStackTrace()
         throw Exception("Failed to submit Pengembangan")
     }
 }
+

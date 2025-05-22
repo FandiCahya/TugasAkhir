@@ -30,6 +30,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.Path
 import androidx.compose.ui.graphics.asImageBitmap
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
@@ -90,6 +91,7 @@ fun FormUsulanScreen(navController: NavController, userId: String?) {
     val usedColors = remember { mutableStateOf(mutableSetOf(Color.Black, Color.White, Color.Gray)) }
 
     val coroutineScope = rememberCoroutineScope()
+    val context = LocalContext.current
 
     paths.value.add(PathState(Path(), drawColor.value, drawBrush.value))
 
@@ -131,7 +133,7 @@ fun FormUsulanScreen(navController: NavController, userId: String?) {
                 }
 
                 if (signatureFile != null) {
-                    val response = postPengajuan(pengajuanRequest, signatureFile)
+                    val response = postPengajuan(context, pengajuanRequest, signatureFile)
                     if (response.status.value in 200..299) {
                         Toast.makeText(navController.context, "Pengajuan berhasil dikirim!", Toast.LENGTH_LONG).show()
                         navController.popBackStack()

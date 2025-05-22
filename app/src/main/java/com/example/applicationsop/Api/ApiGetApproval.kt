@@ -23,6 +23,7 @@ val GetApproval = HttpClient(OkHttp) {
         requestTimeoutMillis = 10000
     }
 }
+
 suspend fun fetchApprovalList(persetujuanId: String? = null): List<Approval> {
     return try {
         val url = buildString {

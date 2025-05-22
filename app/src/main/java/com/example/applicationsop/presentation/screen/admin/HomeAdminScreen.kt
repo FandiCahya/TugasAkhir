@@ -30,6 +30,7 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.setValue
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.ui.platform.LocalContext
 import com.example.applicationsop.Api.fetchPengajuanList
 import com.example.applicationsop.Api.fetchPengembanganList
 import com.example.applicationsop.Api.fetchPengujianList
@@ -53,15 +54,16 @@ fun HomeAdminScreen(
     var pengujianCount by remember { mutableStateOf(0) }
     var riwayatCount by remember { mutableStateOf(0)}
 
+    val context = LocalContext.current
 
     // Fetch jumlah data pengajuan
     LaunchedEffect(Unit) {
-        pendingCount = fetchPengajuanList("pending").size
-        rejectedCount = fetchPengajuanList("rejected").size
-        acceptedCount = fetchPengajuanList("accepted").size
-        pengembanganCount = fetchPengembanganList().size
-        pengujianCount = fetchPengujianList(status_persetujuan = "approved").size
-        riwayatCount = fetchPengajuanList("finished").size
+        pendingCount = fetchPengajuanList(context, "pending").size
+        rejectedCount = fetchPengajuanList(context, "rejected").size
+        acceptedCount = fetchPengajuanList(context, "accepted").size
+        pengembanganCount = fetchPengembanganList(context).size
+        pengujianCount = fetchPengujianList(context, status_persetujuan = "approved").size
+        riwayatCount = fetchPengajuanList(context, "finished").size
     }
 
     Box(

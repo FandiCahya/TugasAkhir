@@ -8,6 +8,7 @@ import androidx.compose.material3.Surface
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.navigation.compose.rememberNavController
+import com.example.applicationsop.core.UserUtils
 import com.example.applicationsop.navigation.MainApp
 import com.example.applicationsop.navigation.MainApp
 import com.example.applicationsop.ui.theme.ApplicationSOPTheme
@@ -32,6 +33,8 @@ class MainActivity : ComponentActivity() {
                     val devisi = intent.getStringExtra("devisi")
 
                     println("Token: $token")
+                    val userData = UserUtils.getUserData(this)  // 'this' adalah Context, misalnya dari Activity
+                    println("User Data: $userData")
 
                     // Check if token exists
                     if (token != null) {

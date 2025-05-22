@@ -49,6 +49,7 @@ fun ListPengujianScreenUser(navController: NavController) {
     LaunchedEffect(Unit) {
         // Fetching the data when the Composable is first launched
         val fetchedPengujianList = fetchPengujianList(
+            context,
             disetujui_oleh = userId,
             status_persetujuan = "approved"
         ) // Fetch the data

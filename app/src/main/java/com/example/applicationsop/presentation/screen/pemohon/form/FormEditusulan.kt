@@ -21,6 +21,7 @@ import androidx.compose.ui.ExperimentalComposeUiApi
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.Path
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
@@ -34,6 +35,7 @@ import com.example.applicationsop.presentation.component.header.HeaderForm
 import com.example.applicationsop.presentation.component.signaturepad.PathState
 import com.example.applicationsop.ui.theme.Maroon
 import com.example.applicationsop.ui.theme.Putih
+import io.ktor.client.content.LocalFileContent
 import kotlinx.coroutines.launch
 
 
@@ -69,6 +71,8 @@ fun FormEditUsulan(
 
     val coroutineScope = rememberCoroutineScope()
 
+    val context = LocalContext.current
+
     paths.value.add(PathState(Path(), drawColor.value, drawBrush.value))
 
     // Function to handle form submission
@@ -89,7 +93,7 @@ fun FormEditUsulan(
                 // Call the API to update the Pengajuan data
                 coroutineScope.launch {
                     try {
-                        val response = updatePengajuan(id, pengajuanRequest)
+                        val response = updatePengajuan(context, id, pengajuanRequest)
 
                         // Check if the response was successful
                         if (response.status.value in 200..299) {

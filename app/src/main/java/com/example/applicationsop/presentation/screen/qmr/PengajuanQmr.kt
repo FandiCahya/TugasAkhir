@@ -18,6 +18,7 @@ import androidx.compose.runtime.LaunchedEffect
 import com.example.applicationsop.Api.fetchPengajuanList
 import com.example.applicationsop.models.Pengajuan
 import androidx.compose.foundation.lazy.items
+import androidx.compose.ui.platform.LocalContext
 import com.example.applicationsop.presentation.component.listitem.ListPengajuanItem
 import com.example.applicationsop.presentation.component.header.HeaderWithSearch
 import com.example.applicationsop.presentation.component.popup.DetailPopupUsulanAdmin
@@ -29,9 +30,10 @@ fun ListPengajuanQmr(navController: NavController) {
     var showPopup by remember { mutableStateOf(false) }
     var selectedDetail by remember { mutableStateOf(DetailInfo(id="")) }
     var pengajuanList by remember { mutableStateOf<List<Pengajuan>>(emptyList()) }
+    val context = LocalContext.current
 
     LaunchedEffect(Unit) {
-        val fetchedPengajuanList = fetchPengajuanList("pending")
+        val fetchedPengajuanList = fetchPengajuanList(context,"pending")
         Log.d("PengajuanList", "Fetched Pengajuan List: $fetchedPengajuanList")
         if (fetchedPengajuanList.isEmpty()) {
             Log.d("PengajuanList", "No data available")

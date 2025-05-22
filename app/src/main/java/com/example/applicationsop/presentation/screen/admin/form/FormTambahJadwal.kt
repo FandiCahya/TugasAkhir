@@ -16,6 +16,7 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.compose.ui.draw.shadow
+import androidx.compose.ui.platform.LocalContext
 import androidx.navigation.NavController
 import com.example.applicationsop.ui.theme.Maroon
 import com.example.applicationsop.ui.theme.Putih
@@ -46,6 +47,8 @@ fun ScheduleForm(
     var isLoading by remember { mutableStateOf(false) }
     var responseMessage by remember { mutableStateOf("") }
     var validationErrors by remember { mutableStateOf<Map<String, String>>(emptyMap()) }
+
+    val context = LocalContext.current
 
     // Create a trigger state to launch the effect
     val triggerApiCall = remember { mutableStateOf(false) }
@@ -292,7 +295,7 @@ fun ScheduleForm(
         LaunchedEffect(triggerApiCall.value) {
             isLoading = true
             try {
-                val response = postPengembangan(pengembanganRequest)
+                val response = postPengembangan(context ,pengembanganRequest)
                 if (response.status.value in 200..299) {
                     responseMessage = "Pengembangan berhasil disubmit!"
                     // Show a Toast after successful submission

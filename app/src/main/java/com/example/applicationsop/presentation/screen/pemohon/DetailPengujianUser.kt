@@ -116,13 +116,11 @@ fun DetailPengujianPemohon(
 
     val scrollState = rememberScrollState()
 
-
-
     LaunchedEffect(idPengujian) {
         println("LaunchedEffect triggered with idPengujian: $idPengujian")
 
         if (idPengujian != null) {
-            val fetchedPengujian = fetchPengujianList(idPengujian).firstOrNull()
+            val fetchedPengujian = fetchPengujianList(context, idPengujian).firstOrNull()
             pengujian = fetchedPengujian
             isLoading = false
 
@@ -783,9 +781,9 @@ fun DetailPengujianPemohon(
                                         )
                                         coroutineScope.launch {
                                             try {
-                                                val response = updatePersetujuanPengujian(firstPersetujuanDetailId, pengujianRequest)
+                                                val response = updatePersetujuanPengujian(context, firstPersetujuanDetailId, pengujianRequest)
                                                 if (signatureFile != null) {
-                                                    val response = UpdatePersetujuanDiterima(firstPersetujuanDetailId, pengujianRequest, signatureFile)
+                                                    val response = UpdatePersetujuanDiterima(context ,firstPersetujuanDetailId, pengujianRequest, signatureFile)
                                                     if (response.status.value in 200..299) {
                                                         Toast.makeText(navController.context, "Approval berhasil dikirim!", Toast.LENGTH_LONG).show()
                                                         navController.popBackStack()

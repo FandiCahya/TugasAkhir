@@ -1,5 +1,6 @@
 package com.example.applicationsop.Api
 
+import android.content.Context
 import android.util.Log
 import io.ktor.client.*
 import io.ktor.client.request.*
@@ -9,6 +10,7 @@ import io.ktor.client.engine.okhttp.OkHttp
 import io.ktor.http.*
 import io.ktor.serialization.kotlinx.json.*
 import com.example.applicationsop.core.ApiConfig
+import com.example.applicationsop.core.UserUtils
 import com.example.applicationsop.models.PengajuanRequest
 import com.example.applicationsop.models.PersetujuanDetail
 import kotlinx.serialization.json.Json
@@ -29,67 +31,82 @@ val PostPersetujuan = HttpClient(OkHttp) {
 }
 
 // Function to update Persetujuan via PUT request
-suspend fun updatePersetujuanPengujian(id: String, persetujuanRequest: PersetujuanDetail): HttpResponse {
+suspend fun updatePersetujuanPengujian(
+    context: Context,
+    id: String,
+    persetujuanRequest: PersetujuanDetail
+): HttpResponse {
     return try {
-        // Make the PUT request to the API
+        val userData = UserUtils.getUserData(context)
+        val token = userData["token"]
+
         val response: HttpResponse = PostPersetujuan.post("${ApiConfig.BASE_URL}pengujian-detail/$id") {
             contentType(ContentType.Application.Json)
-            setBody(persetujuanRequest)  // Send the PersetujuanRequest as body
+            headers {
+                append(HttpHeaders.Authorization, "Bearer $token")
+            }
+            setBody(persetujuanRequest)
         }
 
-        // Handle successful response
         if (response.status.value in 200..299) {
             println("Successfully updated Persetujuan Pengujian!")
         } else {
-            val responseBody = response.bodyAsText()  // Get response body for debugging
+            val responseBody = response.bodyAsText()
             println("Failed to update Persetujuan Pengujian: $responseBody")
         }
 
-        response  // Return the response object to check the result
+        response
 
     } catch (e: Exception) {
-        e.printStackTrace()  // Log the exception
+        e.printStackTrace()
         throw Exception("Failed to update Persetujuan Pengujian")
     }
 }
 
-suspend fun UpdatePersetujuanDiterima(id: String, persetujuanRequest: PersetujuanDetail, signatureFile: File): HttpResponse {
+suspend fun UpdatePersetujuanDiterima(
+    context: Context,
+    id: String,
+    persetujuanRequest: PersetujuanDetail,
+    signatureFile: File
+): HttpResponse {
     return try {
-        // Make the POST request to the API
+        val token = context.getSharedPreferences("user_session", Context.MODE_PRIVATE)
+            .getString("token", null)
+
         val response: HttpResponse = PostPersetujuan.post("${ApiConfig.BASE_URL}pengujian-detail/$id") {
             contentType(ContentType.MultiPart.FormData)
-            // Send multipart form-data
+            headers {
+                append(HttpHeaders.Authorization, "Bearer $token")
+            }
             setBody(
                 MultiPartFormDataContent(
                     formData {
                         append("status", persetujuanRequest.status ?: "")
                         append("catatan", persetujuanRequest.catatan ?: "")
-                        // Adding the signature image file as part of the form
                         append("signature", signatureFile.readBytes(), Headers.build {
-                            append(HttpHeaders.ContentType, "image/png")  // Modify the content type based on the image format
+                            append(HttpHeaders.ContentType, "image/png")
                             append(HttpHeaders.ContentDisposition, "filename=\"${signatureFile.name}\"")
                         })
                     }
                 )
             )
-
         }
 
-        // Handle successful response
         if (response.status.value in 200..299) {
             println("Successfully submitted Persetujuan!")
             Log.d("API Response", "Status: ${response.status}, Body: ${response.bodyAsText()}")
         } else {
-            val responseBody = response.bodyAsText()  // Mengambil body response untuk debug
+            val responseBody = response.bodyAsText()
             println("Failed to submit Persetujuan: $responseBody")
             Log.e("API Error", "Status: ${response.status}, Body: $responseBody")
             throw Exception("Failed to submit Persetujuan")
         }
 
-        response  // Return the response object to check the result
+        response
 
     } catch (e: Exception) {
-        e.printStackTrace()  // Log the exception
+        e.printStackTrace()
         throw Exception("Failed to submit Persetujuan")
     }
 }
+

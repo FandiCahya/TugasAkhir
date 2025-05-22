@@ -139,7 +139,7 @@ fun DetailPengujianAdmin(
         println("LaunchedEffect triggered with idPengujian: $idPengujian")
 
         if (idPengujian != null) {
-            val fetchedPengujian = fetchPengujianList(idPengujian).firstOrNull()
+            val fetchedPengujian = fetchPengujianList(context, idPengujian).firstOrNull()
             pengujian = fetchedPengujian
             isLoading = false
 
@@ -813,11 +813,13 @@ fun DetailPengujianAdmin(
                                      coroutineScope.launch {
                                         try {
                                             val response = updatePersetujuanPengujian(
+                                                context,
                                                 firstPersetujuanDetailId,
                                                 pengujianRequest
                                             )
                                             if (signatureFile != null) {
                                                 val response = UpdatePersetujuanDiterima(
+                                                    context,
                                                     firstPersetujuanDetailId,
                                                     pengujianRequest,
                                                     signatureFile

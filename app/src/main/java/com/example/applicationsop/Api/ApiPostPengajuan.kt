@@ -1,5 +1,6 @@
 package com.example.applicationsop.Api
 
+import android.content.Context
 import android.util.Log
 import io.ktor.client.*
 import io.ktor.client.request.*
@@ -9,6 +10,7 @@ import io.ktor.client.engine.okhttp.OkHttp
 import io.ktor.http.*
 import io.ktor.serialization.kotlinx.json.*
 import com.example.applicationsop.core.ApiConfig
+import com.example.applicationsop.core.UserUtils
 import kotlinx.serialization.json.Json
 import io.ktor.client.statement.HttpResponse
 import com.example.applicationsop.models.PengajuanRequest
@@ -27,12 +29,20 @@ val PostPengajuan = HttpClient(OkHttp) {
 }
 
 // Function to submit Pengajuan via POST request
-suspend fun postPengajuan(pengajuanRequest: PengajuanRequest, signatureFile: File): HttpResponse {
+suspend fun postPengajuan(
+    context: Context,
+    pengajuanRequest: PengajuanRequest,
+    signatureFile: File
+): HttpResponse {
     return try {
-        // Make the POST request to the API
+        val userData = UserUtils.getUserData(context)
+        val token = userData["token"]
+
         val response: HttpResponse = PostPengajuan.post("${ApiConfig.BASE_URL}pengajuan") {
             contentType(ContentType.MultiPart.FormData)
-            // Send multipart form-data
+            headers {
+                append(HttpHeaders.Authorization, "Bearer $token")
+            }
             setBody(
                 MultiPartFormDataContent(
                     formData {
@@ -45,32 +55,29 @@ suspend fun postPengajuan(pengajuanRequest: PengajuanRequest, signatureFile: Fil
                         append("status", pengajuanRequest.status ?: "")
                         append("user_id", pengajuanRequest.user_id ?: "")
 
-                        // Adding the signature image file as part of the form
                         append("signature", signatureFile.readBytes(), Headers.build {
-                            append(HttpHeaders.ContentType, "image/png")  // Modify the content type based on the image format
+                            append(HttpHeaders.ContentType, "image/png")
                             append(HttpHeaders.ContentDisposition, "filename=\"${signatureFile.name}\"")
                         })
                     }
                 )
             )
-
         }
 
-        // Handle successful response
         if (response.status.value in 200..299) {
             println("Successfully submitted Pengajuan!")
             Log.d("API Response", "Status: ${response.status}, Body: ${response.bodyAsText()}")
         } else {
-            val responseBody = response.bodyAsText()  // Mengambil body response untuk debug
+            val responseBody = response.bodyAsText()
             println("Failed to submit Pengajuan: $responseBody")
             Log.e("API Error", "Status: ${response.status}, Body: $responseBody")
             throw Exception("Failed to submit Pengajuan")
         }
 
-        response  // Return the response object to check the result
-
+        response
     } catch (e: Exception) {
-        e.printStackTrace()  // Log the exception
+        e.printStackTrace()
         throw Exception("Failed to submit Pengajuan")
     }
 }
+

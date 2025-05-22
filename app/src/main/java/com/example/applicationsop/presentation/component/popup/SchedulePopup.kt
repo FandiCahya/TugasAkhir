@@ -73,6 +73,8 @@ fun SchedulePopupAdmin(
     var selectedStagesState by remember { mutableStateOf(selectedStages) }
     var progressPercentageState by remember { mutableStateOf(progressPercentage) }
 
+    val context = LocalContext.current
+
     val availableStages = listOf("Analisis", "Desain UI/UX", "Pengerjaan", "Penyelesaian", "Testing")
     val coroutineScope = rememberCoroutineScope()
     Box(modifier = Modifier.fillMaxSize()) {
@@ -283,7 +285,7 @@ fun SchedulePopupAdmin(
                                                 status = newStatus
                                             )
 
-                                            val response = updatePengembangan(idState, updatedPengembangan)
+                                            val response = updatePengembangan(context, idState, updatedPengembangan)
 
                                             if (response.status.value in 200..299) {
                                                 Toast.makeText(context, "Update berhasil!", Toast.LENGTH_SHORT).show()

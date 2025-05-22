@@ -46,6 +46,7 @@ import androidx.compose.ui.draw.shadow
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.Path
 import androidx.compose.ui.graphics.asImageBitmap
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
@@ -141,6 +142,8 @@ fun FormPengujianAdmin(navController: NavController, idPengembangan: String?, na
     var hasilYangDiharapkan by remember { mutableStateOf("") }
     var hasilPengujian by remember { mutableStateOf("") }
     var keteranganStatus by remember { mutableStateOf("OK") }
+
+    val context1 = LocalContext.current
 
     // Get user data (userId)
     val context = navController.context
@@ -513,7 +516,7 @@ fun FormPengujianAdmin(navController: NavController, idPengembangan: String?, na
 
                             coroutineScope.launch {
                                 try {
-                                    postPengujian(pengujianRequest)
+                                    postPengujian(context1, pengujianRequest)
                                     Toast.makeText(context, "Pengujian berhasil disubmit!", Toast.LENGTH_SHORT).show()
                                     navController.popBackStack()
                                 } catch (e: Exception) {
