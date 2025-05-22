@@ -61,8 +61,8 @@ fun SchedulePopupAdmin(
     description: String,
     selectedStages: List<String>,
     progressPercentage: Int,
-    status: String, // Adding status to the parameters
-    navController: NavController // Adding navController for navigation to the new form
+    status: String,
+    navController: NavController
 ) {
 
     var taskNameState by remember { mutableStateOf(taskName) }
