@@ -25,18 +25,19 @@ import com.example.applicationsop.ui.theme.Maroon
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Error
 import androidx.compose.ui.draw.clip
+import androidx.compose.ui.platform.LocalContext
 
 @SuppressLint("UnrememberedMutableState")
 @Composable
 fun DetailApproval(navController: NavController, persetujuanId: String?) {
     var approvals by remember { mutableStateOf<List<Approval>>(emptyList()) }
+    val context = LocalContext.current
 
     // Fetch data dari API
     LaunchedEffect(persetujuanId) {
-        approvals = fetchApprovalList(persetujuanId)
+        approvals = fetchApprovalList(context, persetujuanId)
+        println("Laporan List: ${approvals}")
     }
-
-    Log.d("ApprovalDebug", "List Approval = $approvals")
 
     val scrollState = rememberScrollState()
 

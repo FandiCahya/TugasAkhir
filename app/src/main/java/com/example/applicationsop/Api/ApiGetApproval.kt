@@ -1,5 +1,6 @@
 package com.example.applicationsop.Api
 
+import android.content.Context
 import io.ktor.client.*
 import io.ktor.client.request.*
 import io.ktor.client.plugins.contentnegotiation.*
@@ -9,6 +10,7 @@ import io.ktor.http.*
 import io.ktor.serialization.kotlinx.json.*
 import com.example.applicationsop.models.Approval
 import com.example.applicationsop.core.ApiConfig
+import com.example.applicationsop.core.UserUtils
 import com.example.applicationsop.models.ApprovalResponse
 import kotlinx.serialization.json.Json
 import io.ktor.client.call.body
@@ -24,8 +26,11 @@ val GetApproval = HttpClient(OkHttp) {
     }
 }
 
-suspend fun fetchApprovalList(persetujuanId: String? = null): List<Approval> {
+suspend fun fetchApprovalList(context: Context, persetujuanId: String? = null): List<Approval> {
     return try {
+        val userData = UserUtils.getUserData(context)
+        val token = userData["token"]
+
         val url = buildString {
             append("${ApiConfig.BASE_URL}approval?")
             if (persetujuanId != null) append("persetujuanId=$persetujuanId")
@@ -34,6 +39,9 @@ suspend fun fetchApprovalList(persetujuanId: String? = null): List<Approval> {
         // Make the GET request with the built URL
         val response: HttpResponse = GetApproval.get(url) {
             contentType(ContentType.Application.Json)
+            headers {
+                append(HttpHeaders.Authorization, "Bearer $token")
+            }
         }
 
         if (response.status.value in 200..299) {
