@@ -1,5 +1,6 @@
 package com.example.applicationsop.Api
 
+import android.content.Context
 import io.ktor.client.*
 import io.ktor.client.request.*
 import io.ktor.client.plugins.contentnegotiation.*
@@ -8,10 +9,12 @@ import io.ktor.client.engine.okhttp.OkHttp
 import io.ktor.http.*
 import io.ktor.serialization.kotlinx.json.*
 import com.example.applicationsop.core.ApiConfig
+import com.example.applicationsop.core.UserUtils
 import kotlinx.serialization.json.Json
 import io.ktor.client.statement.HttpResponse
 import com.example.applicationsop.models.PengujianRequest
 import io.ktor.client.call.body
+import io.ktor.client.statement.bodyAsText
 import kotlinx.serialization.encodeToString
 import kotlinx.serialization.json.JsonObject
 import kotlinx.serialization.json.JsonArray
@@ -29,15 +32,20 @@ val PostPengujian = HttpClient(OkHttp) {
 }
 
 // Function to submit Pengujian via POST request
-suspend fun postPengujian(pengujianRequest: PengujianRequest): HttpResponse {
+suspend fun postPengujian(context: Context, pengujianRequest: PengujianRequest): HttpResponse {
     return try {
-        // Make the POST request to the API
+        val userData = UserUtils.getUserData(context)
+        val token = userData["token"]
+
         val response: HttpResponse = PostPengujian.post("${ApiConfig.BASE_URL}pengujian") {
             contentType(ContentType.Application.Json)
-            setBody(pengujianRequest)  // Kirim data dalam format JSON
+            headers {
+                append(HttpHeaders.Authorization, "Bearer $token")
+            }
+            setBody(pengujianRequest)
         }
 
-        val responseBody = response.body<String>()
+        val responseBody = response.bodyAsText()
         val responseStatus = response.status
         val responseHeaders = response.headers
 
@@ -45,17 +53,17 @@ suspend fun postPengujian(pengujianRequest: PengujianRequest): HttpResponse {
         println("Response Headers: $responseHeaders")
         println("Response Body: $responseBody")
 
-        // Handle response dengan status sukses (200-299)
         if (response.status.isSuccess()) {
             println("Successfully submitted Pengujian!")
         } else {
             println("Failed to submit Pengujian: $responseBody")
         }
 
-        response  // Return response object untuk pengecekan lebih lanjut
+        response
 
     } catch (e: Exception) {
-        e.printStackTrace()  // Log error
+        e.printStackTrace()
         throw Exception("Failed to submit Pengujian: ${e.message}")
     }
 }
+

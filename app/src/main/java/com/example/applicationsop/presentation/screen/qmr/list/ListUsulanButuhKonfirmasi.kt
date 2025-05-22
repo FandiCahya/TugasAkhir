@@ -24,6 +24,7 @@ import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.ui.Alignment
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.font.FontWeight
 import com.example.applicationsop.presentation.component.listitem.ListPengajuanItem
@@ -38,9 +39,10 @@ fun ListPengajuanScreenQmr1(navController: NavController) {
     var showPopup by remember { mutableStateOf(false) }
     var selectedDetail by remember { mutableStateOf(DetailInfo(id = "")) }
     var pengajuanList by remember { mutableStateOf<List<Pengajuan>>(emptyList()) }
+    val context = LocalContext.current
 
     LaunchedEffect(Unit) {
-        val fetchedPengajuanList = fetchPengajuanList("pending")
+        val fetchedPengajuanList = fetchPengajuanList(context,"pending")
         Log.d("PengajuanList", "Fetched Pengajuan List: $fetchedPengajuanList")
         if (fetchedPengajuanList.isEmpty()) {
             Log.d("PengajuanList", "No data available")

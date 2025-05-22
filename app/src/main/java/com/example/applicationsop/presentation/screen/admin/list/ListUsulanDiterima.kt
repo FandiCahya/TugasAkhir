@@ -1,5 +1,6 @@
 package com.example.applicationsop.presentation.screen.admin.list
 
+import android.content.Context
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
@@ -23,6 +24,7 @@ import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.ui.Alignment
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.font.FontWeight
 import com.example.applicationsop.presentation.component.listitem.ListPengajuanItem
@@ -41,10 +43,12 @@ fun ListPengajuanScreenAdmin3(navController: NavController) {
     var selectedDetail by remember { mutableStateOf(DetailInfo(id = "")) }
     var pengajuanList by remember { mutableStateOf<List<Pengajuan>>(emptyList()) }
 
+    val context = LocalContext.current
+
     @Composable
     fun refreshList() {
         LaunchedEffect(Unit) {
-            val fetchedPengajuanList = fetchPengajuanList("accepted") // Fetch the data
+            val fetchedPengajuanList = fetchPengajuanList(context,"accepted") // Fetch the data
             pengajuanList = fetchedPengajuanList // Updating the state
         }
     }
@@ -151,7 +155,7 @@ fun ListPengajuanScreenAdmin3(navController: NavController) {
                 // Jika status adalah accepted, navigasi ke Add Schedule
                 if (selectedDetail.status == "accepted") {
                     navController.navigate("addSchedule?id=${selectedDetail.id}&namaSistem=${selectedDetail.namaSistem}")
-                    refreshData { updatedList -> pengajuanList = updatedList }
+                    refreshData(context) { updatedList -> pengajuanList = updatedList }
                 }
             },
             onRejectClick = { alasan ->
@@ -161,9 +165,9 @@ fun ListPengajuanScreenAdmin3(navController: NavController) {
     }
 }
 
-private fun refreshData(onDataUpdated: (List<Pengajuan>) -> Unit) {
+private fun refreshData(context: Context ,onDataUpdated: (List<Pengajuan>) -> Unit) {
     CoroutineScope(Dispatchers.IO).launch {
-        val updatedList = fetchPengajuanList("pending")
+        val updatedList = fetchPengajuanList(context,"pending")
         withContext(Dispatchers.Main) {
             onDataUpdated(updatedList)
         }

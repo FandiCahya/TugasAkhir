@@ -1,5 +1,6 @@
 package com.example.applicationsop.Api
 
+import android.content.Context
 import io.ktor.client.*
 import io.ktor.client.request.*
 import io.ktor.client.plugins.contentnegotiation.*
@@ -9,6 +10,7 @@ import io.ktor.http.*
 import io.ktor.serialization.kotlinx.json.*
 import com.example.applicationsop.models.Pengajuan
 import com.example.applicationsop.core.ApiConfig
+import com.example.applicationsop.core.UserUtils
 import com.example.applicationsop.models.ResponsePengajuan
 import kotlinx.serialization.json.Json
 import io.ktor.client.call.body
@@ -24,39 +26,47 @@ val GetPengajuan = HttpClient(OkHttp) {
     }
 }
 
-// Function to fetch Pengajuan list based on status
-suspend fun fetchPengajuanList(status: String? = null, role: String? = null, devisi: String? = null): List<Pengajuan> {
+suspend fun fetchPengajuanList(
+    context: Context,
+    status: String? = null,
+    role: String? = null,
+    devisi: String? = null
+): List<Pengajuan> {
     return try {
-        // Build the URL dynamically with query parameters if provided
+        val userData = UserUtils.getUserData(context)
+        val token = userData["token"]
+
         val url = buildString {
             append("${ApiConfig.BASE_URL}pengajuan?")
             if (status != null) append("status=$status&")
             if (role != null) append("role=$role&")
             if (devisi != null) append("devisi=$devisi&")
-
-            // Remove the trailing '&' if any query parameters were added
             if (endsWith("&")) deleteCharAt(length - 1)
         }
 
-        // Make the GET request with the built URL
         val response: HttpResponse = GetPengajuan.get(url) {
             contentType(ContentType.Application.Json)
+            if (!token.isNullOrEmpty()) {
+                headers {
+                    bearerAuth(token)
+                }
+            }
         }
 
         if (response.status.value in 200..299) {
             println("Successful response Get Pengajuan!")
         }
 
-        // Deserialize the response body into ResponsePengajuan
         val responsePengajuan: ResponsePengajuan = response.body()
         println("Pengajuan List: ${responsePengajuan.payload}")
 
-        responsePengajuan.payload // Return the list of pengajuan
+        responsePengajuan.payload
     } catch (e: Exception) {
-        e.printStackTrace()  // Log the exception
-        emptyList()  // Return an empty list on error
+        e.printStackTrace()
+        emptyList()
     }
 }
+
 
 
 

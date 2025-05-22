@@ -84,7 +84,7 @@ fun ListPengembanganScreen(navController: NavController) {
 
         if (role != null && devisi != null) {
             val fetchedPengembanganList =
-                fetchPengembanganSortList(role, devisi, userId) // Fetch the data
+                fetchPengembanganSortList(context, role, devisi, userId) // Fetch the data
             pengembanganList = fetchedPengembanganList // Updating the state
             println("Pengembangan List View :${pengembanganList}")
         }

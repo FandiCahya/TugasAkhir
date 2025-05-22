@@ -30,6 +30,7 @@ import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.ui.Alignment
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.font.FontWeight
 import com.example.applicationsop.data.DetailLaporan
@@ -40,11 +41,11 @@ fun HistoryAdmin(navController: NavController) {
     var showPopup by remember { mutableStateOf(false) }
     var selectedDetail by remember { mutableStateOf(DetailLaporan("")) }
     var laporanList by remember { mutableStateOf<List<Laporan>>(emptyList()) }
-
+    val context = LocalContext.current
 
     LaunchedEffect(Unit) {
         // Fetching the data when the Composable is first launched
-        val fetchLaporanList = fetchLaporanList(status_pengajuan = "finished") // Fetch the data
+        val fetchLaporanList = fetchLaporanList(context, status_pengajuan = "finished") // Fetch the data
         Log.d("FETCH_LAPORAN", fetchLaporanList.toString())
         laporanList = fetchLaporanList // Updating the state
     }

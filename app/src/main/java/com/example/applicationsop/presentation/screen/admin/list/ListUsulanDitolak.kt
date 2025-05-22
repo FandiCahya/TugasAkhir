@@ -23,6 +23,7 @@ import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.ui.Alignment
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.font.FontWeight
 import com.example.applicationsop.presentation.component.listitem.ListPengajuanItem
@@ -38,12 +39,12 @@ fun ListPengajuanScreenAdmin2(navController: NavController) {
     var showPopup by remember { mutableStateOf(false) }
     var selectedDetail by remember { mutableStateOf(DetailInfo(id = "")) }
     var pengajuanList by remember { mutableStateOf<List<Pengajuan>>(emptyList()) }
-
+    val context = LocalContext.current
 
     @Composable
     fun refreshList() {
         LaunchedEffect(Unit) {
-            val fetchedPengajuanList = fetchPengajuanList("rejected") // Fetch the data
+            val fetchedPengajuanList = fetchPengajuanList(context,"rejected") // Fetch the data
             pengajuanList = fetchedPengajuanList // Updating the state
         }
     }

@@ -26,12 +26,14 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.example.applicationsop.Api.fetchUserList
 import com.example.applicationsop.models.Users
 import com.example.applicationsop.ui.theme.Maroon
+import io.ktor.client.content.LocalFileContent
 import kotlinx.coroutines.launch
 
 @Composable
@@ -43,11 +45,13 @@ fun UserCheckboxList(checkedUserIds: MutableState<List<String>>) {
     // Role yang ingin ditampilkan
     val filteredRoles = listOf("admin", "user", "qmr", "kepalacabang")
 
+    val context = LocalContext.current
+
 
     // Fetch user list from API when the composable is first launched
     LaunchedEffect(Unit) {
         coroutineScope.launch {
-            val fetchedUsers = fetchUserList()
+            val fetchedUsers = fetchUserList(context)
             userList = fetchedUsers.filter { it.role in filteredRoles } // Filter user by role
             isLoading = false
         }

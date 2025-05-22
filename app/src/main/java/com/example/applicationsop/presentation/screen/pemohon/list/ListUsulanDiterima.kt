@@ -19,6 +19,7 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.font.FontWeight
 import androidx.navigation.NavController
@@ -37,12 +38,13 @@ fun ListPengajuanScreenDiterima(navController: NavController, role: String?, dev
     var showPopup by remember { mutableStateOf(false) }
     var selectedDetail by remember { mutableStateOf(DetailInfo(id = "")) }
     var pengajuanList by remember { mutableStateOf<List<Pengajuan>>(emptyList()) }
+    val context = LocalContext.current
 
     @Composable
     fun refreshList() {
         LaunchedEffect(role, devisi) {
             if (role != null && devisi != null) {
-                val fetchedPengajuanList = fetchPengajuanList("accepted", role, devisi)
+                val fetchedPengajuanList = fetchPengajuanList(context,"accepted", role, devisi)
                 pengajuanList = fetchedPengajuanList // Updating the state with fetched data
             }
         }

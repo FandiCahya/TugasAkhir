@@ -34,6 +34,7 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.shadow
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
@@ -70,6 +71,7 @@ fun DetailPopupUsulanAdmin(
 
     // Coroutine scope for launching suspend functions
     val coroutineScope = rememberCoroutineScope()
+    val context = LocalContext.current
 
     val displayNames = mapOf(
         "sistem_baru" to "Sistem Baru",
@@ -373,7 +375,7 @@ fun DetailPopupUsulanAdmin(
                                 // Call updatePengajuan API to update the status to accepted
                                 coroutineScope.launch {
                                     try {
-                                        val response = updatePengajuan(id, pengajuanRequest)
+                                        val response = updatePengajuan(context, id, pengajuanRequest)
                                         if (response.status.value in 200..299) {
                                             // Remove the accepted pengajuan from the list
                                             pengajuanList = pengajuanList.filterNot { it.id == id }
@@ -450,7 +452,7 @@ fun DetailPopupUsulanAdmin(
                                         // Call updatePengajuan API to update the status to rejected
                                         coroutineScope.launch {
                                             try {
-                                                val response = updatePengajuan(id, pengajuanRequest)
+                                                val response = updatePengajuan(context, id, pengajuanRequest)
                                                 if (response.status.value in 200..299) {
                                                     onRejectClick(inputAlasan)  // Execute the callback after rejection success
                                                     println("response success update alasan$response")

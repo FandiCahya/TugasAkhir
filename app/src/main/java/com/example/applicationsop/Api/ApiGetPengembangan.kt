@@ -1,5 +1,6 @@
 package com.example.applicationsop.Api
 
+import android.content.Context
 import io.ktor.client.*
 import io.ktor.client.request.*
 import io.ktor.client.plugins.contentnegotiation.*
@@ -9,6 +10,7 @@ import io.ktor.http.*
 import io.ktor.serialization.kotlinx.json.*
 import com.example.applicationsop.models.Pengembangan
 import com.example.applicationsop.core.ApiConfig
+import com.example.applicationsop.core.UserUtils
 import com.example.applicationsop.models.ResponsePengembangan
 import kotlinx.serialization.json.Json
 import io.ktor.client.call.body
@@ -25,67 +27,72 @@ val GetPengembangan = HttpClient(OkHttp) {
 }
 
 // Function to fetch pengembangan list
-suspend fun fetchPengembanganList(): List<Pengembangan> {
+suspend fun fetchPengembanganList(context: Context): List<Pengembangan> {
     return try {
+        val userData = UserUtils.getUserData(context)
+        val token = userData["token"]
+        println(token)
+
         val response: HttpResponse = GetPengembangan.get("${ApiConfig.BASE_URL}pengembangan") {
             contentType(ContentType.Application.Json)
+            headers {
+                append(HttpHeaders.Authorization, "Bearer $token")
+            }
         }
 
         if (response.status.value in 200..299) {
             println("Successful response Pengembangan!")
-
         }
-        // Cek isi response sebelum di-mapping
-        val rawResponse = response.body<String>() // Ambil raw JSON dulu
+
+        val rawResponse = response.body<String>()
         println("Raw Response: $rawResponse")
 
-        // Deserialize the response body into ResponsePengajuan
         val responsePengembangan: ResponsePengembangan = response.body()
         println("Pengembangan List: ${responsePengembangan.payload}")
 
-        // Filter the payload to exclude items with the status 'finished'
-        val filteredPengembanganList = responsePengembangan.payload.filter { pengembangan ->
-            pengembangan.status != "finished"  // Filter out 'finished' status
-        }
-        filteredPengembanganList
+        responsePengembangan.payload.filter { it.status != "finished" }
     } catch (e: Exception) {
-        e.printStackTrace()  // Log the exception
-        emptyList()  // Return an empty list on error
+        e.printStackTrace()
+        emptyList()
     }
 }
 
-
-suspend fun fetchPengembanganSortList(role: String? = null, devisi: String? = null,userId: String? = null): List<Pengembangan> {
+suspend fun fetchPengembanganSortList(
+    context: Context,
+    role: String? = null,
+    devisi: String? = null,
+    userId: String? = null
+): List<Pengembangan> {
     return try {
+        val userData = UserUtils.getUserData(context)
+        val token = userData["token"]
+
         val url = buildString {
             append("${ApiConfig.BASE_URL}pengembangan?")
             if (role != null) append("role=$role&")
             if (devisi != null) append("devisi=$devisi&")
             if (userId != null) append("userId=$userId&")
-
-            // Remove the trailing '&' if any query parameters were added
             if (endsWith("&")) deleteCharAt(length - 1)
         }
 
-        // Make the GET request with the built URL
         val response: HttpResponse = GetPengembangan.get(url) {
             contentType(ContentType.Application.Json)
+            headers {
+                append(HttpHeaders.Authorization, "Bearer $token")
+            }
         }
 
         if (response.status.value in 200..299) {
             println("Successful response Pengembangan!")
         }
 
-        // Deserialize the response body into ResponsePengajuan
         val responsePengembangan: ResponsePengembangan = response.body()
         println("Pengembangan List: ${responsePengembangan.payload}")
 
-        val filteredPengembanganList = responsePengembangan.payload.filter { pengembangan ->
-            pengembangan.status != "finished"  // Filter out 'finished' status
-        }
-        filteredPengembanganList
+        responsePengembangan.payload.filter { it.status != "finished" }
     } catch (e: Exception) {
-        e.printStackTrace()  // Log the exception
-        emptyList()  // Return an empty list on error
+        e.printStackTrace()
+        emptyList()
     }
 }
+

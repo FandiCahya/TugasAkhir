@@ -23,6 +23,7 @@ import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.ui.Alignment
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.font.FontWeight
 import com.example.applicationsop.presentation.component.header.HeaderWithSearch
@@ -38,9 +39,11 @@ fun ListPengembanganKacab(navController: NavController) {
     var selectedScheduleItem by remember { mutableStateOf<ScheduleItem?>(null) }
     var pengembanganListKacap by remember { mutableStateOf<List<Pengembangan>>(emptyList()) }
 
+    val context = LocalContext.current
+
     LaunchedEffect(Unit) {
         // Fetching the data when the Composable is first launched
-        val fetchedPengembanganList = fetchPengembanganList() // Fetch the data
+        val fetchedPengembanganList = fetchPengembanganList(context) // Fetch the data
         pengembanganListKacap = fetchedPengembanganList // Updating the state
         println("Pengembangan List View :${pengembanganListKacap}")
     }

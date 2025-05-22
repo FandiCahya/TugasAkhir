@@ -29,6 +29,7 @@ import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.unit.IntOffset
 import androidx.compose.ui.zIndex
 import com.example.applicationsop.ui.theme.Maroon
@@ -68,16 +69,17 @@ fun HomeUserScreen(
     var pengembanganCount by remember { mutableStateOf(0) }
     var pengujianCount by remember { mutableStateOf(0) }
     var riwayatCount by remember { mutableStateOf(0) }
+    val context = LocalContext.current
 
     // Trigger visibility change after the composable is first shown
     LaunchedEffect(true) {
         isVisible.value = true
-        pendingCount = fetchPengajuanList("pending", role, devisi).size
-        rejectedCount = fetchPengajuanList("rejected", role, devisi).size
-        acceptedCount = fetchPengajuanList("accepted", role, devisi).size
-        pengembanganCount = fetchPengembanganSortList( role, devisi,userId).size
-        pengujianCount = fetchPengujianList(user_id = userId,status_persetujuan = "approved").size
-        riwayatCount = fetchPengajuanList("finished").size
+        pendingCount = fetchPengajuanList(context,"pending", role, devisi).size
+        rejectedCount = fetchPengajuanList(context, "rejected", role, devisi).size
+        acceptedCount = fetchPengajuanList(context, "accepted", role, devisi).size
+        pengembanganCount = fetchPengembanganSortList(context, role, devisi,userId).size
+        pengujianCount = fetchPengujianList(context, user_id = userId,status_persetujuan = "approved").size
+        riwayatCount = fetchPengajuanList(context, "finished").size
     }
 
     Box(
