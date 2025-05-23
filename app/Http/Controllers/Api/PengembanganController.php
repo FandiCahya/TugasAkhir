@@ -219,7 +219,7 @@ class PengembanganController extends Controller
                 'tanggal_mulai' => 'date',
                 'tanggal_selesai' => 'date',
                 'tahap' => 'string',
-                'persentase' => 'integer|min:0|max:100',
+                'persentase' => 'nullable|integer|min:0',
                 'keterangan' => 'string',
                 'status' => 'in:developed,finished,testing',
             ]);

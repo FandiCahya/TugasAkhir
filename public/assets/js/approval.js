@@ -86,6 +86,16 @@ function groupByPengujian(data) {
     }, {});
 }
 
+document.addEventListener('click', function (e) {
+    if (e.target.classList.contains('clickable-signature')) {
+        const src = e.target.getAttribute('data-signature');
+        const modalImg = document.getElementById('modalSignatureImage');
+        modalImg.src = src;
+        const signatureModal = new bootstrap.Modal(document.getElementById('signatureModal'));
+        signatureModal.show();
+    }
+});
+
 function renderTable() {
     const tbody = document.getElementById('approval-body');
     tbody.innerHTML = '';
@@ -121,9 +131,14 @@ function renderTable() {
                     <td class="align-middle text-center">${detail.catatan || '-'}</td>
                     <td class="align-middle text-center">
                     ${detail.signature 
-                        ? `<img src="${window.location.origin}/storage/${detail.signature}" alt="Tanda Tangan" class="img-fluid border rounded" style="max-width: 100%; max-height: 200px;">` 
-                        : '-'}
+                            ? `<img src="${window.location.origin}/storage/${detail.signature}" 
+                                    alt="Tanda Tangan" 
+                                    class="img-fluid border rounded clickable-signature" 
+                                    style="max-width: 100%; max-height: 200px;" 
+                                    data-signature="${window.location.origin}/storage/${detail.signature}">` 
+                            : '-'}
                     </td>
+                    
                     <td class="align-middle text-center">${new Date(item.persetujuan_pengujian.updated_at).toLocaleString()}</td>
                     <td class="align-middle text-center">
                         <button class="btn btn-sm btn-warning me-2" onclick='openEditModal(${JSON.stringify(detail)})'>
@@ -146,12 +161,10 @@ function renderTable() {
 function getStatusBadge(status) {
     if (!status) return '<span class="badge bg-secondary">-</span>';
     switch (status.toLowerCase()) {
-        case 'approved':
+        case 'setuju':
             return '<span class="badge bg-success">Approved</span>';
-        case 'rejected':
+        case 'tidak_setuju':
             return '<span class="badge bg-danger">Rejected</span>';
-        case 'pending':
-            return '<span class="badge bg-warning text-dark">Pending</span>';
         default:
             return `<span class="badge bg-secondary">${status}</span>`;
     }

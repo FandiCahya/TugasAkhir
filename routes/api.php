@@ -31,7 +31,7 @@ Route::middleware('auth:sanctum')->group(function () {
     Route::resource('pengujian',PengujianController::class);
     Route::resource('pengujian-detail',PengujianDetailController::class);
     Route::resource('catatan-pengujian',CatatanPengujianController::class);
-    // Route::get( 'approval', [PersetujuanPengujianController::class, 'showall']);
+    Route::get( 'approval', [PersetujuanPengujianController::class, 'showall']);
     Route::get('showall', [ShowController::class, 'allshow']);
 
     Route::post('persetujuan-pengujian-detail/{id}/approval', [PersetujuanPengujianController::class, 'approval']);
