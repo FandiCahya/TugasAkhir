@@ -50,7 +50,7 @@ suspend fun fetchPengembanganList(context: Context): List<Pengembangan> {
         val responsePengembangan: ResponsePengembangan = response.body()
         println("Pengembangan List: ${responsePengembangan.payload}")
 
-        responsePengembangan.payload.filter { it.status != "finished" }
+        responsePengembangan.payload.filter { it.status != "testing" }
     } catch (e: Exception) {
         e.printStackTrace()
         emptyList()

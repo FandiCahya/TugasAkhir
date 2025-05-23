@@ -62,6 +62,8 @@ fun ListPengajuanScreenAdmin2(navController: NavController) {
             Date()
         }
     }
+    
+    refreshList()
 
     refreshList()
 
