@@ -27,6 +27,12 @@ import androidx.activity.ComponentActivity
 import androidx.lifecycle.viewmodel.compose.viewModel
 import com.example.applicationsop.ViewModel.SharedPengujianViewModel
 import android.app.Activity
+import android.content.Intent
+import android.widget.Toast
+import androidx.core.content.FileProvider
+import com.example.applicationsop.logic.downloadPdfToPublicDirectory
+import com.example.applicationsop.logic.generatePDF
+import java.io.File
 
 
 @Composable
@@ -53,23 +59,41 @@ fun RiwayatPopup(
 ) {
     val context = LocalContext.current
     val activity = context as? Activity
-    val encodedNamaSistem = Uri.encode(namaSistem)
-    val encodedJenis = Uri.encode(jenis)
-    val encodedRencanaAnggaran = Uri.encode(rencanaAnggaran)
-    val encodedMasalah = Uri.encode(masalah)
-    val encodedOutput = Uri.encode(output)
-    val encodedTanggalMulai = Uri.encode(tanggalMulai ?: "")
-    val encodedTanggalSelesai = Uri.encode(tanggalSelesai ?: "")
-    val encodedTahap = Uri.encode(tahap ?: "")
-    val encodedKeterangan = Uri.encode(keterangan ?: "")
-    val encodedPerangkatLunak = Uri.encode(perangkatLunak ?: "")
-    val encodedVersiPerangkat = Uri.encode(versiPerangkat ?: "")
-    val encodedTujuanPengujian = Uri.encode(tujuanPengujian ?: "")
-    val encodedMetodePengujian = Uri.encode(metodePengujian ?: "")
-    val encodedStatus = Uri.encode(status ?: "")
+    val decodedNamaSistem = Uri.decode(namaSistem)
+    val decodedJenis = Uri.decode(jenis)
+    val decodedRencanaAnggaran = Uri.decode(rencanaAnggaran)
+    val decodedMasalah = Uri.decode(masalah)
+    val decodedOutput = Uri.decode(output)
+    val decodedTanggalMulai = Uri.decode(tanggalMulai)
+    val decodedTanggalSelesai = Uri.decode(tanggalSelesai)
+    val decodedTahap = Uri.decode(tahap)
+    val decodedKeterangan = Uri.decode(keterangan)
+    val decodedPerangkatLunak = Uri.decode(perangkatLunak)
+    val decodedVersiPerangkat = Uri.decode(versiPerangkat)
+    val decodedTujuanPengujian = Uri.decode(tujuanPengujian)
+    val decodedMetodePengujian = Uri.decode(metodePengujian)
+    val decodedStatus = Uri.decode(status)
 
     val sharedViewModel = viewModel<SharedPengujianViewModel>(context as ComponentActivity)
     sharedViewModel.detailPersetujuan.value = detailPersetujuan
+
+    val internalPdfDirectory = context.getExternalFilesDir(null) ?: context.filesDir
+    val pdfFileName = "Laporan_${id}.pdf"
+    val generatedPdfFile = File(internalPdfDirectory, pdfFileName)
+
+    val displayNames = mapOf(
+        "sistem_baru" to "Sistem Baru",
+        "pengembangan" to "Pengembangan",
+        "termasuk_dalam_perencanaan" to "Termasuk Anggaran",
+        "tidak_termasuk_perencanaan" to "Tidak Termasuk Anggaran"
+    )
+
+    val jenisSistemDisplay = displayNames[jenis] ?: jenis
+    val rencanaAnggaranDisplay = displayNames[rencanaAnggaran] ?: rencanaAnggaran
+
+    // Directory untuk menyimpan file PDF
+    val directory = context.getExternalFilesDir(null) ?: context.filesDir
+    val filePath = File(directory, "Laporan_${id}.pdf")
 
     Box(modifier = Modifier.fillMaxSize()) {
         Box(
@@ -169,7 +193,7 @@ fun RiwayatPopup(
                         }
                         Column(modifier = Modifier.weight(2f)) {
                             Text(
-                                ": $jenis",
+                                ": $jenisSistemDisplay",
                                 color = Color.Black,
                                 maxLines = 2,
                                 overflow = TextOverflow.Ellipsis
@@ -191,7 +215,7 @@ fun RiwayatPopup(
                         }
                         Column(modifier = Modifier.weight(2f)) {
                             Text(
-                                ": $rencanaAnggaran",
+                                ": $rencanaAnggaranDisplay",
                                 color = Color.Black,
                                 maxLines = 2,
                                 overflow = TextOverflow.Ellipsis
@@ -243,26 +267,74 @@ fun RiwayatPopup(
                 modifier = Modifier
                     .fillMaxWidth()
                     .padding(end = 16.dp, bottom = 16.dp),
-                horizontalArrangement = Arrangement.End
+                horizontalArrangement = Arrangement.End // Agar tombol berada di kanan
             ) {
+                // Tombol "Laporan" (Buka PDF)
                 Button(
                     onClick = {
-                        navController.navigate("show_laporan_screen?id=$id&" +
-                                "namaSistem=$encodedNamaSistem&" +
-                                "jenis=$encodedJenis&" +
-                                "rencanaAnggaran=$encodedRencanaAnggaran&" +
-                                "masalah=$encodedMasalah&"+
-                                "output=$encodedOutput&"+
-                                "tanggalMulai=$encodedTanggalMulai&" +
-                                "tanggalSelesai=$encodedTanggalSelesai&" +
-                                "tahap=$encodedTahap&" +
-                                "keterangan=$encodedKeterangan&" +
-                                "perangkatLunak=$encodedPerangkatLunak&" +
-                                "versiPerangkat=$encodedVersiPerangkat&" +
-                                "tujuanPengujian=$encodedTujuanPengujian&" +
-                                "metodePengujian=$encodedMetodePengujian&" +
-                                "status=$encodedStatus&detailPersetujuan=$detailPersetujuan"
-                        )
+                        id?.let {
+                            // 1. Generate PDF
+                            generatePDF(
+                                context = context,
+                                directory = internalPdfDirectory, // Simpan ke internal app
+                                id = it,
+                                namaSistem = decodedNamaSistem,
+                                jenis = decodedJenis,
+                                rencanaAnggaran = decodedRencanaAnggaran,
+                                masalah = decodedMasalah,
+                                output = decodedOutput,
+                                tanggalMulai = decodedTanggalMulai,
+                                tanggalSelesai = decodedTanggalSelesai,
+                                tahap = decodedTahap,
+                                keterangan = decodedKeterangan,
+                                perangkatLunak = decodedPerangkatLunak,
+                                versiPerangkat = decodedVersiPerangkat,
+                                tujuanPengujian = decodedTujuanPengujian,
+                                metodePengujian = decodedMetodePengujian,
+                                status = decodedStatus,
+                                // detailPersetujuan = detailPersetujuan // Uncomment jika dibutuhkan di generatePDF
+                            )
+
+                            // 2. Buka PDF setelah dibuat
+                            if (generatedPdfFile.exists()) {
+                                try {
+                                    val pdfUri: Uri = FileProvider.getUriForFile(
+                                        context,
+                                        "${context.packageName}.fileprovider",
+                                        generatedPdfFile
+                                    )
+
+                                    val intent = Intent(Intent.ACTION_VIEW)
+                                    intent.setDataAndType(pdfUri, "application/pdf")
+                                    intent.flags = Intent.FLAG_ACTIVITY_NO_HISTORY
+                                    intent.addFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION)
+
+                                    val packageManager = context.packageManager
+                                    if (intent.resolveActivity(packageManager) != null) {
+                                        context.startActivity(intent)
+                                    } else {
+                                        Toast.makeText(
+                                            context,
+                                            "Tidak ada aplikasi untuk membuka PDF.",
+                                            Toast.LENGTH_LONG
+                                        ).show()
+                                    }
+                                } catch (e: Exception) {
+                                    Toast.makeText(
+                                        context,
+                                        "Gagal membuka PDF: ${e.message}",
+                                        Toast.LENGTH_LONG
+                                    ).show()
+                                    e.printStackTrace()
+                                }
+                            } else {
+                                Toast.makeText(
+                                    context,
+                                    "Laporan PDF belum digenerate.",
+                                    Toast.LENGTH_SHORT
+                                ).show()
+                            }
+                        }
                     },
                     modifier = Modifier
                         .width(120.dp)
@@ -271,6 +343,59 @@ fun RiwayatPopup(
                     shape = RoundedCornerShape(16.dp)
                 ) {
                     Text("Laporan", color = Color.White)
+                }
+
+                Spacer(modifier = Modifier.width(8.dp)) // Jarak antara dua tombol
+
+                // Tombol "Download PDF" (Simpan ke Publik)
+                Button(
+                    onClick = {
+                        id?.let {
+                            // 1. Generate PDF (pastikan sudah ada di internal)
+                            generatePDF(
+                                context = context,
+                                directory = internalPdfDirectory, // Simpan ke internal app
+                                id = it,
+                                namaSistem = decodedNamaSistem,
+                                jenis = decodedJenis,
+                                rencanaAnggaran = decodedRencanaAnggaran,
+                                masalah = decodedMasalah,
+                                output = decodedOutput,
+                                tanggalMulai = decodedTanggalMulai,
+                                tanggalSelesai = decodedTanggalSelesai,
+                                tahap = decodedTahap,
+                                keterangan = decodedKeterangan,
+                                perangkatLunak = decodedPerangkatLunak,
+                                versiPerangkat = decodedVersiPerangkat,
+                                tujuanPengujian = decodedTujuanPengujian,
+                                metodePengujian = decodedMetodePengujian,
+                                status = decodedStatus,
+                                // detailPersetujuan = detailPersetujuan // Uncomment jika dibutuhkan di generatePDF
+                            )
+
+                            // 2. Download ke Public Directory
+                            if (generatedPdfFile.exists()) {
+                                downloadPdfToPublicDirectory(
+                                    context = context,
+                                    sourceFile = generatedPdfFile,
+                                    fileName = pdfFileName // Gunakan nama file yang sama
+                                )
+                            } else {
+                                Toast.makeText(
+                                    context,
+                                    "Gagal mengunduh: PDF belum digenerate.",
+                                    Toast.LENGTH_SHORT
+                                ).show()
+                            }
+                        }
+                    },
+                    modifier = Modifier
+                        .width(120.dp) // Ukuran yang sama atau disesuaikan
+                        .shadow(4.dp, RoundedCornerShape(16.dp)),
+                    colors = ButtonDefaults.buttonColors(containerColor = Maroon), // Warna berbeda agar mudah dibedakan
+                    shape = RoundedCornerShape(16.dp)
+                ) {
+                    Text("Download", color = Color.White)
                 }
             }
         }

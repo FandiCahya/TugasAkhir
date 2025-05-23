@@ -99,6 +99,7 @@ fun FormUsulanScreen(navController: NavController, userId: String?) {
     fun validateForm(): Boolean {
         val errors = mutableMapOf<String, String>()
         if (namaSistem.isEmpty()) errors["namaSistem"] = "Nama Sistem tidak boleh kosong"
+        if (selectedDate.isEmpty()) errors["tgl"] = "Tanggal harus dipilih"
         if (jenisSistem.isEmpty()) errors["jenisSistem"] = "Jenis Sistem harus dipilih"
         if (rencanaAnggaran.isEmpty()) errors["rencanaAnggaran"] = "Rencana Anggaran harus dipilih"
         if (masalahSistem.isEmpty()) errors["masalahSistem"] = "Masalah Sistem tidak boleh kosong"
