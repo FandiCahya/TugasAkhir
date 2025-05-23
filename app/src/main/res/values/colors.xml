@@ -12,4 +12,5 @@
     <color name="Red_Pudar">#FFEC786B</color>
     <color name="Putih">#FFF6F6F6</color>
     <color name="Red_Sdkt_Pudar">#FFE06B6B</color>
+    <color name="material_grey_300">#E0E0E0</color> <color name="material_grey_100">#F5F5F5</color>
 </resources>
