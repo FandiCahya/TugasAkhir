@@ -10,187 +10,239 @@ import android.graphics.pdf.PdfDocument
 import android.graphics.pdf.PdfDocument.PageInfo
 import android.widget.Toast
 import androidx.core.content.ContextCompat
-import com.example.applicationsop.R
+import com.example.applicationsop.R // Pastikan R diimport dengan benar
 import java.io.File
 import java.io.FileOutputStream
 import java.io.IOException
 
 fun generatePDF(
     context: Context,
-    directory: File,
+    directory: File, // Direktori tempat menyimpan file PDF
     id: String,
     namaSistem: String,
     jenis: String,
     rencanaAnggaran: String,
     masalah: String,
     output: String,
-    tanggalMulai: String,
-    tanggalSelesai: String,
-    tahap: String,
-    keterangan: String,
-    perangkatLunak: String,
-    versiPerangkat: String,
-    tujuanPengujian: String,
-    metodePengujian: String,
-    status: String
-    // detailPersetujuan: List<PersetujuanPengujianDetail> // Jika ini tidak lagi digunakan, bisa dihapus
+    tanggalMulai: String, // Pastikan tidak null jika digunakan langsung
+    tanggalSelesai: String, // Pastikan tidak null
+    tahap: String, // Pastikan tidak null
+    keterangan: String, // Pastikan tidak null
+    perangkatLunak: String, // Pastikan tidak null
+    versiPerangkat: String, // Pastikan tidak null
+    tujuanPengujian: String, // Pastikan tidak null
+    metodePengujian: String, // Pastikan tidak null
+    status: String // Pastikan tidak null
+    // detailPersetujuan: List<PersetujuanPengujianDetail> // Jika tidak digunakan, bisa dihapus
 ) {
     val pageHeight = 1120
     val pageWidth = 792
+
     val pdfDocument = PdfDocument()
     val paint = Paint() // Untuk garis, border, dan fill
     val textPaint = Paint(Paint.ANTI_ALIAS_FLAG) // Untuk teks utama dan konten
     val headerPaint = Paint(Paint.ANTI_ALIAS_FLAG) // Untuk teks header tabel
 
-    val myPageInfo = PageInfo.Builder(pageWidth, pageHeight, 1).create()
-    val myPage = pdfDocument.startPage(myPageInfo)
-    val canvas: Canvas = myPage.canvas
+    // Definisi Margin Global (sesuaikan jika perlu)
+    val G_TOP_MARGIN = 60f
+    val G_BOTTOM_MARGIN = 60f
+    // val G_PAGE_CONTENT_HEIGHT = pageHeight - G_TOP_MARGIN - G_BOTTOM_MARGIN // Bisa digunakan untuk perhitungan
 
-    // Set padding dan margin
-    val leftMargin = 80f
-    val rightMargin = pageWidth - 80f
-    var currentY = 70f // Posisi Y awal, setelah topMargin
+    // Margin untuk konten di dalam halaman (setelah kop surat / di halaman baru)
+    val leftMargin = 70f // Menggunakan nilai dari kode asli Anda, bisa disesuaikan
+    val rightMargin = pageWidth - 70f
 
-    // Definisi Warna (Pastikan ini ada di res/values/colors.xml)
+    // Variabel halaman dan kanvas yang dapat diubah
+    var pageNumber = 1
+    var myPageInfo = PageInfo.Builder(pageWidth, pageHeight, pageNumber).create()
+    var myPage = pdfDocument.startPage(myPageInfo)
+    var canvas: Canvas = myPage.canvas
+
+    // currentY akan menjadi variabel utama yang dilacak dan direset per halaman
+    var currentY = G_TOP_MARGIN // Y awal untuk konten di halaman (atau setelah kop surat)
+
+    // Definisi Warna
     val blackColor = ContextCompat.getColor(context, R.color.black)
     val greyHeaderColor = ContextCompat.getColor(context, R.color.material_grey_300)
-    // val lightGreyColor = ContextCompat.getColor(context, R.color.material_grey_100) // Jika ingin alternating row colors
 
     // Pengaturan global untuk Paint
     textPaint.color = blackColor
-    headerPaint.color = blackColor
+    headerPaint.color = blackColor // Untuk teks di header tabel
 
-    // ---------- START KOP SURAT ----------
+    // Helper function untuk memulai halaman baru
+    fun startNewPage() {
+        pdfDocument.finishPage(myPage)
+        pageNumber++
+        myPageInfo = PageInfo.Builder(pageWidth, pageHeight, pageNumber).create()
+        myPage = pdfDocument.startPage(myPageInfo)
+        canvas = myPage.canvas
+        currentY = G_TOP_MARGIN // Reset Y ke margin atas untuk halaman baru
+        // Di sini Anda bisa menambahkan header/footer yang berulang di setiap halaman baru jika perlu
+        // Misalnya: canvas.drawText("Halaman $pageNumber", pageWidth - 100f, G_TOP_MARGIN - 20f, textPaint)
+    }
+
+    // ---------- START KOP SURAT (HANYA HALAMAN PERTAMA) ----------
+    var kopSuratCurrentY = G_TOP_MARGIN // Y sementara untuk menggambar kop surat
     // 1. Logo
     val logoBitmap: Bitmap? = BitmapFactory.decodeResource(context.resources, R.drawable.lifemedia_logo)
-
     if (logoBitmap != null) {
-        val logoWidth = 100 // Lebar logo yang diinginkan
+        val logoWidth = 100
         val logoHeight = (logoBitmap.height.toFloat() / logoBitmap.width.toFloat() * logoWidth).toInt()
         val scaledLogo = Bitmap.createScaledBitmap(logoBitmap, logoWidth, logoHeight, false)
-        canvas.drawBitmap(scaledLogo, leftMargin, currentY, paint)
-        currentY += logoHeight + 10f
-        scaledLogo.recycle()
+        canvas.drawBitmap(scaledLogo, leftMargin, kopSuratCurrentY, paint) // Gunakan paint biasa untuk bitmap
+        kopSuratCurrentY += logoHeight + 10f
+        // scaledLogo.recycle() // Jangan recycle di sini jika bitmap masih akan digunakan atau jika ini satu-satunya instance
     } else {
-        Toast.makeText(context, "Logo tidak ditemukan! Pastikan lifemedia_logo.png ada di res/drawable.", Toast.LENGTH_SHORT).show()
+        Toast.makeText(context, "Logo tidak ditemukan!", Toast.LENGTH_SHORT).show()
+        kopSuratCurrentY += 50f // Beri ruang jika logo tidak ada
     }
 
     // 2. Nama Perusahaan
-    textPaint.typeface = Typeface.create(Typeface.DEFAULT, Typeface.BOLD)
-    textPaint.textSize = 20f
+    val tempTextPaintForKop = Paint(textPaint) // Buat salinan agar tidak mengubah textPaint global
+    tempTextPaintForKop.typeface = Typeface.create(Typeface.DEFAULT, Typeface.BOLD)
+    tempTextPaintForKop.textSize = 20f
     val companyName = "PT. SaranaInsan MudaSelaras"
-    canvas.drawText(companyName, pageWidth / 2f - textPaint.measureText(companyName) / 2, currentY, textPaint)
-    currentY += 25f
+    canvas.drawText(companyName, pageWidth / 2f - tempTextPaintForKop.measureText(companyName) / 2, kopSuratCurrentY, tempTextPaintForKop)
+    kopSuratCurrentY += 25f
 
     // 3. Alamat Perusahaan
-    textPaint.typeface = Typeface.create(Typeface.DEFAULT, Typeface.NORMAL)
-    textPaint.textSize = 12f
+    tempTextPaintForKop.typeface = Typeface.create(Typeface.DEFAULT, Typeface.NORMAL)
+    tempTextPaintForKop.textSize = 12f
     val address1 = "Jl. Parangtritis No.97, Brontokusuman, Kec. Mergangsan, Kota Yogyakarta,"
     val address2 = "Daerah Istimewa Yogyakarta 55153"
     val contact = "Telp: (+62) 2746055655 | Email: cs@lifemedia.id"
-
-    canvas.drawText(address1, pageWidth / 2f - textPaint.measureText(address1) / 2, currentY, textPaint)
-    currentY += 15f
-    canvas.drawText(address2, pageWidth / 2f - textPaint.measureText(address2) / 2, currentY, textPaint)
-    currentY += 15f
-    canvas.drawText(contact, pageWidth / 2f - textPaint.measureText(contact) / 2, currentY, textPaint)
-    currentY += 30f
+    canvas.drawText(address1, pageWidth / 2f - tempTextPaintForKop.measureText(address1) / 2, kopSuratCurrentY, tempTextPaintForKop)
+    kopSuratCurrentY += 15f
+    canvas.drawText(address2, pageWidth / 2f - tempTextPaintForKop.measureText(address2) / 2, kopSuratCurrentY, tempTextPaintForKop)
+    kopSuratCurrentY += 15f
+    canvas.drawText(contact, pageWidth / 2f - tempTextPaintForKop.measureText(contact) / 2, kopSuratCurrentY, tempTextPaintForKop)
+    kopSuratCurrentY += 30f
 
     // 4. Garis Pembatas (Divider)
     paint.strokeWidth = 2f
-    paint.color = blackColor // Pastikan warna garis hitam
-    canvas.drawLine(leftMargin, currentY, rightMargin, currentY, paint)
-    currentY += 40f
+    paint.color = blackColor
+    canvas.drawLine(leftMargin, kopSuratCurrentY, rightMargin, kopSuratCurrentY, paint)
+    kopSuratCurrentY += 30f // Spasi setelah garis
 
+    currentY = kopSuratCurrentY // Set currentY utama setelah kop surat selesai digambar
     // ---------- END KOP SURAT ----------
 
 
     // Title Laporan Utama
-    textPaint.typeface = Typeface.create(Typeface.DEFAULT, Typeface.BOLD)
-    textPaint.textSize = 28f
+    val reportTitleTextPaint = Paint(textPaint) // Salinan untuk judul
+    reportTitleTextPaint.typeface = Typeface.create(Typeface.DEFAULT, Typeface.BOLD)
+    reportTitleTextPaint.textSize = 24f // Sedikit lebih kecil dari sebelumnya agar muat
     val reportTitle = "Laporan Permohonan Perangkat Lunak"
-    canvas.drawText(reportTitle, (pageWidth - textPaint.measureText(reportTitle)) / 2, currentY, textPaint)
-    currentY += 70f
+    val reportTitleHeight = reportTitleTextPaint.descent() - reportTitleTextPaint.ascent() // Perkiraan tinggi teks
+
+    if (currentY + reportTitleHeight > pageHeight - G_BOTTOM_MARGIN) {
+        startNewPage()
+    }
+    canvas.drawText(reportTitle, (pageWidth - reportTitleTextPaint.measureText(reportTitle)) / 2, currentY + reportTitleHeight/2 , reportTitleTextPaint) // Penyesuaian Y untuk drawText
+    currentY += reportTitleHeight + 40f // Spasi setelah judul utama
+
 
     // ==============================================================================================
-    // Helper function untuk menggambar tabel (didefinisikan di dalam generatePDF agar bisa akses params)
+    // Helper function untuk menggambar tabel (MODIFIKASI UNTUK PAGINATION)
     // ==============================================================================================
     fun drawInfoTable(
-        canvas: Canvas,
-        currentYRef: FloatArray, // Menggunakan array untuk pass by reference
         title: String,
         data: List<Pair<String, String>>,
         tableLeft: Float,
         tableWidth: Float,
-        col1Width: Float,
+        col1WidthRatio: Float, // Gunakan rasio untuk fleksibilitas
         rowHeight: Float,
         headerColor: Int,
-        contentColor: Int,
+        contentColor: Int, // Untuk teks di dalam tabel
         borderColor: Int,
         headerTextSize: Float,
         contentTextSize: Float
     ) {
-        var y = currentYRef[0]
+        val col1Width = tableWidth * col1WidthRatio
+        val col2Width = tableWidth * (1 - col1WidthRatio)
+
+        val actualHeaderTextPaint = Paint(headerPaint) // Gunakan salinan untuk modifikasi lokal
+        actualHeaderTextPaint.textSize = headerTextSize
+        actualHeaderTextPaint.color = contentColor // Teks header biasanya sama dengan content color
+
+        val actualContentTextPaint = Paint(textPaint)
+        actualContentTextPaint.textSize = contentTextSize
+        actualContentTextPaint.color = contentColor
+
+        // Cek apakah header tabel muat
+        if (currentY + rowHeight > pageHeight - G_BOTTOM_MARGIN) {
+            startNewPage()
+        }
 
         // Gambar Header Tabel
         paint.style = Paint.Style.FILL
         paint.color = headerColor
-        canvas.drawRect(tableLeft, y, tableLeft + tableWidth, y + rowHeight, paint)
+        canvas.drawRect(tableLeft, currentY, tableLeft + tableWidth, currentY + rowHeight, paint)
 
         paint.style = Paint.Style.STROKE
         paint.strokeWidth = 2f
         paint.color = borderColor
-        canvas.drawRect(tableLeft, y, tableLeft + tableWidth, y + rowHeight, paint)
+        canvas.drawRect(tableLeft, currentY, tableLeft + tableWidth, currentY + rowHeight, paint) // Border header
 
-        headerPaint.typeface = Typeface.create(Typeface.DEFAULT, Typeface.BOLD)
-        headerPaint.textSize = headerTextSize
-        headerPaint.color = contentColor // Warna teks header
-        canvas.drawText(title, tableLeft + (tableWidth / 2) - (headerPaint.measureText(title) / 2), y + (rowHeight / 2) + (headerTextSize / 3), headerPaint)
-        y += rowHeight
+        val titleTextY = currentY + (rowHeight / 2) + (actualHeaderTextPaint.descent() - actualHeaderTextPaint.ascent()) / 2 - actualHeaderTextPaint.descent()
+        canvas.drawText(title, tableLeft + (tableWidth / 2) - (actualHeaderTextPaint.measureText(title) / 2), titleTextY, actualHeaderTextPaint)
+        currentY += rowHeight
 
         // Gambar setiap baris data
-        textPaint.typeface = Typeface.create(Typeface.DEFAULT, Typeface.NORMAL)
-        textPaint.textSize = contentTextSize
-        textPaint.color = contentColor
+        for ((label, value) in data) {
+            // Cek apakah baris data muat
+            if (currentY + rowHeight > pageHeight - G_BOTTOM_MARGIN) {
+                startNewPage()
+                // Gambar ulang header tabel di halaman baru
+                paint.style = Paint.Style.FILL
+                paint.color = headerColor
+                canvas.drawRect(tableLeft, currentY, tableLeft + tableWidth, currentY + rowHeight, paint)
+                paint.style = Paint.Style.STROKE
+                paint.strokeWidth = 2f
+                paint.color = borderColor
+                canvas.drawRect(tableLeft, currentY, tableLeft + tableWidth, currentY + rowHeight, paint)
+                canvas.drawText(title, tableLeft + (tableWidth / 2) - (actualHeaderTextPaint.measureText(title) / 2), titleTextY.let { it - (currentY - G_TOP_MARGIN) + currentY }, actualHeaderTextPaint) // Y disesuaikan
+                currentY += rowHeight
+            }
 
-        val col2Width = tableWidth - col1Width
-
-        for (i in data.indices) {
-            val (label, value) = data[i]
-
+            // Gambar baris data
             paint.style = Paint.Style.STROKE
             paint.strokeWidth = 1f
             paint.color = borderColor
-            canvas.drawRect(tableLeft, y, tableLeft + tableWidth, y + rowHeight, paint)
-            canvas.drawLine(tableLeft + col1Width, y, tableLeft + col1Width, y + rowHeight, paint)
+            // Border luar baris
+            canvas.drawRect(tableLeft, currentY, tableLeft + tableWidth, currentY + rowHeight, paint)
+            // Garis vertikal pemisah kolom
+            canvas.drawLine(tableLeft + col1Width, currentY, tableLeft + col1Width, currentY + rowHeight, paint)
 
-            canvas.drawText(label, tableLeft + 10f, y + (rowHeight / 2) + (contentTextSize / 3), textPaint)
+            val labelTextY = currentY + (rowHeight / 2) + (actualContentTextPaint.descent() - actualContentTextPaint.ascent()) / 2 - actualContentTextPaint.descent()
+            canvas.drawText(label, tableLeft + 10f, labelTextY, actualContentTextPaint)
 
             val valueText = ": $value"
-            val measuredTextWidth = textPaint.measureText(valueText)
-            if (measuredTextWidth > col2Width - 20f) {
-                val chars = textPaint.breakText(valueText, true, col2Width - 20f, null)
+            val valueTextX = tableLeft + col1Width + 10f
+            val availableWidthForValue = col2Width - 20f // 10f padding kiri dan kanan
+
+            val measuredValueWidth = actualContentTextPaint.measureText(valueText)
+            if (measuredValueWidth > availableWidthForValue) {
+                val chars = actualContentTextPaint.breakText(valueText, true, availableWidthForValue, null)
                 val truncatedText = valueText.substring(0, chars) + "..."
-                canvas.drawText(truncatedText, tableLeft + col1Width + 10f, y + (rowHeight / 2) + (contentTextSize / 3), textPaint)
+                canvas.drawText(truncatedText, valueTextX, labelTextY, actualContentTextPaint)
             } else {
-                canvas.drawText(valueText, tableLeft + col1Width + 10f, y + (rowHeight / 2) + (contentTextSize / 3), textPaint)
+                canvas.drawText(valueText, valueTextX, labelTextY, actualContentTextPaint)
             }
-            y += rowHeight
+            currentY += rowHeight
         }
-        currentYRef[0] = y // Update currentY di scope luar
     }
 
     // Mendeklarasikan parameter umum untuk tabel
     val tableLeft = leftMargin
     val tableWidth = pageWidth - (2 * leftMargin)
-    val col1Width = 200f
-    val rowHeight = 40f
-    val headerTextSize = 16f
-    val contentTextSize = 14f
-    val currentYArr = floatArrayOf(currentY) // Array untuk pass by reference
+    val col1WidthRatio = 0.35f // Lebar kolom pertama 35% dari total lebar tabel
+    val rowHeight = 35f // Sedikit diperkecil agar lebih banyak muat
+    val headerTextSize = 15f
+    val contentTextSize = 13f
 
     // ==============================================================================================
-    // Informasi Pengajuan (Dalam bentuk Tabel)
+    // Informasi Pengajuan
     // ==============================================================================================
     val dataPengajuan = listOf(
         "Tanggal" to tanggalMulai,
@@ -200,14 +252,13 @@ fun generatePDF(
         "Masalah" to masalah,
         "Output" to output
     )
+    if (currentY + rowHeight > pageHeight - G_BOTTOM_MARGIN) { startNewPage() } // Cek sebelum tabel pertama
     drawInfoTable(
-        canvas = canvas,
-        currentYRef = currentYArr,
         title = "Informasi Pengajuan",
         data = dataPengajuan,
         tableLeft = tableLeft,
         tableWidth = tableWidth,
-        col1Width = col1Width,
+        col1WidthRatio = col1WidthRatio,
         rowHeight = rowHeight,
         headerColor = greyHeaderColor,
         contentColor = blackColor,
@@ -215,26 +266,24 @@ fun generatePDF(
         headerTextSize = headerTextSize,
         contentTextSize = contentTextSize
     )
-    currentY = currentYArr[0] + 30f // Spasi setelah tabel
+    currentY += 25f // Spasi setelah tabel
 
     // ==============================================================================================
-    // Informasi Pengembangan (Dalam bentuk Tabel)
+    // Informasi Pengembangan
     // ==============================================================================================
-    currentYArr[0] = currentY // Update posisi Y untuk tabel baru
     val dataPengembangan = listOf(
-        "Tanggal Mulai" to tanggalMulai, // Menggunakan tanggalMulai
+        "Tanggal Mulai" to tanggalMulai,
         "Tanggal Selesai" to tanggalSelesai,
         "Tahap" to tahap,
         "Keterangan" to keterangan
     )
+    if (currentY + rowHeight > pageHeight - G_BOTTOM_MARGIN) { startNewPage() }
     drawInfoTable(
-        canvas = canvas,
-        currentYRef = currentYArr,
         title = "Informasi Pengembangan",
         data = dataPengembangan,
         tableLeft = tableLeft,
         tableWidth = tableWidth,
-        col1Width = col1Width,
+        col1WidthRatio = col1WidthRatio,
         rowHeight = rowHeight,
         headerColor = greyHeaderColor,
         contentColor = blackColor,
@@ -242,28 +291,26 @@ fun generatePDF(
         headerTextSize = headerTextSize,
         contentTextSize = contentTextSize
     )
-    currentY = currentYArr[0] + 30f // Spasi setelah tabel
+    currentY += 25f // Spasi setelah tabel
 
     // ==============================================================================================
-    // Informasi Pengujian (Dalam bentuk Tabel)
+    // Informasi Pengujian
     // ==============================================================================================
-    currentYArr[0] = currentY // Update posisi Y untuk tabel baru
     val dataPengujian = listOf(
-        "Tanggal" to tanggalSelesai, // Menggunakan tanggalSelesai
+        "Tanggal" to tanggalSelesai,
         "Perangkat Lunak" to perangkatLunak,
         "Versi" to versiPerangkat,
         "Tujuan" to tujuanPengujian,
         "Metode" to metodePengujian,
         "Status" to status
     )
+    if (currentY + rowHeight > pageHeight - G_BOTTOM_MARGIN) { startNewPage() }
     drawInfoTable(
-        canvas = canvas,
-        currentYRef = currentYArr,
         title = "Informasi Pengujian",
         data = dataPengujian,
         tableLeft = tableLeft,
         tableWidth = tableWidth,
-        col1Width = col1Width,
+        col1WidthRatio = col1WidthRatio,
         rowHeight = rowHeight,
         headerColor = greyHeaderColor,
         contentColor = blackColor,
@@ -271,24 +318,21 @@ fun generatePDF(
         headerTextSize = headerTextSize,
         contentTextSize = contentTextSize
     )
-    currentY = currentYArr[0] + 30f // Spasi setelah tabel
+    currentY += 25f // Spasi setelah tabel
 
-    // ==============================================================================================
-    // Bagian Approval Tanda Tangan (Dihapus sesuai permintaan)
-    // ==============================================================================================
-    // Kode untuk "Approval Tanda Tangan" dan tabelnya dihapus di sini
-
-    // Finish the page
+    // Finish the LAST page
     pdfDocument.finishPage(myPage)
 
     // Save to file
-    val file = File(directory.path, "Laporan_${id}.pdf")
+    val file = File(directory, "Laporan_${id}.pdf") // Menggunakan 'directory' dari parameter
     try {
-        pdfDocument.writeTo(FileOutputStream(file))
-        Toast.makeText(context, "PDF file generated successfully", Toast.LENGTH_SHORT).show()
-    } catch (ex: IOException) {
+        val fos = FileOutputStream(file)
+        pdfDocument.writeTo(fos)
+        fos.close() // Pastikan stream ditutup
+        pdfDocument.close() // Tutup dokumen PDF
+        Toast.makeText(context, "PDF file generated successfully", Toast.LENGTH_SHORT).show()    } catch (ex: IOException) {
         ex.printStackTrace()
         Toast.makeText(context, "Error generating PDF: ${ex.message}", Toast.LENGTH_LONG).show()
+        pdfDocument.close() // Tutup dokumen PDF jika terjadi error setelah dibuka
     }
-    pdfDocument.close()
 }

@@ -34,15 +34,14 @@ import androidx.compose.ui.platform.LocalContext
 import com.example.applicationsop.Api.fetchPengajuanList
 import com.example.applicationsop.Api.fetchPengembanganList
 import com.example.applicationsop.Api.fetchPengujianList
-
-// Tambahkan import ini untuk Swipe Refresh
+import android.content.Context
 import com.google.accompanist.swiperefresh.SwipeRefresh
 import com.google.accompanist.swiperefresh.rememberSwipeRefreshState
-import kotlinx.coroutines.delay // import delay
-import kotlinx.coroutines.launch // Import launch
-import androidx.compose.runtime.rememberCoroutineScope // Import rememberCoroutineScope
-import androidx.compose.foundation.rememberScrollState // Import for scrolling
-import androidx.compose.foundation.verticalScroll // Import for scrolling
+import kotlinx.coroutines.delay
+import kotlinx.coroutines.launch
+import androidx.compose.runtime.rememberCoroutineScope
+import androidx.compose.foundation.rememberScrollState
+import androidx.compose.foundation.verticalScroll
 
 @RequiresApi(Build.VERSION_CODES.O)
 @Composable
@@ -60,57 +59,53 @@ fun HomeAdminScreen(
     var acceptedCount by remember { mutableStateOf(0) }
     var pengembanganCount by remember { mutableStateOf(0) }
     var pengujianCount by remember { mutableStateOf(0) }
-    var riwayatCount by remember { mutableStateOf(0)}
+    var riwayatCount by remember { mutableStateOf(0) }
 
     val context = LocalContext.current
-    val coroutineScope = rememberCoroutineScope() // Get a CoroutineScope
+    val coroutineScope = rememberCoroutineScope()
 
-    // State untuk mengontrol indikator refresh
     var isRefreshing by remember { mutableStateOf(false) }
 
-    // Fungsi terpisah untuk me-refresh semua data
+    suspend fun loadDataCounts(appContext: Context) {
+        pendingCount = fetchPengajuanList(appContext, "pending").size
+        rejectedCount = fetchPengajuanList(appContext, "rejected").size
+        acceptedCount = fetchPengajuanList(appContext, "accepted").size
+        pengembanganCount = fetchPengembanganList(appContext).size
+        pengujianCount = fetchPengujianList(appContext, status_persetujuan = "approved").size
+        riwayatCount = fetchPengajuanList(appContext, "finished").size
+    }
+
     val refreshAllData: suspend () -> Unit = {
-        isRefreshing = true // Aktifkan indikator refresh
+        isRefreshing = true
 
-        // Lakukan fetching data
-        // These calls are suspend functions, so they need to be in a coroutine
-        pendingCount = fetchPengajuanList(context, "pending").size
-        rejectedCount = fetchPengajuanList(context, "rejected").size
-        acceptedCount = fetchPengajuanList(context, "accepted").size
-        pengembanganCount = fetchPengembanganList(context).size
-        pengujianCount = fetchPengujianList(context, status_persetujuan = "approved").size
-        riwayatCount = fetchPengajuanList(context, "finished").size
+        loadDataCounts(context)
 
-        // Opsional: tambahkan delay singkat untuk simulasi loading jika fetching terlalu cepat
-        delay(1000) // delay 1 detik
+        delay(100)
 
-        isRefreshing = false // Nonaktifkan indikator refresh setelah selesai
+        isRefreshing = false
     }
 
     LaunchedEffect(Unit) {
-        refreshAllData()
+        loadDataCounts(context)
     }
 
-    // Bungkus seluruh konten dengan SwipeRefresh
     SwipeRefresh(
-        state = rememberSwipeRefreshState(isRefreshing), // State yang mengontrol indikator
+        state = rememberSwipeRefreshState(isRefreshing),
         onRefresh = {
-            // Launch a coroutine to call the suspend function when the user pulls to refresh
             coroutineScope.launch {
                 refreshAllData()
             }
         },
-        modifier = Modifier.fillMaxSize()
-            .background(Putih)// Pastikan modifier fillMaxSize ada di sini
+        modifier = Modifier
+            .fillMaxSize()
+            .background(Putih)
     ) {
-        // Konten utama, termasuk Header, Sections, dan lainnya
         Column(
             modifier = Modifier
-                .fillMaxSize() // Penting agar konten bisa di-scroll dan memicu refresh
-                .padding(bottom = 80.dp) // Memberikan ruang bawah agar FAB tidak tertutup
-                .verticalScroll(rememberScrollState()) // **Tambahkan ini agar konten bisa di-scroll dan memicu pull-to-refresh**
+                .fillMaxSize()
+                .padding(bottom = 80.dp)
+                .verticalScroll(rememberScrollState())
         ) {
-            // Header
             HeaderHomeAdmin(
                 navController = navController,
                 adminName = name,
@@ -121,7 +116,6 @@ fun HomeAdminScreen(
                 admindevisi = devisi
             )
 
-            // Pengajuan Section
             SectionTitle("Pengajuan")
             SubmissionSection(
                 navController = navController,
@@ -131,14 +125,12 @@ fun HomeAdminScreen(
             )
             Spacer(modifier = Modifier.height(16.dp))
 
-            // Garis tengah
             Divider(
                 color = Color.Gray,
                 thickness = 1.dp,
                 modifier = Modifier.padding(horizontal = 25.dp)
             )
 
-            // Progres Section
             SectionTitle("Progres")
             ProgressSection(
                 navController = navController,
@@ -150,6 +142,7 @@ fun HomeAdminScreen(
     }
 }
 
+// ... (SubmissionSection dan ProgressSection tetap sama) ...
 @Composable
 fun SubmissionSection(navController: NavController, pendingCount: Int, rejectedCount: Int, acceptedCount: Int) {
     Row(

@@ -24,7 +24,6 @@ data class Approval(
     }
 }
 
-
 @Serializable
 data class PersetujuanPengujian(
     val id: String,

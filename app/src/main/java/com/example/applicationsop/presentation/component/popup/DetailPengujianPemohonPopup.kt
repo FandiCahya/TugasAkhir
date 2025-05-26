@@ -28,22 +28,14 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.shadow
 import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.graphics.Color.Companion.Blue
-import androidx.compose.ui.graphics.Color.Companion.Green
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.navigation.NavController
-import com.example.applicationsop.data.DetailPengujian
-import com.example.applicationsop.models.Catatan
-import com.example.applicationsop.models.GetPengujianDetail
 import com.example.applicationsop.ui.theme.Maroon
-import com.example.applicationsop.ui.theme.Purple40
-import com.example.applicationsop.ui.theme.abang
 import com.example.applicationsop.ui.theme.biru
-import com.example.applicationsop.ui.theme.ijo
 
 @Composable
 fun DetailPopupPengujianPemohon(
