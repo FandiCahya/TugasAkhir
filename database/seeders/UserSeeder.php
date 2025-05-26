@@ -28,7 +28,7 @@ class UserSeeder extends Seeder
         ]);
         DB::table('users')->insert([
             'id' => (string) Str::uuid(),  // UUID untuk id
-            'name' => 'user',
+            'name' => 'Cahyadi',
             'email' => 'user@gmail.com',
             'email_verified_at' => now(),
             'password' => Hash::make(value: 'user123'),  // Password yang di-hash
@@ -39,7 +39,7 @@ class UserSeeder extends Seeder
         ]);
         DB::table('users')->insert([
             'id' => (string) Str::uuid(),  // UUID untuk id
-            'name' => 'hrdku',
+            'name' => 'Khabib',
             'email' => 'qmr@gmail.com',
             'email_verified_at' => now(),
             'password' => Hash::make(value: 'qmr123'),  // Password yang di-hash
@@ -56,6 +56,17 @@ class UserSeeder extends Seeder
             'password' => Hash::make(value: 'kacap123'),  // Password yang di-hash
             'devisi' => 'egov',  // Devise Admin // Ganti dengan path foto yang sesuai
             'role' => 'kepalacabang',  // Role admin
+            'created_at' => now(),
+            'updated_at' => now(),
+        ]);
+        DB::table('users')->insert([
+            'id' => (string) Str::uuid(),  // UUID untuk id
+            'name' => 'Cahyadi',
+            'email' => 'user1@gmail.com',
+            'email_verified_at' => now(),
+            'password' => Hash::make(value: '12345'),  // Password yang di-hash
+            'devisi' => 'helpdesk',  // Devise Admin // Ganti dengan path foto yang sesuai
+            'role' => 'user',  // Role admin
             'created_at' => now(),
             'updated_at' => now(),
         ]);
