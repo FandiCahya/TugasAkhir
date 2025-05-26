@@ -167,7 +167,7 @@ fun ListPengajuanScreenAdmin3(navController: NavController) {
 
 private fun refreshData(context: Context ,onDataUpdated: (List<Pengajuan>) -> Unit) {
     CoroutineScope(Dispatchers.IO).launch {
-        val updatedList = fetchPengajuanList(context,"pending")
+        val updatedList = fetchPengajuanList(context,"accepted")
         withContext(Dispatchers.Main) {
             onDataUpdated(updatedList)
         }

@@ -47,12 +47,12 @@ import androidx.compose.runtime.rememberCoroutineScope
 import kotlinx.coroutines.launch
 import android.widget.Toast
 import androidx.compose.ui.platform.LocalContext
-import io.ktor.client.statement.bodyAsText
+import io.ktor.client.statement.bodyAsText // Pastikan ini diimpor jika belum
 
 @Composable
 fun SchedulePopupAdmin(
     onDismiss: () -> Unit,
-    onSave: (ScheduleItem) -> Unit,
+    onSave: (ScheduleItem) -> Unit, // Parameter ini mungkin tidak lagi digunakan secara langsung untuk memicu refresh
     taskName: String,
     id: String,
     startDate: String,
@@ -61,6 +61,7 @@ fun SchedulePopupAdmin(
     selectedStages: List<String>,
     progressPercentage: Int,
     status: String,
+    onRefreshList: () -> Unit, // Ini callback untuk refresh
     navController: NavController
 ) {
 
@@ -73,16 +74,17 @@ fun SchedulePopupAdmin(
     var progressPercentageState by remember { mutableStateOf(progressPercentage) }
 
     val context = LocalContext.current
+    val coroutineScope = rememberCoroutineScope() // Pastikan CoroutineScope di-remember
 
     val availableStages = listOf("Analisis", "Desain UI/UX", "Pengerjaan", "Penyelesaian", "Testing")
-    val coroutineScope = rememberCoroutineScope()
+
     Box(modifier = Modifier.fillMaxSize()) {
         // Gelap di latar belakang
         Box(
             modifier = Modifier
                 .fillMaxSize()
-                .background(Color.Black.copy(alpha = 0.4f)) // Gelapkan background
-                .clickable { onDismiss() } // Menutup popup jika area gelap di klik
+                .background(Color.Black.copy(alpha = 0.4f))
+                .clickable { onDismiss() }
         )
 
         // Card Popup
@@ -170,13 +172,14 @@ fun SchedulePopupAdmin(
 
                     Divider(
                         modifier = Modifier.padding(vertical = 16.dp),
-                        color = Color.Gray, // Set the color of the divider
-                        thickness = 1.dp // Set the thickness of the divider
+                        color = Color.Gray,
+                        thickness = 1.dp
                     )
 
                     // Tahap Pengerjaan
                     Text(
-                        if (status == "testing") "Tahap Pengerjaan" else "Pilih Tahap Pengerjaan",
+                        // Menggunakan `status` asli untuk menentukan label
+                        if (status == "testing") "Tahap Pengujian" else "Pilih Tahap Pengerjaan",
                         fontWeight = FontWeight.Bold,
                         color = Color.Black,
                     )
@@ -210,7 +213,8 @@ fun SchedulePopupAdmin(
                                             disabledCheckedColor = Maroon,
                                             disabledUncheckedColor = Color.LightGray
                                         ),
-                                        enabled = status != "testing" // Disable the checkbox when status is "finished"
+                                        // Nonaktifkan checkbox jika status awal adalah "finished" atau "testing"
+                                        enabled = status != "finished" && status != "testing"
                                     )
                                     Text(stage, modifier = Modifier.padding(start = 8.dp), color = Maroon)
                                 }
@@ -239,7 +243,8 @@ fun SchedulePopupAdmin(
                                             disabledCheckedColor = Maroon,
                                             disabledUncheckedColor = Color.LightGray
                                         ),
-                                        enabled = status != "testing" // Disable the checkbox when status is "finished"
+                                        // Nonaktifkan checkbox jika status awal adalah "finished" atau "testing"
+                                        enabled = status != "finished" && status != "testing"
                                     )
                                     Text(stage, modifier = Modifier.padding(start = 8.dp), color = Maroon)
                                 }
@@ -269,25 +274,31 @@ fun SchedulePopupAdmin(
                         modifier = Modifier.fillMaxWidth(),
                         horizontalArrangement = Arrangement.SpaceBetween
                     ) {
-                        if (status == "developed") {
-                            val context = LocalContext.current
+                        // Tombol Update hanya muncul jika status bukan "finished" atau "testing"
+                        if (status == "developed") { // Hanya tampilkan tombol update jika statusnya "developed"
                             Button(
                                 onClick = {
                                     coroutineScope.launch { // Run inside coroutine
                                         try {
                                             val safePercentage = progressPercentageState.coerceIn(0, 100)
+                                            // Tentukan status baru berdasarkan persentase
                                             val newStatus = if (safePercentage == 100) "finished" else "developed"
 
                                             val updatedPengembangan = UpdatePengembangan(
                                                 tahap = selectedStagesState.joinToString(", "),
                                                 persentase = safePercentage,
-                                                status = newStatus
+                                                status = newStatus // Kirim status yang diperbarui
                                             )
                                             println(updatedPengembangan)
                                             val response = updatePengembangan(context, idState, updatedPengembangan)
 
                                             if (response.status.value in 200..299) {
                                                 Toast.makeText(context, "Update berhasil!", Toast.LENGTH_SHORT).show()
+                                                // Panggil onRefreshList jika update berhasil dan status menjadi "finished"
+                                                // atau jika Anda ingin refresh setiap kali update
+                                                if (newStatus == "finished") {
+                                                    onRefreshList()
+                                                }
                                                 onDismiss() // Tutup popup jika berhasil
                                             } else {
                                                 val errorMessage = response.bodyAsText()
@@ -310,7 +321,7 @@ fun SchedulePopupAdmin(
                             // Tombol Form Pengujian di kiri
                             Button(
                                 onClick = {
-                                    navController.navigate("formPengujian?id=$id&taskName=$taskName") // Navigate to FormPengujianAdmin screen
+                                    navController.navigate("formPengujian?id=$id&taskName=$taskName")
                                 },
                                 modifier = Modifier
                                     .width(180.dp)
@@ -319,6 +330,22 @@ fun SchedulePopupAdmin(
                                 shape = RoundedCornerShape(16.dp)
                             ) {
                                 Text("Form Pengujian", color = Color.White)
+                            }
+                        } else if (status == "testing") {
+                            // Tombol "Sedang Diuji" jika statusnya "testing"
+                            Button(
+                                onClick = {
+                                    // Mungkin tidak melakukan apa-apa atau menampilkan pesan
+                                    Toast.makeText(context, "Pengembangan sedang dalam tahap pengujian.", Toast.LENGTH_SHORT).show()
+                                },
+                                modifier = Modifier
+                                    .width(180.dp)
+                                    .shadow(4.dp, RoundedCornerShape(16.dp)),
+                                colors = ButtonDefaults.buttonColors(containerColor = Color.LightGray), // Warna abu-abu untuk menunjukkan tidak aktif
+                                shape = RoundedCornerShape(16.dp),
+                                enabled = false // Tidak bisa diklik
+                            ) {
+                                Text("Sedang Diuji", color = Color.DarkGray)
                             }
                         }
 
@@ -339,4 +366,3 @@ fun SchedulePopupAdmin(
         }
     }
 }
-

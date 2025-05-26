@@ -112,4 +112,7 @@ dependencies {
     implementation("org.jetbrains.kotlinx:kotlinx-serialization-json:1.8.0")
     implementation("io.ktor:ktor-serialization-kotlinx-json")
 
+    // Accompanist Swipe Refresh
+    implementation("com.google.accompanist:accompanist-swiperefresh:0.36.0")
+
 }

@@ -47,7 +47,6 @@ fun ListPengajuanScreenAdmin1(navController: NavController) {
 
     val context = LocalContext.current
 
-
         LaunchedEffect(Unit) {
             val fetchedPengajuanList = fetchPengajuanList(context,"pending")
             Log.d("PengajuanList", "Fetched Pengajuan List: $fetchedPengajuanList")
@@ -56,7 +55,6 @@ fun ListPengajuanScreenAdmin1(navController: NavController) {
             }
             pengajuanList = fetchedPengajuanList // Updating the state
         }
-
 
     val dateFormat = SimpleDateFormat("yyyy-MM-dd", Locale.getDefault()) // Parsing the date format
 
@@ -70,8 +68,6 @@ fun ListPengajuanScreenAdmin1(navController: NavController) {
             Date()
         }
     }
-
-
 
     Column(
         modifier = Modifier
