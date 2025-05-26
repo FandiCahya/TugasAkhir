@@ -35,6 +35,14 @@ import com.example.applicationsop.Api.fetchPengajuanList
 import com.example.applicationsop.Api.fetchPengembanganList
 import com.example.applicationsop.Api.fetchPengujianList
 
+// Tambahkan import ini untuk Swipe Refresh
+import com.google.accompanist.swiperefresh.SwipeRefresh
+import com.google.accompanist.swiperefresh.rememberSwipeRefreshState
+import kotlinx.coroutines.delay // import delay
+import kotlinx.coroutines.launch // Import launch
+import androidx.compose.runtime.rememberCoroutineScope // Import rememberCoroutineScope
+import androidx.compose.foundation.rememberScrollState // Import for scrolling
+import androidx.compose.foundation.verticalScroll // Import for scrolling
 
 @RequiresApi(Build.VERSION_CODES.O)
 @Composable
@@ -55,39 +63,63 @@ fun HomeAdminScreen(
     var riwayatCount by remember { mutableStateOf(0)}
 
     val context = LocalContext.current
+    val coroutineScope = rememberCoroutineScope() // Get a CoroutineScope
 
-    // Fetch jumlah data pengajuan
-    LaunchedEffect(Unit) {
+    // State untuk mengontrol indikator refresh
+    var isRefreshing by remember { mutableStateOf(false) }
+
+    // Fungsi terpisah untuk me-refresh semua data
+    val refreshAllData: suspend () -> Unit = {
+        isRefreshing = true // Aktifkan indikator refresh
+
+        // Lakukan fetching data
+        // These calls are suspend functions, so they need to be in a coroutine
         pendingCount = fetchPengajuanList(context, "pending").size
         rejectedCount = fetchPengajuanList(context, "rejected").size
         acceptedCount = fetchPengajuanList(context, "accepted").size
         pengembanganCount = fetchPengembanganList(context).size
         pengujianCount = fetchPengujianList(context, status_persetujuan = "approved").size
         riwayatCount = fetchPengajuanList(context, "finished").size
+
+        // Opsional: tambahkan delay singkat untuk simulasi loading jika fetching terlalu cepat
+        delay(1000) // delay 1 detik
+
+        isRefreshing = false // Nonaktifkan indikator refresh setelah selesai
     }
 
-    Box(
-        modifier = Modifier
-            .fillMaxSize()
-            .background(Putih)
+    LaunchedEffect(Unit) {
+        refreshAllData()
+    }
+
+    // Bungkus seluruh konten dengan SwipeRefresh
+    SwipeRefresh(
+        state = rememberSwipeRefreshState(isRefreshing), // State yang mengontrol indikator
+        onRefresh = {
+            // Launch a coroutine to call the suspend function when the user pulls to refresh
+            coroutineScope.launch {
+                refreshAllData()
+            }
+        },
+        modifier = Modifier.fillMaxSize()
+            .background(Putih)// Pastikan modifier fillMaxSize ada di sini
     ) {
         // Konten utama, termasuk Header, Sections, dan lainnya
         Column(
             modifier = Modifier
-                .fillMaxSize()
+                .fillMaxSize() // Penting agar konten bisa di-scroll dan memicu refresh
                 .padding(bottom = 80.dp) // Memberikan ruang bawah agar FAB tidak tertutup
+                .verticalScroll(rememberScrollState()) // **Tambahkan ini agar konten bisa di-scroll dan memicu pull-to-refresh**
         ) {
             // Header
             HeaderHomeAdmin(
                 navController = navController,
                 adminName = name,
                 adminToken = token,
-                adminuserId  = userId,
+                adminuserId = userId,
                 adminrole = role,
-                adminemail = email ,
+                adminemail = email,
                 admindevisi = devisi
             )
-
 
             // Pengajuan Section
             SectionTitle("Pengajuan")
@@ -95,7 +127,8 @@ fun HomeAdminScreen(
                 navController = navController,
                 pendingCount = pendingCount,
                 rejectedCount = rejectedCount,
-                acceptedCount = acceptedCount)
+                acceptedCount = acceptedCount
+            )
             Spacer(modifier = Modifier.height(16.dp))
 
             // Garis tengah
@@ -107,7 +140,12 @@ fun HomeAdminScreen(
 
             // Progres Section
             SectionTitle("Progres")
-            ProgressSection(navController = navController,pengembanganCount = pengembanganCount,pengujianCount=pengujianCount, riwayatCount = riwayatCount)
+            ProgressSection(
+                navController = navController,
+                pengembanganCount = pengembanganCount,
+                pengujianCount = pengujianCount,
+                riwayatCount = riwayatCount
+            )
         }
     }
 }

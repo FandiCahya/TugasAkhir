@@ -1,5 +1,6 @@
 package com.example.applicationsop.presentation.screen.admin.list
 
+import android.content.Context
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
@@ -29,6 +30,10 @@ import androidx.compose.ui.text.font.FontWeight
 import com.example.applicationsop.presentation.component.listitem.ListPengajuanItem
 import com.example.applicationsop.presentation.component.header.HeaderWithSearch
 import com.example.applicationsop.presentation.component.popup.DetailPopupUsulanAdmin
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.launch
+import kotlinx.coroutines.withContext
 import java.text.SimpleDateFormat
 import java.util.Date
 import java.util.Locale
@@ -157,5 +162,14 @@ fun ListPengajuanScreenAdmin2(navController: NavController) {
             },
             navController = navController
         )
+    }
+}
+
+private fun refreshData(context: Context, onDataUpdated: (List<Pengajuan>) -> Unit) {
+    CoroutineScope(Dispatchers.IO).launch {
+        val updatedList = fetchPengajuanList(context,"rejected")
+        withContext(Dispatchers.Main) {
+            onDataUpdated(updatedList)
+        }
     }
 }

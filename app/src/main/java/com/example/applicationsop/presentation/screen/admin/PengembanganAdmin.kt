@@ -26,9 +26,15 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.font.FontWeight
+import com.example.applicationsop.Api.fetchPengajuanList
+import com.example.applicationsop.models.Pengajuan
 import com.example.applicationsop.presentation.component.header.HeaderWithSearch
 import com.example.applicationsop.presentation.component.listitem.ListPengembangan
 import com.example.applicationsop.presentation.component.popup.SchedulePopupAdmin
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.launch
+import kotlinx.coroutines.withContext
 import java.text.SimpleDateFormat
 import java.util.Date
 import java.util.Locale
@@ -40,12 +46,18 @@ fun ListPengembanganAdminScreen(navController: NavController) {
     var pengembanganList by remember { mutableStateOf<List<Pengembangan>>(emptyList()) }
     val context = LocalContext.current
 
+    // Fungsi untuk memuat ulang data pengembangan
+    val loadPengembanganList: suspend () -> Unit = {
+        val fetchedPengembanganList = fetchPengembanganList(context)
+        pengembanganList = fetchedPengembanganList
+        println("Pengembangan List View (refreshed): ${pengembanganList}")
+    }
+
     LaunchedEffect(Unit) {
         // Fetching the data when the Composable is first launched
-        val fetchedPengembanganList = fetchPengembanganList(context) // Fetch the data
-        pengembanganList = fetchedPengembanganList // Updating the state
-        println("Pengembangan List View :${pengembanganList}")
+        loadPengembanganList()
     }
+
     val dateFormat = SimpleDateFormat("yyyy-MM-dd", Locale.getDefault()) // Parsing the date format
     val sortedPengembanganList = pengembanganList.sortedByDescending { pengembangan ->
         try {
@@ -77,7 +89,9 @@ fun ListPengembanganAdminScreen(navController: NavController) {
                     Icon(
                         imageVector = Icons.Default.Error, // Ganti dengan ikon yang diinginkan
                         contentDescription = "No Pengajuan",
-                        modifier = Modifier.size(70.dp) .padding(bottom = 10.dp), // Sesuaikan ukuran ikon
+                        modifier = Modifier
+                            .size(70.dp)
+                            .padding(bottom = 10.dp), // Sesuaikan ukuran ikon
                         tint = Color.Gray
                     )
 
@@ -140,7 +154,12 @@ fun ListPengembanganAdminScreen(navController: NavController) {
                 selectedStages = scheduleItem.stage.split(", "),
                 progressPercentage = scheduleItem.progressPercentage,
                 status = scheduleItem.status,
-                navController = navController
+                navController = navController,
+                onRefreshList = {
+                    CoroutineScope(Dispatchers.Main).launch {
+                        loadPengembanganList()
+                    }
+                }
             )
         }
     }

@@ -15,9 +15,7 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
-import androidx.compose.ui.unit.sp
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Add
 import androidx.compose.material.icons.filled.Close
@@ -49,6 +47,17 @@ import com.example.applicationsop.presentation.component.SubmissionCard
 import com.example.applicationsop.presentation.component.header.HeaderHomeUser
 import java.time.LocalTime
 
+// Imports for Swipe Refresh
+import com.google.accompanist.swiperefresh.SwipeRefresh
+import com.google.accompanist.swiperefresh.rememberSwipeRefreshState
+import kotlinx.coroutines.launch
+import androidx.compose.runtime.rememberCoroutineScope
+import kotlinx.coroutines.delay // Added for optional delay in refresh
+
+// Imports for scrolling
+import androidx.compose.foundation.rememberScrollState
+import androidx.compose.foundation.verticalScroll
+
 @RequiresApi(Build.VERSION_CODES.O)
 @Composable
 fun HomeUserScreen(
@@ -60,9 +69,8 @@ fun HomeUserScreen(
     email: String?,
     devisi: String?
 ) {
-    // State for controlling visibility and offset for FAB
     val isVisible = remember { mutableStateOf(false) }
-    val fabOffset = remember { mutableStateOf(1000) } // Initial offset for FAB sliding
+    val fabOffset = remember { mutableStateOf(1000) }
     var pendingCount by remember { mutableStateOf(0) }
     var rejectedCount by remember { mutableStateOf(0) }
     var acceptedCount by remember { mutableStateOf(0) }
@@ -70,97 +78,125 @@ fun HomeUserScreen(
     var pengujianCount by remember { mutableStateOf(0) }
     var riwayatCount by remember { mutableStateOf(0) }
     val context = LocalContext.current
+    val coroutineScope = rememberCoroutineScope() // Get a CoroutineScope
 
-    // Trigger visibility change after the composable is first shown
-    LaunchedEffect(true) {
-        isVisible.value = true
-        pendingCount = fetchPengajuanList(context,"pending", role, devisi).size
+    // State to control the refresh indicator
+    var isRefreshing by remember { mutableStateOf(false) }
+
+    // Function to refresh all data
+    val refreshAllData: suspend () -> Unit = {
+        isRefreshing = true // Activate refresh indicator
+
+        // Fetch data
+        pendingCount = fetchPengajuanList(context, "pending", role, devisi).size
         rejectedCount = fetchPengajuanList(context, "rejected", role, devisi).size
         acceptedCount = fetchPengajuanList(context, "accepted", role, devisi).size
-        pengembanganCount = fetchPengembanganSortList(context, role, devisi,userId).size
-        pengujianCount = fetchPengujianList(context, user_id = userId,status_persetujuan = "approved").size
+        pengembanganCount = fetchPengembanganSortList(context, role, devisi, userId).size
+        pengujianCount = fetchPengujianList(context, user_id = userId, status_persetujuan = "approved").size
         riwayatCount = fetchPengajuanList(context, "finished").size
+
+        // Optional: add a short delay to simulate loading if fetching is too fast
+        delay(1000)
+
+        isRefreshing = false // Deactivate refresh indicator after completion
     }
 
-    Box(
-        modifier = Modifier
-            .fillMaxSize()
-            .background(Putih)
+    // Trigger visibility change for FAB after the composable is first shown
+    LaunchedEffect(true) {
+        isVisible.value = true
+    }
+
+    // Wrap the entire content with SwipeRefresh
+    SwipeRefresh(
+        state = rememberSwipeRefreshState(isRefreshing), // State that controls the indicator
+        onRefresh = {
+            // Launch a coroutine to call the suspend function when the user pulls to refresh
+            coroutineScope.launch {
+                refreshAllData()
+            }
+        },
+        modifier = Modifier.fillMaxSize()
     ) {
-        // Main content (including header, sections, etc.)
-        Column(
+        Box(
             modifier = Modifier
                 .fillMaxSize()
-                .padding(bottom = 80.dp) // To ensure FAB is not covered
+                .background(Putih)
         ) {
-            // Header
-            HeaderHomeUser(
-                navController = navController,
-                nameUser = name,
-                TokenUser = token,
-                userIdUser = userId,
-                roleUser = role,
-                emailUser = email,
-                devisiUser = devisi
-            )
+            // Main content (including header, sections, etc.)
+            Column(
+                modifier = Modifier
+                    .fillMaxSize()
+                    .padding(bottom = 80.dp) // To ensure FAB is not covered
+                    .verticalScroll(rememberScrollState()) // **Crucial for pull-to-refresh**
+            ) {
+                // Header
+                HeaderHomeUser(
+                    navController = navController,
+                    nameUser = name,
+                    TokenUser = token,
+                    userIdUser = userId,
+                    roleUser = role,
+                    emailUser = email,
+                    devisiUser = devisi
+                )
 
-            // Pengajuan Section
-            SectionTitle("Pengajuan")
-            SubmissionSection(
-                navController = navController,
-                roleUS = role,
-                devisiUS = devisi,
-                pendingCount=pendingCount,
-                rejectedCount=rejectedCount,
-                acceptedCount=acceptedCount,
-   )
+                // Pengajuan Section
+                SectionTitle("Pengajuan")
+                SubmissionSection(
+                    navController = navController,
+                    roleUS = role,
+                    devisiUS = devisi,
+                    pendingCount = pendingCount,
+                    rejectedCount = rejectedCount,
+                    acceptedCount = acceptedCount,
+                )
 
-            Spacer(modifier = Modifier.height(16.dp))
+                Spacer(modifier = Modifier.height(16.dp))
 
-            // Garis tengah
-            Divider(
-                color = Color.Gray,
-                thickness = 1.dp,
-                modifier = Modifier.padding(horizontal = 25.dp)
-            )
+                // Garis tengah
+                Divider(
+                    color = Color.Gray,
+                    thickness = 1.dp,
+                    modifier = Modifier.padding(horizontal = 25.dp)
+                )
 
-            // Progres Section
-            SectionTitle("Progres")
-            ProgressSection(
-                navController = navController,
-                pengembanganCount=pengembanganCount,
-                pengujianCount=pengujianCount,
-                riwayatCount = riwayatCount
-            )
-        }
+                // Progres Section
+                SectionTitle("Progres")
+                ProgressSection(
+                    navController = navController,
+                    pengembanganCount = pengembanganCount,
+                    pengujianCount = pengujianCount,
+                    riwayatCount = riwayatCount
+                )
+            }
 
-        // Animated FAB with sliding and fading animation
-        AnimatedVisibility(
-            visible = isVisible.value,
-            enter = slideIn(initialOffset = { IntOffset(0, 1000) }, animationSpec = tween(durationMillis = 300)),
-            exit = slideOut(targetOffset = { IntOffset(0, fabOffset.value) }, animationSpec = tween(durationMillis = 300))
-        ) {
+            // Animated FAB with sliding and fading animation
             AnimatedVisibility(
                 visible = isVisible.value,
-                enter = fadeIn(animationSpec = tween(durationMillis = 300)),
-                exit = fadeOut(animationSpec = tween(durationMillis = 300))
+                enter = slideIn(initialOffset = { IntOffset(0, 1000) }, animationSpec = tween(durationMillis = 300)),
+                exit = slideOut(targetOffset = { IntOffset(0, fabOffset.value) }, animationSpec = tween(durationMillis = 300))
             ) {
-                FloatingActionButton(
-                    onClick = {
-                        // Navigate to FormUsulanScreen when FAB is clicked
-                        navController.navigate("form_usulan?userId=$userId")
-                    },
-                    modifier = Modifier
-                        .align(Alignment.BottomEnd) // Position FAB at the bottom right
-                        .padding(top = 700.dp, start = 300.dp)
-                        .zIndex(1f),
-                    containerColor = PinkPudar // FAB background color
+                AnimatedVisibility(
+                    visible = isVisible.value,
+                    enter = fadeIn(animationSpec = tween(durationMillis = 300)),
+                    exit = fadeOut(animationSpec = tween(durationMillis = 300))
                 ) {
-                    Icon(
-                        imageVector = Icons.Filled.Add, // "Add" icon
-                        contentDescription = "Add",
-                        tint = Putih
-                    )
+                    FloatingActionButton(
+                        onClick = {
+                            navController.navigate("form_usulan?userId=$userId")
+                        },
+                        modifier = Modifier
+                            .align(Alignment.BottomEnd) // Position FAB at the bottom right
+                            .padding(top = 700.dp, start = 300.dp)
+                            .zIndex(1f),
+                        containerColor = PinkPudar // FAB background color
+                    ) {
+                        Icon(
+                            imageVector = Icons.Filled.Add, // "Add" icon
+                            contentDescription = "Add",
+                            tint = Putih
+                        )
+                    }
                 }
             }
         }
@@ -173,9 +209,8 @@ fun SubmissionSection(navController: NavController, roleUS: String?, devisiUS: S
         modifier = Modifier
             .fillMaxWidth()
             .padding(horizontal = 30.dp),
-        horizontalArrangement = Arrangement.SpaceBetween // Mengatur jarak antar kolom
+        horizontalArrangement = Arrangement.SpaceBetween
     ) {
-        // Card Butuh Konfirmasi (kuning)
         SubmissionCard(
             color = kuning,
             icon = Icons.Filled.Timer,
@@ -185,7 +220,6 @@ fun SubmissionSection(navController: NavController, roleUS: String?, devisiUS: S
             }
         )
 
-        // Card Ditolak (merah)
         SubmissionCard(
             color = abang,
             icon = Icons.Filled.Close,
@@ -195,7 +229,6 @@ fun SubmissionSection(navController: NavController, roleUS: String?, devisiUS: S
             }
         )
 
-        // Card Dikembangkan (hijau)
         SubmissionCard(
             color = ijo,
             icon = Icons.Filled.Verified,
@@ -212,23 +245,20 @@ fun ProgressSection(navController: NavController, pengembanganCount: Int, penguj
     Column(
         modifier = Modifier
             .fillMaxWidth()
-            .padding(horizontal = 16.dp) // Memberikan padding horizontal pada ProgressSection
+            .padding(horizontal = 16.dp)
     ) {
-        // Menampilkan beberapa ProgressCard
         ProgressCard("Pengembangan User", Icons.Filled.Timer, Maroon, count = pengembanganCount,navController)
         ProgressCard("Pengujian User", Icons.Filled.History, Maroon,count = pengujianCount, navController)
 
-        // Garis tengah
         Divider(
             color = Color.Gray,
             thickness = 1.dp,
             modifier = Modifier.padding(
                 horizontal = 5.dp,
                 vertical = 10.dp
-            ) // Berikan ruang kiri dan kanan
+            )
         )
 
-        // Card Riwayat dengan Icon di bawah
         ProgressCardRiwayat("Riwayat User", Icons.Filled.History, Maroon, count = riwayatCount, navController)
     }
 }

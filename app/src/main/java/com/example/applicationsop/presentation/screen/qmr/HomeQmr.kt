@@ -14,7 +14,7 @@ import androidx.compose.material.icons.filled.Close
 import androidx.compose.material.icons.filled.History
 import androidx.compose.material.icons.filled.Timer
 import androidx.compose.material.icons.filled.Verified
-import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.LaunchedEffect // Keep this import, but we'll remove its usage for initial refresh
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
@@ -35,6 +35,17 @@ import com.example.applicationsop.presentation.component.SectionTitle
 import com.example.applicationsop.presentation.component.SubmissionCard
 import com.example.applicationsop.presentation.component.header.HeaderHomeQmr
 
+// Imports for Swipe Refresh
+import com.google.accompanist.swiperefresh.SwipeRefresh
+import com.google.accompanist.swiperefresh.rememberSwipeRefreshState
+import kotlinx.coroutines.launch
+import androidx.compose.runtime.rememberCoroutineScope
+import kotlinx.coroutines.delay // Added for optional delay in refresh
+
+// Imports for scrolling
+import androidx.compose.foundation.rememberScrollState
+import androidx.compose.foundation.verticalScroll
+
 @RequiresApi(Build.VERSION_CODES.O)
 @Composable
 fun HomeQmrScreen(
@@ -53,65 +64,97 @@ fun HomeQmrScreen(
     var pengujianCount by remember { mutableStateOf(0) }
     var riwayatCount by remember { mutableStateOf(0)}
     val context = LocalContext.current
+    val coroutineScope = rememberCoroutineScope() // Get a CoroutineScope
 
-    // Fetch jumlah data pengajuan
-    LaunchedEffect(Unit) {
+    // State to control the refresh indicator
+    var isRefreshing by remember { mutableStateOf(false) }
+
+    // Function to refresh all data
+    val refreshAllData: suspend () -> Unit = {
+        isRefreshing = true // Activate refresh indicator
+
+        // Fetch data
         pendingCount = fetchPengajuanList(context,"pending").size
         rejectedCount = fetchPengajuanList(context,"rejected").size
         acceptedCount = fetchPengajuanList(context,"accepted").size
         pengembanganCount = fetchPengembanganList(context).size
         pengujianCount = fetchPengujianList(context, status_persetujuan = "approved").size
         riwayatCount = fetchPengajuanList(context, "finished").size
+
+        // Optional: add a short delay to simulate loading if fetching is too fast
+        delay(1000)
+
+        isRefreshing = false // Deactivate refresh indicator after completion
     }
 
-    Box(
-        modifier = Modifier
-            .fillMaxSize()
-            .background(Putih)
+    // --- REMOVE THIS BLOCK to prevent auto-refresh on initial load ---
+    /*
+    LaunchedEffect(Unit) {
+        refreshAllData()
+    }
+    */
+    // --- END REMOVAL ---
+
+    // Wrap the entire content with SwipeRefresh
+    SwipeRefresh(
+        state = rememberSwipeRefreshState(isRefreshing), // State that controls the indicator
+        onRefresh = {
+            // Launch a coroutine to call the suspend function when the user pulls to refresh
+            coroutineScope.launch {
+                refreshAllData()
+            }
+        },
+        modifier = Modifier.fillMaxSize()
     ) {
-        // Konten utama, termasuk Header, Sections, dan lainnya
-        Column(
+        Box(
             modifier = Modifier
                 .fillMaxSize()
-                .padding(bottom = 80.dp) // Memberikan ruang bawah agar FAB tidak tertutup
+                .background(Putih)
         ) {
-            // Header
-            HeaderHomeQmr(
-                navController = navController,
-                adminName = name,
-                adminToken = token,
-                adminuserId  = userId,
-                adminrole = role,
-                adminemail = email ,
-                admindevisi = devisi
-            )
+            // Konten utama, termasuk Header, Sections, dan lainnya
+            Column(
+                modifier = Modifier
+                    .fillMaxSize()
+                    .padding(bottom = 80.dp) // Memberikan ruang bawah agar FAB tidak tertutup
+                    .verticalScroll(rememberScrollState()) // **Crucial for pull-to-refresh**
+            ) {
+                // Header
+                HeaderHomeQmr(
+                    navController = navController,
+                    adminName = name,
+                    adminToken = token,
+                    adminuserId  = userId,
+                    adminrole = role,
+                    adminemail = email ,
+                    admindevisi = devisi
+                )
 
+                // Pengajuan Section
+                SectionTitle("Pengajuan")
+                SubmissionSection(
+                    navController = navController,
+                    pendingCount = pendingCount,
+                    rejectedCount = rejectedCount,
+                    acceptedCount = acceptedCount
+                )
+                Spacer(modifier = Modifier.height(16.dp))
 
-            // Pengajuan Section
-            SectionTitle("Pengajuan")
-            SubmissionSection(
-                navController = navController,
-                pendingCount = pendingCount,
-                rejectedCount = rejectedCount,
-                acceptedCount = acceptedCount
-            )
-            Spacer(modifier = Modifier.height(16.dp))
+                // Garis tengah
+                Divider(
+                    color = Color.Gray,
+                    thickness = 1.dp,
+                    modifier = Modifier.padding(horizontal = 25.dp)
+                )
 
-            // Garis tengah
-            Divider(
-                color = Color.Gray,
-                thickness = 1.dp,
-                modifier = Modifier.padding(horizontal = 25.dp)
-            )
-
-            // Progres Section
-            SectionTitle("Progres")
-            ProgressSection(
-                navController = navController,
-                pengembanganCount = pengembanganCount,
-                pengujianCount = pengujianCount,
-                riwayatCount = riwayatCount
-            )
+                // Progres Section
+                SectionTitle("Progres")
+                ProgressSection(
+                    navController = navController,
+                    pengembanganCount = pengembanganCount,
+                    pengujianCount = pengujianCount,
+                    riwayatCount = riwayatCount
+                )
+            }
         }
     }
 }
