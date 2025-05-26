@@ -53,6 +53,7 @@ fun UserCheckboxList(checkedUserIds: MutableState<List<String>>) {
         coroutineScope.launch {
             val fetchedUsers = fetchUserList(context)
             userList = fetchedUsers.filter { it.role in filteredRoles } // Filter user by role
+            print(userList)
             isLoading = false
         }
     }
