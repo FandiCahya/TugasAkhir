@@ -15,7 +15,7 @@ class PengajuanSeeder extends Seeder
      */
     public function run(): void
     {
-        $user = User::first();
+        $user = User::where('role', 'user')->first();
 
         if (!$user) {
             $this->command->info('Seeder Pengajuan membutuhkan setidaknya satu user di database.');
