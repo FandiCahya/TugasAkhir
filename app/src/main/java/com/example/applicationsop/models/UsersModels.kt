@@ -19,5 +19,5 @@ data class Users(
 @Serializable
 data class ResponseUser(
     val success: Boolean,
-    val payload: List<Users>
+    val data: List<Users>
 )

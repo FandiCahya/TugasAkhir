@@ -40,13 +40,13 @@ suspend fun fetchUserList(context: Context): List<Users> {
         }
 
         if (response.status.value in 200..299) {
-            println("Successful response Get Users!")
+            println("Successful response Get Users!" )
         }
 
         val responseUser: ResponseUser = response.body()
-        println("User List: ${responseUser.payload}")
+        println("User List: ${responseUser.data}")
 
-        responseUser.payload
+        responseUser.data
     } catch (e: Exception) {
         e.printStackTrace()
         emptyList()
