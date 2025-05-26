@@ -18,6 +18,7 @@
                             <tr>
                                 <th style="width: 15%;">Nama Sistem <span id="sort-name" class="cursor-pointer">🔽</span>
                                 </th>
+                                <th style="width: 10%;">Yang Mengajukan</th>
                                 <th style="width: 10%;">Jenis</th>
                                 <th style="width: 10%;">Rencana Anggaran</th>
                                 <th style="width: 15%;">Masalah</th>

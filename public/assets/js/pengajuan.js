@@ -57,6 +57,7 @@ function renderTable() {
         const tr = document.createElement('tr');
         tr.innerHTML = `
             <td class="text-center">${item.nama_sistem}</td>
+            <td class="text-center">${item.user.name}</td>
             <td class="text-center">${formatJenis(item.jenis)}</td>
             <td class="text-center">${formatJenis(item.rencana_anggaran)}</td>
             <td class="text-center">${item.masalah}</td>
@@ -99,6 +100,7 @@ function searchPengajuan() {
     const q = document.getElementById('search').value.trim().toLowerCase();
     filteredData = PengajuanData.filter(item =>
         item.nama_sistem.toLowerCase().includes(q) ||
+        item.user.name.toLowerCase().includes(q) ||
         item.jenis.toLowerCase().includes(q) ||
         item.rencana_anggaran.toLowerCase().includes(q) ||
         item.masalah.toLowerCase().includes(q) ||

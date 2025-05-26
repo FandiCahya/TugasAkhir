@@ -19,7 +19,7 @@ return new class extends Migration {
             $table->string('tahap'); // Tahap perkembangan
             $table->integer(column: 'persentase'); // Persentase perkembangan
             $table->text('keterangan')->nullable(); // Keterangan perkembangan
-            $table->enum('status', ['developed', 'finished'])->default('developed');
+            $table->enum('status', ['developed', 'finished','testing'])->default('developed');
             $table->timestamps(); // Created_at dan updated_at
 
             // Menambahkan foreign key constraint untuk pengajuan_id

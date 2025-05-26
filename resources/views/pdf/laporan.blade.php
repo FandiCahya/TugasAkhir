@@ -122,6 +122,14 @@
                 <td class="value">: {{ $data['pengajuan']['tgl'] ?? '-' }}</td>
             </tr>
             <tr>
+                <td class="label">Nama Pemohon</td>
+                <td class="value">: {{ $data['pengajuan']['user']['name'] ?? '-' }}</td>
+            </tr>
+            <tr>
+                <td class="label">Devisi Pemohon</td>
+                <td class="value">: {{ $data['pengajuan']['user']['devisi'] ?? '-' }}</td>
+            </tr>
+            <tr>
                 <td class="label">Nama Sistem</td>
                 <td class="value">: {{ $data['pengajuan']['nama_sistem'] ?? '-' }}</td>
             </tr>
@@ -141,6 +149,7 @@
                 <td class="label">Output</td>
                 <td class="value">: {{ $data['pengajuan']['output'] ?? '-' }}</td>
             </tr>
+
         </table>
     </div>
 

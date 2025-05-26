@@ -17,7 +17,7 @@
                         <thead>
                             <tr>
                                 <th>Nama Sistem</th>
-                                <th>Nama User</th>
+                                <th>Yang Mengajukan</th>
                                 <th>Tgl Mulai</th>
                                 <th>Tgl Selesai</th>
                                 <th>Tahap</th>

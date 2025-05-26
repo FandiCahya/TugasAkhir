@@ -14,6 +14,7 @@
                             <tr>
                                 <th style="width: 25%;">Nama Sistem</span>
                                 </th>
+                                <th style="width: 15%;">Nama Pemohon</th>
                                 <th style="width: 10%;">Status</th>
                                 <th style="width: 20%">Tanggal Pengajuan</th>
                                 <th style="width: 15%;">Actions</th>

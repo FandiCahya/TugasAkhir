@@ -56,6 +56,7 @@
                 // console.log(item)
                 tr.innerHTML = `
                 <td class="text-center">${item.pengajuan.nama_sistem}</td>
+                <td class="text-center">${item.pengajuan.user.name}</td>
                 <td class="text-center">${item.pengajuan.status}</td>
                 <td class="text-center">${formattedDate}</td>
                 <td class="text-center">
@@ -95,7 +96,8 @@
             const q = document.getElementById('search').value.trim().toLowerCase();
             filteredData = LaporanData.filter(item =>
                 item.pengajuan.nama_sistem.toLowerCase().includes(q) ||
-                item.pengajuan.status.toLowerCase().includes(q)
+                item.pengajuan.user.name.toLowerCase().includes(q) ||
+                item.pengajuan.status.toLowerCase().includes(q) 
             );
             currentPage = 1;
             renderTable();
