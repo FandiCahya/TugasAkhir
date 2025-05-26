@@ -44,7 +44,6 @@ fun ListPengajuanScreenAdmin1(navController: NavController) {
     var showPopup by remember { mutableStateOf(false) }
     var selectedDetail by remember { mutableStateOf(DetailInfo(id = "")) }
     var pengajuanList by remember { mutableStateOf<List<Pengajuan>>(emptyList()) }
-
     val context = LocalContext.current
 
         LaunchedEffect(Unit) {
