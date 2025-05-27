@@ -46,7 +46,9 @@ fun DetailPopupUsulanKacab(
     masalahSistem: String,
     outputHasil: String,
     status: String,
-    alasan: String? = null, // Alasan hanya ada jika status ditolak
+    alasan: String? = null,
+    nama_user: String? = null,
+    devisi: String? = null,
     navController: NavController
 ) {
     val displayNames = mapOf(

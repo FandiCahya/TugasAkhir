@@ -45,6 +45,8 @@ fun ListPengajuanItem(
     outputHasil: String,
     status: String,
     alasan_penolakan: String,
+    nama_user: String,
+    devisi: String,
     onClick: () -> Unit // Fungsi untuk menangani klik
 ) {
     // Format tanggal

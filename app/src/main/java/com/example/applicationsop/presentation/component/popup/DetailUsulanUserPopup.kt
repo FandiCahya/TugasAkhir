@@ -45,7 +45,9 @@ fun DetailPopupUsulanUser(
     masalahSistem: String,
     outputHasil: String,
     status: String,
-    alasan: String? = null, // Alasan hanya ada jika status ditolak
+    alasan: String? = null,
+    nama_user: String? = null,
+    devisi: String? = null,
     onEditClick: () -> Unit // Fungsi untuk navigasi ke form edit
 ) {
     val displayNames = mapOf(
@@ -161,6 +163,56 @@ fun DetailPopupUsulanUser(
                                 modifier = Modifier.weight(2f)
                             ) {
                                 Text(": $namaSistem", color = Color.Black)
+                            }
+                        }
+                        Spacer(modifier = Modifier.height(8.dp))
+
+                        // Row for Nama User
+                        Row(
+                            modifier = Modifier.fillMaxWidth(),
+                            horizontalArrangement = Arrangement.Start
+                        ) {
+                            // Kolom 1 (Judul)
+                            Column(
+                                modifier = Modifier.weight(1f)
+                            ) {
+                                Text(
+                                    "Pemohon",
+                                    fontWeight = FontWeight.Bold,
+                                    color = Color.Black
+                                )
+                            }
+
+                            // Kolom 2 (Isi)
+                            Column(
+                                modifier = Modifier.weight(2f)
+                            ) {
+                                Text(": $nama_user", color = Color.Black)
+                            }
+                        }
+                        Spacer(modifier = Modifier.height(8.dp))
+
+                        // Row for Devisi
+                        Row(
+                            modifier = Modifier.fillMaxWidth(),
+                            horizontalArrangement = Arrangement.Start
+                        ) {
+                            // Kolom 1 (Judul)
+                            Column(
+                                modifier = Modifier.weight(1f)
+                            ) {
+                                Text(
+                                    "Devisi Pemohon",
+                                    fontWeight = FontWeight.Bold,
+                                    color = Color.Black
+                                )
+                            }
+
+                            // Kolom 2 (Isi)
+                            Column(
+                                modifier = Modifier.weight(2f)
+                            ) {
+                                Text(": $devisi", color = Color.Black)
                             }
                         }
                         Spacer(modifier = Modifier.height(8.dp))

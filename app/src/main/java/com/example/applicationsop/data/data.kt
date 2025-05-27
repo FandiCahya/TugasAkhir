@@ -16,7 +16,9 @@ data class DetailInfo(
     val masalahSistem: String = "",
     val outputHasil: String = "",
     var status: String = "",
-    var alasan_penolakan: String = ""
+    var alasan_penolakan: String = "",
+    var nama_user: String = "",
+    var devisi: String = ""
 )
 
 // Data model for the schedule

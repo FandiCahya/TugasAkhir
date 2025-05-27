@@ -120,6 +120,8 @@ fun ListPengajuanScreenButuhKonfirmasi(
                         status = pengajuan.status,
                         alasan_penolakan = pengajuan.alasan_penolakan
                             ?: "null",  // Use the dynamically selected alasan
+                        nama_user = pengajuan.user.name ?: "null",
+                        devisi = pengajuan.user.devisi ?: "null",
                         onClick = {
                             selectedDetail = DetailInfo(
                                 id = pengajuan.id,
@@ -130,7 +132,9 @@ fun ListPengajuanScreenButuhKonfirmasi(
                                 masalahSistem = pengajuan.masalah,
                                 outputHasil = pengajuan.output,
                                 status = pengajuan.status,
-                                alasan_penolakan = pengajuan.alasan_penolakan ?: "null"
+                                alasan_penolakan = pengajuan.alasan_penolakan ?: "null",
+                                nama_user = pengajuan.user.name ?: "null",
+                                devisi = pengajuan.user.devisi ?: "null",
                             )
                             showPopup = true
                         }
@@ -150,8 +154,10 @@ fun ListPengajuanScreenButuhKonfirmasi(
             rencanaAnggaran = selectedDetail.rencanaAnggaran,
             masalahSistem = selectedDetail.masalahSistem,
             outputHasil = selectedDetail.outputHasil,
-            status = selectedDetail.status,  // Use the dynamically selected status
-            alasan = selectedDetail.alasan_penolakan, // Alasan hanya muncul jika status ditolak
+            status = selectedDetail.status,
+            alasan = selectedDetail.alasan_penolakan,
+            nama_user = selectedDetail.nama_user ,
+            devisi = selectedDetail.devisi ,
             onEditClick = {
                 navController.navigate("form_usulan") // Ganti dengan rute yang sesuai
             }

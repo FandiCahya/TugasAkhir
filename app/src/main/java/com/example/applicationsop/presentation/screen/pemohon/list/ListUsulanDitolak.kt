@@ -114,6 +114,8 @@ fun ListPengajuanScreenDitolak(navController: NavController, role: String?, devi
                         status = pengajuan.status,
                         alasan_penolakan = pengajuan.alasan_penolakan
                             ?: "null",  // Use the dynamically selected alasan
+                        nama_user = pengajuan.user.name ?: "null",
+                        devisi = pengajuan.user.devisi ?: "null",
                         onClick = {
                             selectedDetail = DetailInfo(
                                 id = pengajuan.id,
@@ -124,7 +126,9 @@ fun ListPengajuanScreenDitolak(navController: NavController, role: String?, devi
                                 masalahSistem = pengajuan.masalah,
                                 outputHasil = pengajuan.output,
                                 status = pengajuan.status,
-                                alasan_penolakan = pengajuan.alasan_penolakan ?: "null"
+                                alasan_penolakan = pengajuan.alasan_penolakan ?: "null",
+                                nama_user = pengajuan.user.name ?: "null",
+                                devisi = pengajuan.user.devisi ?: "null",
                             )
                             showPopup = true
                         }
@@ -146,6 +150,8 @@ fun ListPengajuanScreenDitolak(navController: NavController, role: String?, devi
             outputHasil = selectedDetail.outputHasil,
             status = selectedDetail.status,  // Use the dynamically selected status
             alasan = selectedDetail.alasan_penolakan, // Alasan hanya muncul jika status ditolak
+            nama_user = selectedDetail.nama_user ,
+            devisi = selectedDetail.devisi ,
             onEditClick = {
                 navController.navigate("form_edit_usulan?id=${selectedDetail.id}&hariTanggal=${selectedDetail.tanggal}&namaSistem=${selectedDetail.namaSistem}&jenisSistem=${selectedDetail.jenisSistem}&rencanaAnggaran=${selectedDetail.rencanaAnggaran}&masalahSistem=${selectedDetail.masalahSistem}&outputHasil=${selectedDetail.outputHasil}&status=${selectedDetail.status}&alasan=${selectedDetail.alasan_penolakan}") // Ganti dengan rute yang sesuai
             }

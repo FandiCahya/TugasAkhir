@@ -76,6 +76,8 @@ fun ListPengajuanQmr(navController: NavController) {
                     outputHasil = pengajuan.output,
                     status = pengajuan.status,
                     alasan_penolakan = pengajuan.alasan_penolakan ?: "null",
+                    nama_user = pengajuan.user.name ?: "null",
+                    devisi = pengajuan.user.devisi ?: "null",
                     onClick = {
                         selectedDetail = DetailInfo(
                             id = pengajuan.id,
@@ -86,7 +88,9 @@ fun ListPengajuanQmr(navController: NavController) {
                             masalahSistem = pengajuan.masalah,
                             outputHasil = pengajuan.output,
                             status = pengajuan.status,
-                            alasan_penolakan = pengajuan.alasan_penolakan ?: "null"
+                            alasan_penolakan = pengajuan.alasan_penolakan ?: "null",
+                            nama_user = pengajuan.user.name ?: "null",
+                            devisi = pengajuan.user.devisi ?: "null"
                         )
                         showPopup = true
                     }

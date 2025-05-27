@@ -119,7 +119,7 @@ fun ListPengembanganAdminScreen(navController: NavController) {
                         description = pengembangan.keterangan, // Description from Pengembangan
                         stage = pengembangan.tahap, // Stage from Pengembangan
                         progressPercentage = pengembangan.persentase, // Progress from Pengembangan
-                        status = if (pengembangan.persentase == 100) "finished" else "developed" // Logic for status based on progress
+                        status = if (pengembangan.persentase == 100) "finished" else "developed"
                     )
 
                     // Pass actual schedule data to the ListPengembangan composable

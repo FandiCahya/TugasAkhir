@@ -16,8 +16,8 @@ data class LoginResponse(
 @Serializable
 data class User(
     val id: String,
-    val name: String,
-    val email: String,
+    val name: String? = null,
+    val email: String? = null,
     val devisi: String? = null,  // Mengubah menjadi nullable
     val role: String? = null
 )
