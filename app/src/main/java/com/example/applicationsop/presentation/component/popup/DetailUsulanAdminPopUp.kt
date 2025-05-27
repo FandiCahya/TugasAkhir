@@ -60,6 +60,8 @@ fun DetailPopupUsulanAdmin(
     outputHasil: String,
     status: String,
     alasan: String? = null, // Alasan hanya ada jika status ditolak
+    namaUser: String? = null,
+    devisi: String? = null,
     isAdmin: Boolean, // Menambahkan parameter untuk memeriksa peran
     onAcceptClick: () -> Unit, // Fungsi untuk menerima usulan
     onRejectClick: (String) -> Unit, // Fungsi untuk menolak usulan
@@ -185,6 +187,56 @@ fun DetailPopupUsulanAdmin(
                                 modifier = Modifier.weight(2f)
                             ) {
                                 Text(": $namaSistem", color = Color.Black)
+                            }
+                        }
+                        Spacer(modifier = Modifier.height(8.dp))
+
+                        // Row for Pemohon
+                        Row(
+                            modifier = Modifier.fillMaxWidth(),
+                            horizontalArrangement = Arrangement.Start
+                        ) {
+                            // Kolom 1 (Judul)
+                            Column(
+                                modifier = Modifier.weight(1f)
+                            ) {
+                                Text(
+                                    "Pemohon",
+                                    fontWeight = FontWeight.Bold,
+                                    color = Color.Black
+                                )
+                            }
+
+                            // Kolom 2 (Isi)
+                            Column(
+                                modifier = Modifier.weight(2f)
+                            ) {
+                                Text(": $namaUser", color = Color.Black)
+                            }
+                        }
+                        Spacer(modifier = Modifier.height(8.dp))
+
+                        // Row for Devisi
+                        Row(
+                            modifier = Modifier.fillMaxWidth(),
+                            horizontalArrangement = Arrangement.Start
+                        ) {
+                            // Kolom 1 (Judul)
+                            Column(
+                                modifier = Modifier.weight(1f)
+                            ) {
+                                Text(
+                                    "Devisi",
+                                    fontWeight = FontWeight.Bold,
+                                    color = Color.Black
+                                )
+                            }
+
+                            // Kolom 2 (Isi)
+                            Column(
+                                modifier = Modifier.weight(2f)
+                            ) {
+                                Text(": $devisi", color = Color.Black)
                             }
                         }
                         Spacer(modifier = Modifier.height(8.dp))

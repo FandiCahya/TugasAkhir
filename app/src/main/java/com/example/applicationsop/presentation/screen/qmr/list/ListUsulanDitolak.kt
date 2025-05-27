@@ -126,6 +126,8 @@ fun ListPengajuanScreenQmr2(navController: NavController) {
                         outputHasil = pengajuan.output,
                         status = pengajuan.status,
                         alasan_penolakan = pengajuan.alasan_penolakan ?: "null",
+                        nama_user = pengajuan.user.name ?: "null",
+                        devisi = pengajuan.user.devisi ?: "null",
                         onClick = {
                             selectedDetail = DetailInfo(
                                 id = pengajuan.id,
@@ -136,7 +138,9 @@ fun ListPengajuanScreenQmr2(navController: NavController) {
                                 masalahSistem = pengajuan.masalah,
                                 outputHasil = pengajuan.output,
                                 status = pengajuan.status,
-                                alasan_penolakan = pengajuan.alasan_penolakan ?: "null"
+                                alasan_penolakan = pengajuan.alasan_penolakan ?: "null",
+                                nama_user = pengajuan.user.name ?: "null",
+                                devisi = pengajuan.user.devisi ?: "null"
                             )
                             showPopup = true
                         }
@@ -158,6 +162,8 @@ fun ListPengajuanScreenQmr2(navController: NavController) {
             outputHasil = selectedDetail.outputHasil,
             status = selectedDetail.status,  // Gunakan status yang dipilih secara dinamis
             alasan = if (selectedDetail.status == "Pengajuan ditolak") "Output kurang jelas" else null, // Alasan hanya muncul jika status ditolak
+            nama_user = selectedDetail.nama_user ,
+            devisi = selectedDetail.devisi ,
             navController = navController
         )
     }
