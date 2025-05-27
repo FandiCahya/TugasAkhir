@@ -28,7 +28,7 @@ class UserSeeder extends Seeder
         ]);
         DB::table('users')->insert([
             'id' => (string) Str::uuid(),  // UUID untuk id
-            'name' => 'Cahyadi',
+            'name' => 'Cahyono',
             'email' => 'user@gmail.com',
             'email_verified_at' => now(),
             'password' => Hash::make(value: 'user123'),  // Password yang di-hash

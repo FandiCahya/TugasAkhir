@@ -46,7 +46,7 @@
                             <option value="pending">Pending</option>
                             <option value="accepted">Accepted</option>
                             <option value="rejected">Rejected</option>
-                            <option value="developed">Developed</option>
+                            <option value="developing">Developing</option>
                             <option value="testing">Testing</option>
                             <option value="finished">Finished</option>
                         </select>

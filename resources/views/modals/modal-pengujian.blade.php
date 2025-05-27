@@ -56,7 +56,7 @@
 
                         {{-- Persetujuan --}}
                         <div id="persetujuan_section" class="col-md-12 mb-3 row">
-                            <label class="form-label">Persetujuan (4 User)</label>
+                            <label class="form-label">Persetujuan Pengguna</label>
                             <div id="user_ids_container">
                                 {{-- Checkbox akan di-generate via JavaScript --}}
                             </div>

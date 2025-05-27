@@ -3,8 +3,46 @@ let filteredData = [];
 let currentPage = 1;
 const itemsPerPage = 10;
 let detailIndex = 0;
+let userIdFromPengembangan = null;
 
 const getAuthToken = () => localStorage.getItem('token');
+
+function getUserFromPengembangan(pengembanganId) {
+    const token = getAuthToken(); // Fungsi ini harus mengembalikan token autentikasi
+    fetch('/api/pengembangan', {
+        headers: {
+            'Accept': 'application/json',
+            'Authorization': `Bearer ${token}`
+        }
+    })
+    .then(res => res.json())
+    .then(res => {
+        if (res.success && Array.isArray(res.payload)) {
+            const pengembangan = res.payload.find(item => item.id === pengembanganId);
+            if (pengembangan && pengembangan.pengajuan && pengembangan.pengajuan.user) {
+                userIdFromPengembangan = pengembangan.pengajuan.user.id;
+                console.log('✅ ID user berhasil diambil:', userIdFromPengembangan);
+            } else {
+                userIdFromPengembangan = null;
+                console.warn('⚠️ Data user tidak ditemukan dalam pengajuan pengembangan');
+            }
+        } else {
+            console.error('⚠️ Payload tidak sesuai format atau kosong');
+        }
+    })
+    .catch(error => {
+        console.error('❌ Gagal memuat data pengembangan:', error);
+    });
+}
+
+document.getElementById('pengembangan_id').addEventListener('change', function () {
+    const selectedId = this.value;
+    if (selectedId) {
+        getUserFromPengembangan(selectedId);
+    } else {
+        userIdFromPengembangan = null;
+    }
+});
 
 document.getElementById('addDetailBtn').addEventListener('click', function () {
     const container = document.getElementById('pengujian_detail_container');
@@ -141,6 +179,8 @@ function loadUsersOptions() {
 
                 const slicedRoles = roles.slice(colIndex * chunkSize, (colIndex + 1) * chunkSize);
                 slicedRoles.forEach(role => {
+                    if (role === 'user') return; // ❌ skip role "user"
+
                     const roleWrapper = document.createElement('div');
                     roleWrapper.classList.add('mb-3');
 
@@ -173,6 +213,7 @@ function loadUsersOptions() {
                     colDiv.appendChild(roleWrapper);
                 });
 
+
                 rowDiv.appendChild(colDiv);
             });
 
@@ -186,6 +227,7 @@ function loadUsersOptions() {
         console.error('Error load Users:', err);
     });
 }
+
 function loadPengujianData() {
     const token = getAuthToken();
     fetch('/api/pengujian', {
@@ -448,8 +490,27 @@ document.getElementById('savePengujianBtn').addEventListener('click', function (
 
     if (!id) {  // artinya tambah
     data.pengembangan_id = document.getElementById('pengembangan_id').value;
+    // data.user_ids = Array.from(document.querySelectorAll('input[name="user_ids[]"]:checked')).map(cb => cb.value);
+
+    // Baru
+    // ✅ Ambil dari checkbox user tambahan
     data.user_ids = Array.from(document.querySelectorAll('input[name="user_ids[]"]:checked')).map(cb => cb.value);
 
+    // ✅ Tambahkan user_id dari pengajuan (via pengembangan)
+    // Ambil user_id dari pengajuan
+    if (userIdFromPengembangan) {
+        data.user_id = userIdFromPengembangan;
+
+        // Gabungkan ke user_ids[] jika belum ada
+        if (!data.user_ids.includes(userIdFromPengembangan)) {
+            data.user_ids.push(userIdFromPengembangan);
+        }
+    } else {
+        Swal.fire('Gagal', 'User dari pengajuan belum diambil. Silakan pilih pengembangan terlebih dahulu.', 'warning');
+        return;
+    }
+    console.log('User IDs:', data.user_ids);
+    
     data.pengujian_detail = [];
     const rows = document.querySelectorAll('.pengujian-detail-row');
     rows.forEach((row, index) => {
@@ -479,7 +540,7 @@ document.getElementById('savePengujianBtn').addEventListener('click', function (
 
     }
 
-    // console.log('Data stringify:', JSON.stringify(data));    
+    console.log('Data stringify:', JSON.stringify(data));    
     fetch(url, {
         method: method,
         headers: {
@@ -489,6 +550,7 @@ document.getElementById('savePengujianBtn').addEventListener('click', function (
             'X-CSRF-TOKEN': csrfToken
         },
         body: JSON.stringify(data)
+        
     })
     .then(res => res.json())
     .then(res => {
