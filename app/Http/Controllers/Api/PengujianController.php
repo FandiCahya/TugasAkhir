@@ -349,7 +349,7 @@ class PengujianController extends Controller
             // Update status pengembangan dan pengajuan
             $pengembangan = Pengembangan::find($validated['pengembangan_id']);
             if ($pengembangan) {
-                $pengembangan->status = 'finished';
+                $pengembangan->status = 'testing';
                 $pengembangan->save();
 
                 if ($pengembangan->pengajuan) {
