@@ -3,17 +3,17 @@ package com.example.applicationsop.core
 // File: ApiConfig.kt
 
 //Pakai Port
-//object ApiConfig {
-//    const val BASE_URL = "http://${Config.IP_ADDRESS}:${Config.PORT}/api/"
-//}
-//
-//object UrlConfig {
-//    const val BASE_URL = "http://${Config.IP_ADDRESS}:${Config.PORT}/"
-//}
-//
-//object urlSignature{
-//    const val BASE_URL = "http://${Config.IP_ADDRESS}:${Config.PORT}/storage/"
-//}
+object ApiConfig {
+    const val BASE_URL = "http://${Config.IP_ADDRESS}:${Config.PORT}/api/"
+}
+
+object UrlConfig {
+    const val BASE_URL = "http://${Config.IP_ADDRESS}:${Config.PORT}/"
+}
+
+object urlSignature{
+    const val BASE_URL = "http://${Config.IP_ADDRESS}:${Config.PORT}/storage/"
+}
 
 //////Tanpa Port
 //object ApiConfig {
@@ -28,15 +28,15 @@ package com.example.applicationsop.core
 //    const val BASE_URL = "http://${Config.IP_ADDRESS}/storage/"
 //}
 
-//////pakai https
-object ApiConfig {
-    const val BASE_URL = "https://${Config.DOMAIN}/api/"
-}
-
-object UrlConfig {
-    const val BASE_URL = "https://${Config.DOMAIN}/"
-}
-
-object urlSignature{
-    const val BASE_URL = "https://${Config.DOMAIN}/storage/"
-}
+////////pakai https
+//object ApiConfig {
+//    const val BASE_URL = "https://${Config.DOMAIN}/api/"
+//}
+//
+//object UrlConfig {
+//    const val BASE_URL = "https://${Config.DOMAIN}/"
+//}
+//
+//object urlSignature{
+//    const val BASE_URL = "https://${Config.DOMAIN}/storage/"
+//}

@@ -52,8 +52,8 @@ fun DetailPopupPengujian(
     navController: NavController // Menambahkan navController sebagai parameter
 ) {
     // Cetak ID untuk debugging
-    println("ID Pengujian: $id")
-    println("Persetujuan Id Admin: $persetujuanId")
+//    println("ID Pengujian: $id")
+//    println("Persetujuan Id Admin: $persetujuanId")
 
 
     Box(modifier = Modifier.fillMaxSize()) {

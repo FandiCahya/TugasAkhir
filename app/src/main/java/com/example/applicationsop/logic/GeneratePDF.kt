@@ -11,10 +11,12 @@ import android.graphics.pdf.PdfDocument.PageInfo
 import android.widget.Toast
 import androidx.core.content.ContextCompat
 import com.example.applicationsop.R // Pastikan R diimport dengan benar
+import com.example.applicationsop.core.urlSignature
 import com.example.applicationsop.models.PersetujuanPengujianDetail
 import java.io.File
 import java.io.FileOutputStream
 import java.io.IOException
+import kotlinx.coroutines.*
 
 fun generatePDF(
     context: Context,
@@ -329,6 +331,60 @@ fun generatePDF(
         contentTextSize = contentTextSize
     )
     currentY += 25f // Spasi setelah tabel
+
+    // ==============================================================================================
+// Tampilkan Signature Persetujuan
+// ==============================================================================================
+    if (detailPersetujuan.isNotEmpty()) {
+        for ((index, item) in detailPersetujuan.withIndex()) {
+            // Cek jika mendekati batas halaman, buat halaman baru
+            if (currentY + 100f > pageHeight - G_BOTTOM_MARGIN) {
+                startNewPage()
+            }
+
+            val signatureUrl = "${urlSignature.BASE_URL}${item.signature}"
+            println("Signature URL: $signatureUrl")
+
+            // Tampilkan Nama Reviewer
+            val reviewerLabel = "Reviewer #${index + 1}"
+            canvas.drawText(reviewerLabel, leftMargin, currentY, textPaint)
+            currentY += 20f
+
+            canvas.drawText("Nama     : ${item.user.name}", leftMargin, currentY, textPaint)
+            currentY += 20f
+            canvas.drawText("Status   : ${item.status}", leftMargin, currentY, textPaint)
+            currentY += 20f
+            canvas.drawText("Catatan  : ${item.catatan ?: "-"}", leftMargin, currentY, textPaint)
+            currentY += 20f
+
+            // Gambar tanda tangan dari file atau resource
+            runBlocking {
+                try {
+                    val bitmap = withContext(Dispatchers.IO) {
+                        val inputStream = java.net.URL(signatureUrl).openStream()
+                        BitmapFactory.decodeStream(inputStream)
+                    }
+
+                    if (bitmap != null) {
+                        val scaledSignature = Bitmap.createScaledBitmap(bitmap, 150, 80, false)
+                        canvas.drawBitmap(scaledSignature, leftMargin, currentY, paint)
+                        currentY += 100f
+                    } else {
+                        canvas.drawText("Gagal memuat tanda tangan.", leftMargin, currentY, textPaint)
+                        currentY += 30f
+                    }
+
+                } catch (e: Exception) {
+                    e.printStackTrace()
+                    canvas.drawText("Gagal memuat tanda tangan.", leftMargin, currentY, textPaint)
+                    currentY += 30f
+                }
+            }
+
+            // Spasi antara reviewer
+            currentY += 10f
+        }
+    }
 
     // Finish the LAST page
     pdfDocument.finishPage(myPage)
