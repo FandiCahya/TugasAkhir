@@ -11,6 +11,7 @@ import android.graphics.pdf.PdfDocument.PageInfo
 import android.widget.Toast
 import androidx.core.content.ContextCompat
 import com.example.applicationsop.R // Pastikan R diimport dengan benar
+import com.example.applicationsop.models.PersetujuanPengujianDetail
 import java.io.File
 import java.io.FileOutputStream
 import java.io.IOException
@@ -32,11 +33,20 @@ fun generatePDF(
     versiPerangkat: String, // Pastikan tidak null
     tujuanPengujian: String, // Pastikan tidak null
     metodePengujian: String, // Pastikan tidak null
-    status: String // Pastikan tidak null
-    // detailPersetujuan: List<PersetujuanPengujianDetail> // Jika tidak digunakan, bisa dihapus
+    status: String, // Pastikan tidak null
+    detailPersetujuan: List<PersetujuanPengujianDetail> // Jika tidak digunakan, bisa dihapus
 ) {
     val pageHeight = 1120
     val pageWidth = 792
+
+    for ((index, item) in detailPersetujuan.withIndex()) {
+        println("Detail Persetujuan #${index + 1}")
+        println("nama    : ${item.user.name}")
+        println("Status      : ${item.status}")
+        println("signature     : ${item.signature}")
+        println("Catatan     : ${item.catatan}")
+        println("-----------------------------")
+    }
 
     val pdfDocument = PdfDocument()
     val paint = Paint() // Untuk garis, border, dan fill

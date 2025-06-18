@@ -29,6 +29,7 @@ import com.example.applicationsop.ViewModel.SharedPengujianViewModel
 import android.app.Activity
 import android.content.Intent
 import android.widget.Toast
+import androidx.compose.runtime.LaunchedEffect
 import androidx.core.content.FileProvider
 import com.example.applicationsop.logic.downloadPdfToPublicDirectory
 import com.example.applicationsop.logic.generatePDF
@@ -73,6 +74,12 @@ fun RiwayatPopup(
     val decodedTujuanPengujian = Uri.decode(tujuanPengujian)
     val decodedMetodePengujian = Uri.decode(metodePengujian)
     val decodedStatus = Uri.decode(status)
+
+    LaunchedEffect(Unit) {
+        detailPersetujuan.forEachIndexed { index, detail ->
+            println("Detail [$index]: $detail")
+        }
+    }
 
     val sharedViewModel = viewModel<SharedPengujianViewModel>(context as ComponentActivity)
     sharedViewModel.detailPersetujuan.value = detailPersetujuan
@@ -292,7 +299,7 @@ fun RiwayatPopup(
                                 tujuanPengujian = decodedTujuanPengujian,
                                 metodePengujian = decodedMetodePengujian,
                                 status = decodedStatus,
-                                // detailPersetujuan = detailPersetujuan // Uncomment jika dibutuhkan di generatePDF
+                                detailPersetujuan = detailPersetujuan // Uncomment jika dibutuhkan di generatePDF
                             )
 
                             // 2. Buka PDF setelah dibuat
@@ -370,7 +377,7 @@ fun RiwayatPopup(
                                 tujuanPengujian = decodedTujuanPengujian,
                                 metodePengujian = decodedMetodePengujian,
                                 status = decodedStatus,
-                                // detailPersetujuan = detailPersetujuan // Uncomment jika dibutuhkan di generatePDF
+                                detailPersetujuan = detailPersetujuan // Uncomment jika dibutuhkan di generatePDF
                             )
 
                             // 2. Download ke Public Directory

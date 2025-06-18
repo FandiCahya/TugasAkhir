@@ -1,5 +1,6 @@
 package com.example.applicationsop.presentation.screen.kacab
 
+import android.content.Context
 import android.os.Build
 import androidx.annotation.RequiresApi
 import androidx.compose.foundation.background
@@ -70,31 +71,30 @@ fun HomeKacabScreen(
     // State to control the refresh indicator
     var isRefreshing by remember { mutableStateOf(false) }
 
+    suspend fun loadDataCounts(appContext: Context) {
+        pendingCount = fetchPengajuanList(appContext, "pending").size
+        rejectedCount = fetchPengajuanList(appContext, "rejected").size
+        acceptedCount = fetchPengajuanList(appContext, "accepted").size
+        pengembanganCount = fetchPengembanganList(appContext).size
+        pengujianCount = fetchPengujianList(appContext, status_persetujuan = "approved").size
+        riwayatCount = fetchPengajuanList(appContext, "finished").size
+    }
+
     // Function to refresh all data
     val refreshAllData: suspend () -> Unit = {
-        isRefreshing = true // Activate refresh indicator
+        isRefreshing = true
 
-        // Fetch data
-        pendingCount = fetchPengajuanList(context ,"pending").size
-        rejectedCount = fetchPengajuanList(context ,"rejected").size
-        acceptedCount = fetchPengajuanList(context ,"accepted").size
-        pengembanganCount = fetchPengembanganList(context).size
-        pengujianCount = fetchPengujianList(context ,status_persetujuan = "approved").size
-        riwayatCount = fetchPengajuanList(context,"finished").size
+        loadDataCounts(context)
 
-        // Optional: add a short delay to simulate loading if fetching is too fast
-        delay(1000)
+        delay(100)
 
-        isRefreshing = false // Deactivate refresh indicator after completion
+        isRefreshing = false
     }
 
-    // --- REMOVE THIS BLOCK to prevent auto-refresh on initial load ---
-    /*
     LaunchedEffect(Unit) {
-        refreshAllData()
+        loadDataCounts(context)
     }
-    */
-    // --- END REMOVAL ---
+
 
     // Wrap the entire content with SwipeRefresh
     SwipeRefresh(

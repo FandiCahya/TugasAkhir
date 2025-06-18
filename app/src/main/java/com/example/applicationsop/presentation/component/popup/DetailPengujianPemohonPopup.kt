@@ -53,6 +53,8 @@ fun DetailPopupPengujianPemohon(
 ) {
     // Cetak ID untuk debugging
     println("ID Pengujian: $id")
+    println("persetujuanId pada User: $persetujuanId")
+
 
     Box(modifier = Modifier.fillMaxSize()) {
         Box(
@@ -266,7 +268,7 @@ fun DetailPopupPengujianPemohon(
                         // Tombol Approval
                         Button(
                             onClick = {  // Example: Navigating to DetailApproval with a mock DetailPengujian object
-                                navController.navigate("detail_approval_screen?persetujuanId=$persetujuanId") },
+                                navController.navigate("detail_approval_screen/persetujuanId=$persetujuanId") },
                             modifier = Modifier
                                 .width(100.dp)
                                 .shadow(4.dp, RoundedCornerShape(16.dp)),

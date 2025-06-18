@@ -106,7 +106,7 @@ fun ListPengembangan(
             val statusText = when (status) {
                 "developed" -> "Pengembangan"
                 "finished" -> "Pengembangan Selesai"
-                "finished" -> "Tahap Pengujian"
+                "testing" -> "Tahap Pengujian"
                 else -> "Status Tidak Dikenali" // Default for other statuses
             }
 

@@ -53,7 +53,7 @@ fun DetailPopupPengujian(
 ) {
     // Cetak ID untuk debugging
     println("ID Pengujian: $id")
-    println("Persetujuan Id: $persetujuanId")
+    println("Persetujuan Id Admin: $persetujuanId")
 
 
     Box(modifier = Modifier.fillMaxSize()) {

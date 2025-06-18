@@ -37,8 +37,8 @@ fun ProgressCardRiwayat(
 ) {
     // Mapping untuk menampilkan "Pengembangan" atau "Pengujian"
     val displayTitle = when (title) {
-        "Riwayat Admin" -> "Riwayat"
-        "Riwayat User" -> "Riwayat"
+        "Riwayat Admin" -> "Laporan"
+        "Riwayat User" -> "Laporan"
         else -> title
     }
     Box(

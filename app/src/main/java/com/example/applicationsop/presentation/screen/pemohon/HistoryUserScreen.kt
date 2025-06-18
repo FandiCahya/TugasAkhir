@@ -26,6 +26,7 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.navigation.NavController
 import com.example.applicationsop.Api.fetchLaporanList
 import com.example.applicationsop.Api.fetchPengujianList
+import com.example.applicationsop.core.UserUtils
 import com.example.applicationsop.data.DetailLaporan
 import com.example.applicationsop.data.DetailPengujian
 import com.example.applicationsop.models.Laporan
@@ -45,15 +46,19 @@ fun HistoryUser(navController: NavController) {
     var selectedDetail by remember { mutableStateOf(DetailLaporan("")) }
     var laporanList by remember { mutableStateOf<List<Laporan>>(emptyList()) }
     val context = LocalContext.current
+    val userData = UserUtils.getUserData(context)
+    val role = userData["role"]
+    val devisi = userData["devisi"]
+
 
     LaunchedEffect(Unit) {
         // Fetching the data when the Composable is first launched
-        val fetchLaporanList = fetchLaporanList(context, status_pengajuan = "finished") // Fetch the data
+        val fetchLaporanList = fetchLaporanList(context, status_pengajuan = "finished", role = role, devisi = devisi)
         Log.d("FETCH_LAPORAN", fetchLaporanList.toString())
-        laporanList = fetchLaporanList // Updating the state
+        laporanList = fetchLaporanList
     }
     val dateFormat = SimpleDateFormat("yyyy-MM-dd", Locale.getDefault()) // Parsing the date format
-    val todayDate = dateFormat.format(Date()) // Current date for fallback
+
     // Sort pengajuanList by tanggal
     val sortedLaporanList = laporanList.sortedByDescending { laporan ->
         try {
@@ -68,7 +73,7 @@ fun HistoryUser(navController: NavController) {
             .fillMaxSize()
             .background(Color.White)
     ) {
-        HeaderWithSearch(navController = navController, title = "Riwayat")
+        HeaderWithSearch(navController = navController, title = "Hasil Pengajuan")
         Spacer(modifier = Modifier.height(20.dp))
         var currentDate: String? = null
 
@@ -92,7 +97,7 @@ fun HistoryUser(navController: NavController) {
 
                     // Add Text below the icon
                     Text(
-                        text = "Tidak Ada Riwayat",
+                        text = "Tidak Ada Laporan",
                         color = Color.Gray,
                         style = TextStyle(
                             fontWeight = FontWeight.Bold,

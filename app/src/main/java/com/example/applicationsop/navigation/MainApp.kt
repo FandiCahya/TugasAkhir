@@ -26,6 +26,7 @@ import com.example.applicationsop.presentation.screen.kacab.list.ListPengajuanSc
 import com.example.applicationsop.presentation.screen.kacab.list.ListPengajuanScreenKacab3
 import com.example.applicationsop.presentation.screen.kacab.HomeKacabScreen
 import com.example.applicationsop.presentation.screen.kacab.ListPengembanganKacab
+import com.example.applicationsop.presentation.screen.pemohon.DetailApprovalUser
 import com.example.applicationsop.presentation.screen.pemohon.DetailPengujianPemohon
 import com.example.applicationsop.presentation.screen.pemohon.HistoryUser
 import com.example.applicationsop.presentation.screen.pemohon.form.FormUsulanScreen

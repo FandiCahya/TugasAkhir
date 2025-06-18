@@ -170,6 +170,7 @@ fun ShowLaporanScreen(
                     tujuanPengujian = decodedTujuanPengujian,
                     metodePengujian = decodedMetodePengujian,
                     status = decodedStatus,
+                    detailPersetujuan = detailPersetujuan
                 )
             }
         }

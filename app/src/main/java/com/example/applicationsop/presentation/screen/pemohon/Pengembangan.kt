@@ -26,6 +26,7 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.navigation.NavController
 import com.example.applicationsop.Api.fetchPengembanganSortList
+import com.example.applicationsop.core.UserUtils
 import com.example.applicationsop.models.Pengembangan
 import com.example.applicationsop.presentation.component.header.HeaderWithSearch
 import com.example.applicationsop.presentation.component.listitem.ListPengembangan
@@ -46,25 +47,6 @@ data class ScheduleItem(
     val status: String
 )
 
-fun getUserData(context: Context): Map<String, String?> {
-    val sharedPreferences = context.getSharedPreferences("MyPrefs", Activity.MODE_PRIVATE)
-    val token = sharedPreferences.getString("TOKEN", null)
-    val userId = sharedPreferences.getString("USER_ID", null)
-    val role = sharedPreferences.getString("ROLE", null)
-    val name = sharedPreferences.getString("NAME", null)
-    val email = sharedPreferences.getString("EMAIL", null)
-    val devisi = sharedPreferences.getString("DEVISI", null)
-
-    return mapOf(
-        "token" to token,
-        "userId" to userId,
-        "role" to role,
-        "name" to name,
-        "email" to email,
-        "devisi" to devisi
-    )
-}
-
 @Composable
 fun ListPengembanganScreen(navController: NavController) {
     var showPopup by remember { mutableStateOf(false) }
@@ -73,7 +55,7 @@ fun ListPengembanganScreen(navController: NavController) {
 
     // Mengambil data dari SharedPreferences
     val context = LocalContext.current
-    val userData = getUserData(context)
+    val userData = UserUtils.getUserData(context)
 
     // Menyimpan role, devisi, dan userId ke dalam variabel
     val role = userData["role"]

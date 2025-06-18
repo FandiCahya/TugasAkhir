@@ -46,14 +46,14 @@ fun ListPengajuanScreenAdmin1(navController: NavController) {
     var pengajuanList by remember { mutableStateOf<List<Pengajuan>>(emptyList()) }
     val context = LocalContext.current
 
-        LaunchedEffect(Unit) {
+    LaunchedEffect(Unit) {
             val fetchedPengajuanList = fetchPengajuanList(context,"pending")
             Log.d("PengajuanList", "Fetched Pengajuan List: $fetchedPengajuanList")
             if (fetchedPengajuanList.isEmpty()) {
                 Log.d("PengajuanList", "No data available")
             }
             pengajuanList = fetchedPengajuanList // Updating the state
-        }
+    }
 
     val dateFormat = SimpleDateFormat("yyyy-MM-dd", Locale.getDefault()) // Parsing the date format
 

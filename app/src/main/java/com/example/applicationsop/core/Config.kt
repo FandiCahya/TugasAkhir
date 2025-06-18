@@ -1,6 +1,7 @@
 package com.example.applicationsop.core
 
 object Config {
-    const val IP_ADDRESS = "172.16.100.227"
+    const val IP_ADDRESS = "8.215.63.143"
+    const val DOMAIN = "cahyame.my.id"
     const val PORT = "8000"
 }

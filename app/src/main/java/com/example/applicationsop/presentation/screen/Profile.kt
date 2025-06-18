@@ -182,32 +182,6 @@ fun ProfileUser(
                     .fillMaxWidth()
                     .padding(top = 100.dp) // Adjust the top padding to place the menu section below the profile
             ) {
-                // History Button
-                TextButton(
-                    onClick = { /* Navigate to history screen */ },
-                    modifier = Modifier.fillMaxWidth()
-                ) {
-                    Row(
-                        modifier = Modifier.fillMaxWidth(),
-                        horizontalArrangement = Arrangement.Start // Aligns content to the left
-                    ) {
-                        Icon(
-                            imageVector = Icons.Filled.History,
-                            contentDescription = "History",
-                            modifier = Modifier.size(24.dp),
-                            tint = Maroon
-                        )
-                        Spacer(modifier = Modifier.width(8.dp)) // Space between icon and text
-                        Text(
-                            text = "History",
-                            color = Color.Black,
-                            fontSize = 16.sp
-                        )
-                    }
-                }
-
-                // Divider between buttons (No extra padding here, close to the content)
-                Divider(modifier = Modifier.padding(horizontal = 15.dp))
 
                 // Sign Out Button
                 TextButton(

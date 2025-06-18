@@ -1,5 +1,6 @@
 package com.example.applicationsop.presentation.screen.pemohon
 
+import android.content.Context
 import android.os.Build
 import androidx.annotation.RequiresApi
 import androidx.compose.animation.AnimatedVisibility
@@ -57,6 +58,7 @@ import kotlinx.coroutines.delay // Added for optional delay in refresh
 // Imports for scrolling
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
+import com.example.applicationsop.Api.fetchPengembanganList
 
 @RequiresApi(Build.VERSION_CODES.O)
 @Composable
@@ -69,7 +71,7 @@ fun HomeUserScreen(
     email: String?,
     devisi: String?
 ) {
-    val isVisible = remember { mutableStateOf(false) }
+    val isVisible = remember { mutableStateOf(true) }
     val fabOffset = remember { mutableStateOf(1000) }
     var pendingCount by remember { mutableStateOf(0) }
     var rejectedCount by remember { mutableStateOf(0) }
@@ -83,27 +85,28 @@ fun HomeUserScreen(
     // State to control the refresh indicator
     var isRefreshing by remember { mutableStateOf(false) }
 
-    // Function to refresh all data
-    val refreshAllData: suspend () -> Unit = {
-        isRefreshing = true // Activate refresh indicator
-
-        // Fetch data
+    suspend fun loadDataCounts(appContext: Context) {
         pendingCount = fetchPengajuanList(context, "pending", role, devisi).size
         rejectedCount = fetchPengajuanList(context, "rejected", role, devisi).size
         acceptedCount = fetchPengajuanList(context, "accepted", role, devisi).size
         pengembanganCount = fetchPengembanganSortList(context, role, devisi, userId).size
         pengujianCount = fetchPengujianList(context, user_id = userId, status_persetujuan = "approved").size
-        riwayatCount = fetchPengajuanList(context, "finished").size
-
-        // Optional: add a short delay to simulate loading if fetching is too fast
-        delay(1000)
-
-        isRefreshing = false // Deactivate refresh indicator after completion
+        riwayatCount = fetchPengajuanList(context, "finished", role, devisi).size
     }
 
-    // Trigger visibility change for FAB after the composable is first shown
-    LaunchedEffect(true) {
-        isVisible.value = true
+    // Function to refresh all data
+    val refreshAllData: suspend () -> Unit = {
+        isRefreshing = true
+
+        loadDataCounts(context)
+
+        delay(100)
+
+        isRefreshing = false
+    }
+
+    LaunchedEffect(Unit) {
+        loadDataCounts(context)
     }
 
     // Wrap the entire content with SwipeRefresh

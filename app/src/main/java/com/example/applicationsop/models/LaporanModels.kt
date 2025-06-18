@@ -85,5 +85,5 @@ data class PersetujuanPengujianDetail(
 data class UserDetail(
     val id: String,
     val name: String,
-    val email: String
+    val email: String,
 )
