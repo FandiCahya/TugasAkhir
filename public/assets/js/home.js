@@ -17,7 +17,7 @@
             .then(response => response.json())
             .then(data => {
                 if (data.success) {
-                    console.log('Data fetched successfully:', data);
+                    // console.log('Data fetched successfully:', data);
                     dashboard = data.payload;
                     renderStatistik(dashboard);
                 } else {
@@ -33,12 +33,13 @@ function renderStatistik(data) {
 
     const statusCounter = {};
     const bulanCounter = {};
+    console.log(bulanCounter);
 
     data.forEach(p => {
         const status = p.status || 'unknown';
         statusCounter[status] = (statusCounter[status] || 0) + 1;
 
-        const tgl = new Date(p.created_at);
+        const tgl = new Date(p.tgl);
         const bulanTahun = tgl.toLocaleString('id-ID', {
             month: 'long',
             year: 'numeric'
@@ -86,13 +87,16 @@ function renderStatistik(data) {
 container.insertAdjacentHTML('beforeend', `
     <div class="col-12 mt-4">
         <div class="card">
-            <div class="card-body">
+            <div class="card-body px-2 px-md-4">
                 <h5 class="text-muted">📊 Statistik Status Pengajuan</h5>
-                <canvas id="statusChart" height="100"></canvas>
+                <div class="chart-container" style="position: relative; width: 100%; max-width: 500px; margin: auto;">
+                    <canvas id="statusChart" style="max-height: 250px;"></canvas>
+                </div>
             </div>
         </div>
     </div>
 `);
+
 
 
 // 2. Setelah itu baru ambil dan render Chart.js
@@ -112,13 +116,21 @@ new Chart(ctxs, {
         }]
     },
     options: {
-        responsive: true,
-        plugins: {
-            legend: {
-                position: 'bottom',
+    responsive: true,
+    maintainAspectRatio: false,
+    plugins: {
+        legend: {
+            position: 'bottom',
+            labels: {
+                boxWidth: 10,
+                font: {
+                    size: 12
+                }
             }
         }
     }
+}
+
 });
 
 // BULAN SECTION (Chart)
@@ -134,7 +146,10 @@ container.insertAdjacentHTML('beforeend', `
 `);
 
 const bulanLabels = Object.keys(bulanCounter);
-const bulanValues = Object.values(bulanCounter).map(v => parseInt(v, 10));
+const bulanValues = Object.values(bulanCounter).map(v => Math.floor(v));
+console.log(bulanValues);
+console.log(bulanLabels);
+
 
 // Render Chart.js
 const ctx = document.getElementById('bulanChart').getContext('2d');
@@ -166,6 +181,7 @@ new Chart(ctx, {
         scales: {
     y: {
         beginAtZero: true,
+        suggestedMax: Math.max(...bulanValues) + 1, // Paksa Chart.js kasih ruang
         ticks: {
             stepSize: 1,
             callback: function(value) {
@@ -184,6 +200,7 @@ new Chart(ctx, {
         }
     }
 }
+
 
 
 
