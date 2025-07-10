@@ -19,7 +19,7 @@ class UserController extends Controller
                 return $queryBuilder->where('name', 'like', '%' . $query . '%');
             })->get();
 
-            $users = User::all();
+            // $users = User::all();
             return new GlobalResource(true, 'Berhasil mengambil data Users', $users);
         } catch (\Exception $e) {
             // Menangani error lainnya

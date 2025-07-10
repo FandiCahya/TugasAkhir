@@ -35,8 +35,7 @@ Route::middleware('auth:sanctum')->group(function () {
     Route::get('showall', [ShowController::class, 'allshow']);
 
     Route::post('persetujuan-pengujian-detail/{id}/approval', [PersetujuanPengujianController::class, 'approval']);
-});
-
+}); 
 
 Route::post('persetujuan-pengujian/create', [PersetujuanPengujianController::class, 'createApproval']);
 

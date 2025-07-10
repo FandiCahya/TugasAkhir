@@ -5,7 +5,7 @@
         <div class="row">
             <!-- Card 1: Jumlah Users -->
             <div class="col-md-4 col-sm-6 grid-margin stretch-card">
-                <div class="card bg-facebook shadow" style="border-radius: 1rem;">
+                <div class="card bg-facebook shadow" style="border-radius: 1rem; position: relative;">
                     <div class="card-body py-5 d-flex justify-content-between align-items-center">
                         <!-- Teks di kiri -->
                         <div class="ms-3">
@@ -14,9 +14,12 @@
                         </div>
                         <!-- Icon di kanan -->
                         <i class="mdi mdi-account-multiple text-white" style="font-size: 4rem;"></i>
+                        <!-- Invisible full-card link -->
+                        <a href="/users" class="stretched-link"></a>
                     </div>
                 </div>
             </div>
+
 
             <!-- Card 2: Pengajuan-->
             <div class="col-md-4 col-sm-6 grid-margin stretch-card">
@@ -29,6 +32,8 @@
                         </div>
                         <!-- Icon di kanan -->
                         <i class="mdi mdi-note-plus text-white" style="font-size: 4rem;"></i>
+                        <!-- Invisible full-card link -->
+                        <a href="/pengajuan" class="stretched-link"></a>
                     </div>
                 </div>
             </div>
@@ -44,6 +49,8 @@
                         </div>
                         <!-- Icon di kanan -->
                         <i class="mdi mdi-code-tags text-white" style="font-size: 4rem;"></i>
+                        <!-- Invisible full-card link -->
+                        <a href="/pengembangan" class="stretched-link"></a>
                     </div>
                 </div>
             </div>
@@ -60,6 +67,8 @@
                         </div>
                         <!-- Icon di kanan -->
                         <i class="mdi mdi-clipboard-text text-white" style="font-size: 4rem;"></i>
+                        <!-- Invisible full-card link -->
+                        <a href="/pengujian" class="stretched-link"></a>
                     </div>
                 </div>
             </div>
@@ -70,11 +79,14 @@
                     <div class="card-body py-5 d-flex justify-content-between align-items-center">
                         <!-- Teks di kiri -->
                         <div class="ms-3">
-                            <h3 id="count-approval" class="text-white fw-bold mb-2">{{ $counts['persetujuan_pengujian'] }}</h3>
+                            <h3 id="count-approval" class="text-white fw-bold mb-2">{{ $counts['persetujuan_pengujian'] }}
+                            </h3>
                             <p class="text-white fs-5 mb-0">Jumlah Persetujuan</p>
                         </div>
                         <!-- Icon di kanan -->
                         <i class="mdi mdi-checkbox-multiple-marked-circle-outline text-white" style="font-size: 4rem;"></i>
+                        <!-- Invisible full-card link -->
+                        <a href="/pengajuan" class="stretched-link"></a>
                     </div>
                 </div>
             </div>
@@ -83,36 +95,14 @@
         <div class="col-lg-12 grid-margin stretch-card">
             <div class="card">
                 <div class="card-body">
-                    <h4 class="card-title">SOP</h4>
-                    <div class="table-responsive">
-                        <table class="table table-striped" id="dashboard">
-                            <thead>
-                                <tr>
-                                    <th>
-                                        Nama Sistem
-                                    </th>
-                                    <th>
-                                        Versi
-                                    </th>
-                                    <th>
-                                        Jenis
-                                    </th>
-                                    <th>
-                                        Status
-                                    </th>
-                                    <th>
-                                        Tanggal Pengajuan
-                                    </th>
-                                </tr>
-                            </thead>
-                            <tbody id="dashboard-body">
-                                <!-- Data will be dynamically filled here using JavaScript -->
-                            </tbody>
-                        </table>
+                    <h4 class="card-title">Statistik Pengajuan</h4>
+                    <div class="row" id="dashboard-body">
+                        <!-- Statistik cards will be injected by JavaScript -->
                     </div>
                 </div>
             </div>
         </div>
+
     </div>
 @endsection
 @push('scripts')

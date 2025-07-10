@@ -20,20 +20,8 @@ return new class extends Migration
             $table->foreign('pengujian_id')->references('id')->on('pengujian_perangkat_lunak')->onDelete('cascade');
         });
 
-        Schema::create('persetujuan_pengujian_details', function (Blueprint $table) {
-            $table->uuid('id')->primary();
-            $table->uuid( 'persetujuan_pengujian_id');
-            $table->uuid('user_id');
-            $table->enum('status', ['setuju', 'tidak_setuju']);
-            $table->text('catatan')->nullable();
-            $table->string('signature')->nullable();
-            $table->enum('role', ['user', 'admin', 'mqr', 'kepalacabang'])->default('user');
-            $table->timestamps();
 
-            // Foreign Keys
-            $table->foreign(columns: 'persetujuan_pengujian_id')->references('id')->on(table: 'persetujuan_pengujian')->onDelete('cascade');
-            $table->foreign('user_id')->references('id')->on('users')->onDelete('cascade');
-        });
+        
     }
 
     /**
