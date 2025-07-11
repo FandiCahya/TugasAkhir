@@ -2,6 +2,7 @@ package com.example.applicationsop.core
 
 import android.app.Activity
 import android.content.Context
+import org.json.JSONObject
 
 fun saveUserData(
     context: Context,
@@ -20,5 +21,9 @@ fun saveUserData(
     editor.putString("NAME", name) // Simpan name
     editor.putString("EMAIL", email) // Simpan email
     editor.putString("DEVISI", devisi) // Simpan devisi
+    editor.putBoolean("IS_LOGGED_IN", true)
     editor.apply() // Commit perubahan
 }
+
+
+

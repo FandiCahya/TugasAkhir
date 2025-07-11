@@ -43,7 +43,7 @@ fun ListPengujianScreenUser(navController: NavController) {
     // Informasi User
     val context = LocalContext.current
     val userData = remember { UserUtils.getUserData(context) }
-    val userId = userData["userId"]
+    val userId = userData["userId"]as? String
 
 
     LaunchedEffect(Unit) {

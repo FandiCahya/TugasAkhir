@@ -58,9 +58,9 @@ fun ListPengembanganScreen(navController: NavController) {
     val userData = UserUtils.getUserData(context)
 
     // Menyimpan role, devisi, dan userId ke dalam variabel
-    val role = userData["role"]
-    val devisi = userData["devisi"]
-    val userId = userData["userId"]
+    val role = userData["role"] as? String
+    val devisi = userData["devisi"] as? String
+    val userId = userData["userId"] as? String
 
     LaunchedEffect(Unit) {
 

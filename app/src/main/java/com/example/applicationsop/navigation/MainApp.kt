@@ -64,59 +64,16 @@ fun MainApp(
             LoginScreen(navController = navController)
         }
         composable("home") {
-            if (token != null) {
+            if (!token.isNullOrEmpty()) {
                 when (role) {
-                    "admin" -> {
-                        HomeAdminScreen(
-                            navController = navController,
-                            token = token,
-                            userId = userId,
-                            role = role,
-                            name = name,
-                            email = email,
-                            devisi = devisi
-                        )
-                    }
-
-                    "kepalacabang" -> {
-                        // Kacab specific screen
-                        HomeKacabScreen(
-                            navController = navController,
-                            token = token,
-                            userId = userId,
-                            role = role,
-                            name = name,
-                            email = email,
-                            devisi = devisi
-                        )
-                    }
-
-                    "qmr" -> {
-                        // Qmr specific screen
-                        HomeQmrScreen(
-                            navController = navController,
-                            token = token,
-                            userId = userId,
-                            role = role,
-                            name = name,
-                            email = email,
-                            devisi = devisi
-                        )
-                    }
-
-                    else -> {
-                        // Default user screen if the role doesn't match above
-                        HomeUserScreen(
-                            navController = navController,
-                            token = token,
-                            userId = userId,
-                            role = role,
-                            name = name,
-                            email = email,
-                            devisi = devisi
-                        )
-                    }
+                    "admin" -> HomeAdminScreen(navController, token, userId, role, name, email, devisi)
+                    "kepalacabang" -> HomeKacabScreen(navController, token, userId, role, name, email, devisi)
+                    "qmr" -> HomeQmrScreen(navController, token, userId, role, name, email, devisi)
+                    else -> HomeUserScreen(navController, token, userId, role, name, email, devisi)
                 }
+            } else {
+                // Safety fallback
+                LoginScreen(navController = navController)
             }
         }
 

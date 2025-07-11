@@ -56,6 +56,19 @@ fun ListPengajuanItem(
     } catch (e: Exception) {
         null
     }
+    val statusText = when (status.lowercase()) {
+        "pending" -> "Menunggu Konfirmasi"
+        "rejected" -> "Pengajuan Ditolak"
+        "accepted" -> "Pengajuan Diterima"
+        else -> status
+    }
+
+    val statusColor = when (status.lowercase()) {
+        "pending" -> kuning
+        "rejected" -> abang
+        "accepted" -> ijo
+        else -> Color.Black
+    }
 
     val formattedDate = if (parsedDate != null) {
         SimpleDateFormat("dd/MM/yyyy", Locale.getDefault()).format(parsedDate)
@@ -117,14 +130,9 @@ fun ListPengajuanItem(
                 verticalAlignment = Alignment.CenterVertically
             ) {
                 Text(
-                    text = status,
+                    text = statusText,
                     fontSize = 14.sp,
-                    color = when (status) {
-                        "pending" -> kuning
-                        "rejected" -> abang
-                        "accepted" -> ijo
-                        else -> Color.Black
-                    }
+                    color = statusColor
                 )
                 Text(
                     text = formattedDate,

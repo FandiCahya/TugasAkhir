@@ -113,7 +113,7 @@ fun DetailPopupPengujian(
                     ) {
                         Column(modifier = Modifier.weight(1f)) {
                             Text(
-                                "Nama Perangkat",
+                                "Perangkat",
                                 fontWeight = FontWeight.Bold,
                                 color = Color.Black
                             )
@@ -233,7 +233,7 @@ fun DetailPopupPengujian(
                             Text(
                                 ": ${
                                     when (status) {
-                                        "testing" -> "Menunggu Approval"
+                                        "testing" -> "Menunggu Persetujuan"
                                         "finished" -> "ACC"
                                         else -> status // Menampilkan status lain jika tidak matching
                                     }

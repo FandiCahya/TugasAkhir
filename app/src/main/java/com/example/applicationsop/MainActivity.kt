@@ -16,52 +16,46 @@ import com.example.applicationsop.ui.theme.ApplicationSOPTheme
 class MainActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
+
+        val intentToken = intent.getStringExtra("token")
+        val intentUserId = intent.getStringExtra("userId")
+        val intentRole = intent.getStringExtra("role")
+        val intentName = intent.getStringExtra("name")
+        val intentEmail = intent.getStringExtra("email")
+        val intentDevisi = intent.getStringExtra("devisi")
+
+        val userData = UserUtils.getUserData(this)
+        val fallbackToken = userData["token"] as? String
+        val fallbackRole = userData["role"] as? String
+        val fallbackUserId = userData["userId"] as? String
+        val fallbackName = userData["name"] as? String
+        val fallbackEmail = userData["email"] as? String
+        val fallbackDevisi = userData["devisi"] as? String
+
+        val token = intentToken ?: fallbackToken
+        val userId = intentUserId ?: fallbackUserId
+        val role = intentRole ?: fallbackRole
+        val name = intentName ?: fallbackName
+        val email = intentEmail ?: fallbackEmail
+        val devisi = intentDevisi ?: fallbackDevisi
+
         setContent {
             ApplicationSOPTheme {
-                Surface(
-                    modifier = Modifier.fillMaxSize()
-                ) {
-                    val navController = rememberNavController() // Inisialisasi NavController
-//                    MainApp() // Panggil AppNavigation dengan navController
+                Surface(modifier = Modifier.fillMaxSize()) {
+                    val navController = rememberNavController()
 
-                    // Retrieve user data from Intent
-                    val token = intent.getStringExtra("token")
-                    val userId = intent.getStringExtra("userId")
-                    val role = intent.getStringExtra("role")
-                    val name = intent.getStringExtra("name")
-                    val email = intent.getStringExtra("email")
-                    val devisi = intent.getStringExtra("devisi")
-
-                    println("Token: $token")
-                    val userData = UserUtils.getUserData(this)  // 'this' adalah Context, misalnya dari Activity
-                    println("User Data: $userData")
-
-                    // Check if token exists
-                    if (token != null) {
-                        // Pass data to MainApp
-                        MainApp(
-                            navController = navController,
-                            token = token,
-                            userId = userId,
-                            role = role,
-                            name = name,
-                            email = email,
-                            devisi = devisi
-                        )
-                    } else {
-                        // If no token, navigate to login
-                        MainApp(
-                            navController = navController,
-                            token = null,
-                            userId = null,
-                            role = null,
-                            name = null,
-                            email = null,
-                            devisi = null
-                        )
-                    }
+                    MainApp(
+                        navController = navController,
+                        token = token,
+                        userId = userId,
+                        role = role,
+                        name = name,
+                        email = email,
+                        devisi = devisi
+                    )
                 }
             }
         }
     }
 }
+

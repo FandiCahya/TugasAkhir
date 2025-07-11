@@ -52,7 +52,18 @@ fun ListLaporanItem(
         null
     }
 
-    val formattedDate = if (parsedDate != null) {
+     val statusText = when (status.lowercase()) {
+         "finished" -> "Pengujian Telah Disetujui"
+         else -> status
+     }
+
+     val statusColor = when (status.lowercase()) {
+         "finished" -> ijo
+         else -> Color.Black
+     }
+
+
+     val formattedDate = if (parsedDate != null) {
         SimpleDateFormat("dd/MM/yyyy", Locale.getDefault()).format(parsedDate)
     } else {
         "Invalid Date"
@@ -103,15 +114,11 @@ fun ListLaporanItem(
                 verticalAlignment = Alignment.CenterVertically
             ) {
                 Text(
-                    text = status,
+                    text = statusText,
                     fontSize = 14.sp,
-                    color = when (status.lowercase(Locale.ROOT)) {
-                        "pending" -> kuning
-                        "rejected" -> abang
-                        "finished" -> ijo
-                        else -> Color.Black
-                    }
+                    color = statusColor
                 )
+
                 Text(
                     text = formattedDate,
                     fontSize = 12.sp,

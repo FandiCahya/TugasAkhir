@@ -4,6 +4,7 @@ import android.content.Context
 import android.graphics.Bitmap
 import android.graphics.BitmapFactory
 import android.graphics.Canvas
+import android.graphics.Color
 import android.graphics.Paint
 import android.graphics.Typeface
 import android.graphics.pdf.PdfDocument
@@ -17,6 +18,7 @@ import java.io.File
 import java.io.FileOutputStream
 import java.io.IOException
 import kotlinx.coroutines.*
+import java.net.URL
 
 fun generatePDF(
     context: Context,
@@ -62,6 +64,7 @@ fun generatePDF(
 
     // Margin untuk konten di dalam halaman (setelah kop surat / di halaman baru)
     val leftMargin = 70f // Menggunakan nilai dari kode asli Anda, bisa disesuaikan
+    val topMargin = 50f
     val rightMargin = pageWidth - 70f
 
     // Variabel halaman dan kanvas yang dapat diubah
@@ -333,58 +336,118 @@ fun generatePDF(
     currentY += 25f // Spasi setelah tabel
 
     // ==============================================================================================
-// Tampilkan Signature Persetujuan
-// ==============================================================================================
+    // Tampilkan Signature Persetujuan (diganti jadi Tabel)
+    // ==============================================================================================
     if (detailPersetujuan.isNotEmpty()) {
+        startNewPage() // Mulai dari halaman baru
+
+        val headerHeight = 40f
+        val colPadding = 10f
+        val headerPaint = Paint().apply {
+            style = Paint.Style.FILL
+            color = Color.LTGRAY
+        }
+
+        // Header utama
+        canvas.drawRect(leftMargin, currentY, pageWidth - leftMargin, currentY + headerHeight, headerPaint)
+        textPaint.textSize = 14f
+        textPaint.color = Color.BLACK
+        canvas.drawText("Persetujuan Pengujian", leftMargin + colPadding, currentY + 25f, textPaint)
+        currentY += headerHeight + 10f
+
         for ((index, item) in detailPersetujuan.withIndex()) {
-            // Cek jika mendekati batas halaman, buat halaman baru
-            if (currentY + 100f > pageHeight - G_BOTTOM_MARGIN) {
-                startNewPage()
-            }
+            // Estimasi tinggi: 2 baris biasa + 1 baris tanda tangan besar
+            val estimatedHeight = 2 * 40f + 100f + 20f
+            if (currentY + estimatedHeight > pageHeight - G_BOTTOM_MARGIN) startNewPage()
 
-            val signatureUrl = "${urlSignature.BASE_URL}${item.signature}"
-            println("Signature URL: $signatureUrl")
+            val col1Width = tableWidth * 0.3f
+            val col2Width = tableWidth * 0.7f
 
-            // Tampilkan Nama Reviewer
-            val reviewerLabel = "Reviewer #${index + 1}"
-            canvas.drawText(reviewerLabel, leftMargin, currentY, textPaint)
-            currentY += 20f
+            // Header tabel per reviewer
+            val tableTop = currentY
+            val reviewerHeaderHeight = 40f
+            paint.style = Paint.Style.FILL
+            paint.color = greyHeaderColor
+            canvas.drawRect(tableLeft, tableTop, tableLeft + tableWidth, tableTop + reviewerHeaderHeight, paint)
 
-            canvas.drawText("Nama     : ${item.user.name}", leftMargin, currentY, textPaint)
-            currentY += 20f
-            canvas.drawText("Status   : ${item.status}", leftMargin, currentY, textPaint)
-            currentY += 20f
-            canvas.drawText("Catatan  : ${item.catatan ?: "-"}", leftMargin, currentY, textPaint)
-            currentY += 20f
+            paint.style = Paint.Style.STROKE
+            paint.color = blackColor
+            paint.strokeWidth = 2f
+            canvas.drawRect(tableLeft, tableTop, tableLeft + tableWidth, tableTop + reviewerHeaderHeight, paint)
 
-            // Gambar tanda tangan dari file atau resource
-            runBlocking {
-                try {
-                    val bitmap = withContext(Dispatchers.IO) {
-                        val inputStream = java.net.URL(signatureUrl).openStream()
-                        BitmapFactory.decodeStream(inputStream)
+            textPaint.textSize = 13f
+            textPaint.color = blackColor
+            canvas.drawText("Reviewer ${index + 1}", tableLeft + 10f, tableTop + 25f, textPaint)
+
+            currentY += reviewerHeaderHeight
+
+            // Data reviewer
+            val reviewerFields = listOf(
+                "Nama" to (item.user.name ?: "-"),
+                "Catatan" to (item.catatan ?: "-"),
+                "Tanda Tangan" to "" // Kosongkan dulu, gambar bitmap nanti
+            )
+
+            for ((label, value) in reviewerFields) {
+                val rowHeight = if (label == "Tanda Tangan") 100f else 40f
+                val rowTop = currentY
+                val rowBottom = currentY + rowHeight
+
+                // Garis luar dan pembatas kolom
+                canvas.drawRect(tableLeft, rowTop, tableLeft + tableWidth, rowBottom, paint)
+                canvas.drawLine(tableLeft + col1Width, rowTop, tableLeft + col1Width, rowBottom, paint)
+
+                val textY = rowTop + (rowHeight / 2) + (textPaint.descent() - textPaint.ascent()) / 2 - textPaint.descent()
+
+                // Label kiri
+                canvas.drawText(label, tableLeft + 10f, textY, textPaint)
+
+                if (label != "Tanda Tangan") {
+                    // Value teks biasa
+                    canvas.drawText(": $value", tableLeft + col1Width + 10f, textY, textPaint)
+                } else {
+                    // Area tanda tangan (gambar)
+                    val sigLeft = tableLeft + col1Width + 10f
+                    val sigRight = tableLeft + tableWidth - 10f
+                    val sigBoxTop = rowTop + 10f
+                    val sigBoxBottom = rowBottom - 10f
+
+                    try {
+                        val signatureUrl = "${urlSignature.BASE_URL}${item.signature}"
+                        val bitmap = runBlocking {
+                            withContext(Dispatchers.IO) {
+                                try {
+                                    val inputStream = URL(signatureUrl).openStream()
+                                    BitmapFactory.decodeStream(inputStream)
+                                } catch (e: Exception) {
+                                    null
+                                }
+                            }
+                        }
+
+                        if (bitmap != null) {
+                            val scaled = Bitmap.createScaledBitmap(bitmap, 250, 60, true)
+                            val sigX = sigLeft + (sigRight - sigLeft - scaled.width) / 2
+                            val sigY = sigBoxTop + (sigBoxBottom - sigBoxTop - scaled.height) / 2
+                            canvas.drawBitmap(scaled, sigX, sigY, Paint(Paint.ANTI_ALIAS_FLAG).apply {
+                                isFilterBitmap = true
+                                isDither = true
+                            })
+                        } else {
+                            canvas.drawText("TTD kosong", sigLeft, textY, textPaint)
+                        }
+                    } catch (e: Exception) {
+                        canvas.drawText("TTD gagal", sigLeft, textY, textPaint)
                     }
-
-                    if (bitmap != null) {
-                        val scaledSignature = Bitmap.createScaledBitmap(bitmap, 150, 80, false)
-                        canvas.drawBitmap(scaledSignature, leftMargin, currentY, paint)
-                        currentY += 100f
-                    } else {
-                        canvas.drawText("Gagal memuat tanda tangan.", leftMargin, currentY, textPaint)
-                        currentY += 30f
-                    }
-
-                } catch (e: Exception) {
-                    e.printStackTrace()
-                    canvas.drawText("Gagal memuat tanda tangan.", leftMargin, currentY, textPaint)
-                    currentY += 30f
                 }
+
+                currentY += rowHeight
             }
 
-            // Spasi antara reviewer
-            currentY += 10f
+            currentY += 20f // Spasi antar reviewer
         }
     }
+
 
     // Finish the LAST page
     pdfDocument.finishPage(myPage)

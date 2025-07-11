@@ -47,8 +47,8 @@ fun HistoryUser(navController: NavController) {
     var laporanList by remember { mutableStateOf<List<Laporan>>(emptyList()) }
     val context = LocalContext.current
     val userData = UserUtils.getUserData(context)
-    val role = userData["role"]
-    val devisi = userData["devisi"]
+    val role = userData["role"]as? String
+    val devisi = userData["devisi"]as? String
 
 
     LaunchedEffect(Unit) {

@@ -28,6 +28,7 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.example.applicationsop.MainActivity
 import com.example.applicationsop.R
+import com.example.applicationsop.core.UserUtils.getUserData
 import kotlinx.coroutines.delay
 
 @Composable
@@ -44,23 +45,28 @@ fun SplashScreen() {
         startAnimation = true
         delay(3000)
 
-        // Fetch user data from SharedPreferences or Intent
+        // Ambil data dari SharedPreferences
         val userData = getUserData(context)
-        val token = userData["token"]
+        val token = userData["token"] as? String
+        val isLoggedIn = userData["isLoggedIn"] as? Boolean ?: false
 
-        if (token != null) {
-            // Pass token and user data to MainActivity
+        print("Token awal inisiasi : $token, LoginStatus: $isLoggedIn")
+
+        if (!token.isNullOrEmpty() && isLoggedIn) {
+            // Jika login valid, arahkan ke MainActivity
             val intent = Intent(context, MainActivity::class.java).apply {
                 putExtra("token", token)
-                putExtra("userId", userData["userId"])
-                putExtra("role", userData["role"])
-                putExtra("name", userData["name"])
-                putExtra("email", userData["email"])
-                putExtra("devisi", userData["devisi"])
+                putExtra("userId", userData["userId"] as? String)
+                putExtra("role", userData["role"] as? String)
+                putExtra("name", userData["name"] as? String)
+                putExtra("email", userData["email"] as? String)
+                putExtra("devisi", userData["devisi"] as? String)
             }
             context.startActivity(intent)
         } else {
-            // Navigate to login screen if no token found
+            val sharedPreferences = context.getSharedPreferences("MyPrefs", Activity.MODE_PRIVATE)
+            sharedPreferences.edit().clear().apply()
+            // Jika belum login, arahkan ke LoginActivity
             val intent = Intent(context, MainActivity::class.java)
             context.startActivity(intent)
         }
@@ -68,26 +74,8 @@ fun SplashScreen() {
         (context as? Activity)?.finish()
     }
 
+
     Splash(alpha = alphaAnim.value)
-}
-
-fun getUserData(context: Context): Map<String, String?> {
-    val sharedPreferences = context.getSharedPreferences("MyPrefs", Activity.MODE_PRIVATE)
-    val token = sharedPreferences.getString("TOKEN", null)
-    val userId = sharedPreferences.getString("USER_ID", null)
-    val role = sharedPreferences.getString("ROLE", null)
-    val name = sharedPreferences.getString("NAME", null)
-    val email = sharedPreferences.getString("EMAIL", null)
-    val devisi = sharedPreferences.getString("DEVISI", null)
-
-    return mapOf(
-        "token" to token,
-        "userId" to userId,
-        "role" to role,
-        "name" to name,
-        "email" to email,
-        "devisi" to devisi
-    )
 }
 
 

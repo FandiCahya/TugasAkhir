@@ -41,7 +41,7 @@ fun ScheduleForm(
     var selectedStages by remember { mutableStateOf(listOf<String>()) }
     var progressPercentage by remember { mutableStateOf(0) }
 
-    val availableStages = listOf("Analisis", "Desain UI/UX", "Pengerjaan", "Penyelesaian", "Testing")
+    val availableStages = listOf("Analisis", "Desain UI UX", "Pengerjaan", "Penyelesaian", "Testing")
 
     val scrollState = rememberScrollState()
     var isLoading by remember { mutableStateOf(false) }

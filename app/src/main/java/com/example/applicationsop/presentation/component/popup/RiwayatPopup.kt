@@ -349,7 +349,7 @@ fun RiwayatPopup(
                     colors = ButtonDefaults.buttonColors(containerColor = biru),
                     shape = RoundedCornerShape(16.dp)
                 ) {
-                    Text("Laporan", color = Color.White)
+                    Text("View", color = Color.White)
                 }
 
                 Spacer(modifier = Modifier.width(8.dp)) // Jarak antara dua tombol

@@ -34,7 +34,7 @@ suspend fun fetchPengajuanList(
 ): List<Pengajuan> {
     return try {
         val userData = UserUtils.getUserData(context)
-        val token = userData["token"]
+        val token = userData["token"]as? String
 
         val url = buildString {
             append("${ApiConfig.BASE_URL}pengajuan?")

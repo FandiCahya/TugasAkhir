@@ -76,7 +76,7 @@ fun SchedulePopupAdmin(
     val context = LocalContext.current
     val coroutineScope = rememberCoroutineScope() // Pastikan CoroutineScope di-remember
 
-    val availableStages = listOf("Analisis", "Desain UI/UX", "Pengerjaan", "Penyelesaian", "Testing")
+    val availableStages = listOf("Analisis", "Desain UI UX", "Pengerjaan", "Penyelesaian", "Testing")
 
     Box(modifier = Modifier.fillMaxSize()) {
         // Gelap di latar belakang
