@@ -1,5 +1,6 @@
 package com.example.applicationsop.presentation.screen.pemohon
 
+import SubmissionSection
 import android.content.Context
 import android.os.Build
 import androidx.annotation.RequiresApi
@@ -19,10 +20,6 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.unit.dp
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Add
-import androidx.compose.material.icons.filled.Close
-import androidx.compose.material.icons.filled.History
-import androidx.compose.material.icons.filled.Timer
-import androidx.compose.material.icons.filled.Verified
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
@@ -31,23 +28,16 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.unit.IntOffset
 import androidx.compose.ui.zIndex
-import com.example.applicationsop.ui.theme.Maroon
 import com.example.applicationsop.ui.theme.PinkPudar
 import com.example.applicationsop.ui.theme.Putih
-import com.example.applicationsop.ui.theme.ijo
-import com.example.applicationsop.ui.theme.abang
 import com.example.applicationsop.ui.theme.kuning
 import androidx.navigation.NavController
 import com.example.applicationsop.Api.fetchPengajuanList
 import com.example.applicationsop.Api.fetchPengembanganSortList
 import com.example.applicationsop.Api.fetchPengujianList
-import com.example.applicationsop.presentation.component.ProgressCard
-import com.example.applicationsop.presentation.component.ProgressCardRiwayat
 import com.example.applicationsop.presentation.component.SectionTitle
-import com.example.applicationsop.presentation.component.SubmissionCard
 import com.example.applicationsop.presentation.component.header.HeaderHomeUser
-import java.time.LocalTime
-
+import androidx.compose.material.icons.filled.*
 // Imports for Swipe Refresh
 import com.google.accompanist.swiperefresh.SwipeRefresh
 import com.google.accompanist.swiperefresh.rememberSwipeRefreshState
@@ -58,7 +48,16 @@ import kotlinx.coroutines.delay // Added for optional delay in refresh
 // Imports for scrolling
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
-import com.example.applicationsop.Api.fetchPengembanganList
+import androidx.compose.material.icons.filled.AccessTime
+import com.example.applicationsop.models.Pengajuan
+import com.example.applicationsop.presentation.component.ListPengajuan.PengajuanListItem
+import com.example.applicationsop.presentation.component.chartcard.PengajuanChartCard
+import com.example.applicationsop.ui.theme.BiruMuda
+import com.example.applicationsop.ui.theme.Purple40
+import com.example.applicationsop.ui.theme.abang
+import com.example.applicationsop.ui.theme.birutua
+import com.example.applicationsop.ui.theme.ijo
+
 
 @RequiresApi(Build.VERSION_CODES.O)
 @Composable
@@ -79,6 +78,7 @@ fun HomeUserScreen(
     var pengembanganCount by remember { mutableStateOf(0) }
     var pengujianCount by remember { mutableStateOf(0) }
     var riwayatCount by remember { mutableStateOf(0) }
+    var pengajuanList by remember { mutableStateOf<List<Pengajuan>>(emptyList()) }
     val context = LocalContext.current
     val coroutineScope = rememberCoroutineScope() // Get a CoroutineScope
 
@@ -86,6 +86,8 @@ fun HomeUserScreen(
     var isRefreshing by remember { mutableStateOf(false) }
 
     suspend fun loadDataCounts(appContext: Context) {
+        val allPengajuan = fetchPengajuanList(context, status = null, role, devisi)
+        pengajuanList = allPengajuan.sortedByDescending { it.tgl }
         pendingCount = fetchPengajuanList(context, "pending", role, devisi).size
         rejectedCount = fetchPengajuanList(context, "rejected", role, devisi).size
         acceptedCount = fetchPengajuanList(context, "accepted", role, devisi).size
@@ -94,11 +96,13 @@ fun HomeUserScreen(
         riwayatCount = fetchPengajuanList(context, "finished", role, devisi).size
     }
 
+
     // Function to refresh all data
     val refreshAllData: suspend () -> Unit = {
         isRefreshing = true
 
         loadDataCounts(context)
+
 
         delay(100)
 
@@ -142,6 +146,31 @@ fun HomeUserScreen(
                     emailUser = email,
                     devisiUser = devisi
                 )
+                // Greeting section
+                Text(
+                    text = "Hello, ${name.orEmpty()} 👋",
+                    style = MaterialTheme.typography.headlineSmall,
+                    color = birutua,
+                    modifier = Modifier
+                        .padding(start = 16.dp, top = 8.dp, bottom = 4.dp)
+                )
+
+                Text(
+                    text = "Let’s see what’s going on today!",
+                    style = MaterialTheme.typography.bodyMedium,
+                    color = Color.Gray,
+                    modifier = Modifier
+                        .padding(start = 16.dp, bottom = 16.dp)
+                )
+
+                PengajuanChartCard(
+                    pending = pendingCount,
+                    accepted = acceptedCount,
+                    rejected = rejectedCount,
+                    pengembangan = pengembanganCount,
+                    pengujian = pengujianCount,
+                    finished = riwayatCount
+                )
 
                 // Pengajuan Section
                 SectionTitle("Pengajuan")
@@ -152,6 +181,9 @@ fun HomeUserScreen(
                     pendingCount = pendingCount,
                     rejectedCount = rejectedCount,
                     acceptedCount = acceptedCount,
+                    pengembanganCount = pengembanganCount,
+                    pengujianCount = pengujianCount,
+                    finishedCount = riwayatCount
                 )
 
                 Spacer(modifier = Modifier.height(16.dp))
@@ -162,15 +194,54 @@ fun HomeUserScreen(
                     thickness = 1.dp,
                     modifier = Modifier.padding(horizontal = 25.dp)
                 )
-
-                // Progres Section
-                SectionTitle("Progres")
-                ProgressSection(
-                    navController = navController,
-                    pengembanganCount = pengembanganCount,
-                    pengujianCount = pengujianCount,
-                    riwayatCount = riwayatCount
-                )
+                SectionTitle("List Pengajuan")
+                Column(
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .heightIn(min = 100.dp, max = 400.dp) // Ubah tinggi sesuai kebutuhan
+                        .verticalScroll(rememberScrollState())
+                        .padding(horizontal = 16.dp)
+                ) {
+                    pengajuanList.forEach { item ->
+                        val status = item.status ?: "-"
+                        val icon = when (status) {
+                            "pending" -> Icons.Default.Schedule
+                            "accepted" -> Icons.Default.CheckCircle
+                            "rejected" -> Icons.Default.Cancel
+                            "developing" -> Icons.Default.Build
+                            "testing" -> Icons.Default.Science
+                            "finished" -> Icons.Default.DoneAll
+                            else -> Icons.Default.Help
+                        }
+                        PengajuanListItem(
+                            title = item.nama_sistem,
+                            status = status,
+                            time = item.tgl ?: "-",
+                            typeColor = when (item.status) {
+                                "pending" -> kuning
+                                "accepted" -> ijo
+                                "rejected" -> abang
+                                "developing" -> PinkPudar
+                                "testing" -> BiruMuda
+                                "finished" -> Purple40
+                                else -> BiruMuda
+                            },
+                            icon = icon,
+                            pengajuName = item.user.name ?: "Tidak diketahui",
+                            onClick = {
+                                when (status) {
+                                    "pending", "accepted", "rejected" -> {
+                                        navController.navigate("detail_usulan?id=${item.id}")
+                                    }
+                                    "developing" -> navController.navigate("pengembangan_detail?id=${item.id}")
+                                    "testing" -> navController.navigate("pengujian?id=${item.id}")
+                                    "finished" -> navController.navigate("hasil_akhir?id=${item.id}")
+                                    else -> {} // atau tampilkan toast/snackbar
+                                }
+                            }
+                        )
+                    }
+                }
             }
 
             // Animated FAB with sliding and fading animation
@@ -190,7 +261,7 @@ fun HomeUserScreen(
                         },
                         modifier = Modifier
                             .align(Alignment.BottomEnd) // Position FAB at the bottom right
-                            .padding(top = 700.dp, start = 300.dp)
+                            .padding(top = 752.dp, start = 165.dp)
                             .zIndex(1f),
                         containerColor = PinkPudar // FAB background color
                     ) {
@@ -203,65 +274,5 @@ fun HomeUserScreen(
                 }
             }
         }
-    }
-}
-
-@Composable
-fun SubmissionSection(navController: NavController, roleUS: String?, devisiUS: String?, pendingCount: Int, rejectedCount: Int, acceptedCount: Int) {
-    Row(
-        modifier = Modifier
-            .fillMaxWidth()
-            .padding(horizontal = 30.dp),
-        horizontalArrangement = Arrangement.SpaceBetween
-    ) {
-        SubmissionCard(
-            color = kuning,
-            icon = Icons.Filled.Timer,
-            count = pendingCount,
-            onClick = {
-                navController.navigate("listUsulan1?role=$roleUS&devisi=$devisiUS")
-            }
-        )
-
-        SubmissionCard(
-            color = abang,
-            icon = Icons.Filled.Close,
-            count = rejectedCount,
-            onClick = {
-                navController.navigate("listUsulan3?role=$roleUS&devisi=$devisiUS")
-            }
-        )
-
-        SubmissionCard(
-            color = ijo,
-            icon = Icons.Filled.Verified,
-            count = acceptedCount,
-            onClick = {
-                navController.navigate("listUsulan2?role=$roleUS&devisi=$devisiUS")
-            }
-        )
-    }
-}
-
-@Composable
-fun ProgressSection(navController: NavController, pengembanganCount: Int, pengujianCount: Int, riwayatCount:Int) {
-    Column(
-        modifier = Modifier
-            .fillMaxWidth()
-            .padding(horizontal = 16.dp)
-    ) {
-        ProgressCard("Pengembangan User", Icons.Filled.Timer, Maroon, count = pengembanganCount,navController)
-        ProgressCard("Pengujian User", Icons.Filled.History, Maroon,count = pengujianCount, navController)
-
-        Divider(
-            color = Color.Gray,
-            thickness = 1.dp,
-            modifier = Modifier.padding(
-                horizontal = 5.dp,
-                vertical = 10.dp
-            )
-        )
-
-        ProgressCardRiwayat("Riwayat User", Icons.Filled.History, Maroon, count = riwayatCount, navController)
     }
 }
