@@ -3,20 +3,26 @@ package com.example.applicationsop.presentation.screen.pemohon.form
 import android.widget.Toast
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
+import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.setValue
+import androidx.compose.ui.Alignment
 import androidx.compose.ui.ExperimentalComposeUiApi
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
@@ -26,7 +32,9 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.navigation.NavController
+import com.example.applicationsop.Api.fetchPengajuanList
 import com.example.applicationsop.Api.updatePengajuan
+import com.example.applicationsop.models.Pengajuan
 import com.example.applicationsop.models.PengajuanRequest
 import com.example.applicationsop.presentation.component.ActionButton
 import com.example.applicationsop.presentation.component.DropdownField
@@ -43,81 +51,71 @@ import kotlinx.coroutines.launch
 @Composable
 fun FormEditUsulan(
     navController: NavController,
-    id: String?,
-    nama_Sistem: String?,
-    hari_Tanggal: String?,
-    jenis_Sistem: String?,
-    rencana_Anggaran: String?,
-    masalah_Sistem: String?,
-    output_Hasil: String?,
-    status: String?,
-    alasan_penolakan: String?
+    id: String?
 ) {
-    // State untuk menyimpan inputan form
-    var namaSistem by remember { mutableStateOf(nama_Sistem ?: "") }
-    var jenisSistem by remember { mutableStateOf(jenis_Sistem ?: "") }
-    var rencanaAnggaran by remember { mutableStateOf(rencana_Anggaran ?: "") }
-    var masalahSistem by remember { mutableStateOf(masalah_Sistem ?: "") }
-    var outputSistem by remember { mutableStateOf(output_Hasil ?: "") }
-    var selectedDate by remember { mutableStateOf(hari_Tanggal ?: "") }
-
-    // To show success or error messages
-    var isLoading by remember { mutableStateOf(false) }
-
-    // Signature Pad
-    val paths = remember { mutableStateOf(mutableListOf<PathState>()) }
-    val drawColor = remember { mutableStateOf(Color.Black) }
-    val drawBrush = remember { mutableStateOf(5f) }
+    val context = LocalContext.current
+    var detail by remember { mutableStateOf<Pengajuan?>(null) }
+    var isLoading by remember { mutableStateOf(true) }
 
     val coroutineScope = rememberCoroutineScope()
 
-    val context = LocalContext.current
+    // State form field
+    val namaSistemState = remember { mutableStateOf("") }
+    val jenisSistemState = remember { mutableStateOf("") }
+    val rencanaAnggaranState = remember { mutableStateOf("") }
+    val masalahSistemState = remember { mutableStateOf("") }
+    val outputSistemState = remember { mutableStateOf("") }
+    val selectedDate = remember { mutableStateOf("") }
 
-    paths.value.add(PathState(Path(), drawColor.value, drawBrush.value))
+    LaunchedEffect(id) {
+        if (id != null) {
+            val list = fetchPengajuanList(context, status = null, role = "user", devisi = "")
+            detail = list.find { it.id == id }
+            detail?.let {
+                namaSistemState.value = it.nama_sistem ?: ""
+                jenisSistemState.value = it.jenis ?: ""
+                rencanaAnggaranState.value = it.rencana_anggaran ?: ""
+                masalahSistemState.value = it.masalah ?: ""
+                outputSistemState.value = it.output ?: ""
+                selectedDate.value = it.tgl ?: ""
+            }
+            isLoading = false
+        }
+    }
 
-    // Function to handle form submission
+    if (isLoading) {
+        Box(modifier = Modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
+            CircularProgressIndicator()
+        }
+        return
+    }
+
     suspend fun handleFormSubmit() {
         if (id != null) {
             isLoading = true
-            try {
-
-                val pengajuanRequest = PengajuanRequest(
-                    nama_sistem = namaSistem,
-                    jenis = jenisSistem,
-                    rencana_anggaran = rencanaAnggaran,
-                    masalah = masalahSistem,
-                    output = outputSistem,
-                    status = "pending",
-                    alasan_penolakan = null
-                )
-                // Call the API to update the Pengajuan data
-                coroutineScope.launch {
-                    try {
-                        val response = updatePengajuan(context, id, pengajuanRequest)
-
-                        // Check if the response was successful
-                        if (response.status.value in 200..299) {
-                            // Show success message using Toast
-                            Toast.makeText(navController.context, "Edit Pengajuan berhasil diperbarui!", Toast.LENGTH_SHORT).show()
-
-                            // Navigate back to the previous screen
-                            navController.popBackStack()
-                        } else {
-                            // Show failure message using Toast
-                            Toast.makeText(navController.context, "Gagal memperbarui. Coba lagi!", Toast.LENGTH_SHORT).show()
-                        }
-                    } catch (e: Exception) {
-                        // Show error message using Toast
-                        Toast.makeText(navController.context, "Error: ${e.message}", Toast.LENGTH_SHORT).show()
-                    } finally {
-                        isLoading = false
+            coroutineScope.launch {
+                try {
+                    val pengajuanRequest = PengajuanRequest(
+                        nama_sistem = namaSistemState.value,
+                        jenis = jenisSistemState.value,
+                        rencana_anggaran = rencanaAnggaranState.value,
+                        masalah = masalahSistemState.value,
+                        output = outputSistemState.value,
+                        status = "pending",
+                        alasan_penolakan = null
+                    )
+                    val response = updatePengajuan(context, id, pengajuanRequest)
+                    if (response.status.value in 200..299) {
+                        Toast.makeText(context, "Edit Pengajuan berhasil diperbarui!", Toast.LENGTH_SHORT).show()
+                        navController.popBackStack()
+                    } else {
+                        Toast.makeText(context, "Gagal memperbarui. Coba lagi!", Toast.LENGTH_SHORT).show()
                     }
+                } catch (e: Exception) {
+                    Toast.makeText(context, "Error: ${e.message}", Toast.LENGTH_SHORT).show()
+                } finally {
+                    isLoading = false
                 }
-            } catch (e: Exception) {
-                // Show error message using Toast
-                Toast.makeText(navController.context, "Error: ${e.message}", Toast.LENGTH_SHORT).show()
-            } finally {
-                isLoading = false
             }
         }
     }
@@ -128,91 +126,77 @@ fun FormEditUsulan(
             .background(Putih)
             .verticalScroll(rememberScrollState())
     ) {
-        // Header
-        HeaderForm("Formulir Permohonan", navController)
+        HeaderForm("Edit Pengajuan", navController)
 
-        // Form Fields
         Column(
             modifier = Modifier
                 .fillMaxWidth()
-                .padding(16.dp),
+                .padding(16.dp)
+                .fillMaxHeight(), // Pastikan column bisa "mendorong" ke bawah
             verticalArrangement = Arrangement.spacedBy(16.dp)
         ) {
-            // Date Picker (Read-only version)
             DatePickerField2(
                 label = "Hari/Tanggal",
-                selectedDate = selectedDate,
-                onDateSelected = { selectedDate = it }
+                selectedDate = selectedDate.value,
+                onDateSelected = { selectedDate.value = it }
             )
 
-            // Nama Sistem
-            FormField(
-                label = "Nama Sistem",
-                placeholder = "Sistem baru",
-                value = namaSistem,
-                onValueChange = { namaSistem = it }
-            )
+            FormField("Nama Sistem", "Sistem baru", namaSistemState.value) {
+                namaSistemState.value = it
+            }
 
-            // Jenis Sistem
             DropdownField(
                 label = "Jenis Sistem",
                 options = listOf("sistem_baru", "pengembangan"),
-                selectedOption = jenisSistem,
-                onOptionSelected = { jenisSistem = it }
+                selectedOption = jenisSistemState.value,
+                onOptionSelected = { jenisSistemState.value = it }
             )
 
-            // Rencana Anggaran
             DropdownField(
                 label = "Rencana Anggaran",
                 options = listOf("termasuk_dalam_perencanaan", "tidak_termasuk_perencanaan"),
-                selectedOption = rencanaAnggaran,
-                onOptionSelected = { rencanaAnggaran = it }
+                selectedOption = rencanaAnggaranState.value,
+                onOptionSelected = { rencanaAnggaranState.value = it }
             )
 
-            // Masalah Sistem
-            FormField(
-                label = "Masalah pada Sistem yang Ada",
-                placeholder = "Bug tampilan...",
-                value = masalahSistem,
-                onValueChange = { masalahSistem = it }
-            )
+            FormField("Masalah pada Sistem yang Ada", "Bug tampilan...", masalahSistemState.value) {
+                masalahSistemState.value = it
+            }
 
-            // Output Sistem
-            FormField(
-                label = "Output/Hasil yang Diharapkan",
-                placeholder = "Hasil yang diinginkan...",
-                value = outputSistem,
-                onValueChange = { outputSistem = it }
-            )
+            FormField("Output/Hasil yang Diharapkan", "Hasil yang diinginkan...", outputSistemState.value) {
+                outputSistemState.value = it
+            }
 
-            // Submit Button
+            // Tambahkan Spacer untuk mendorong button ke bawah
+            Spacer(modifier = Modifier.weight(1f))
+
             Row(
                 modifier = Modifier
-                    .fillMaxWidth() // Memastikan Row memanfaatkan lebar penuh
-                    .padding(
-                        start = 16.dp,
-                        bottom = 16.dp,
-                        end = 16.dp
-                    ), // Padding agar tombol tidak menempel pada tepi layar
-                horizontalArrangement = Arrangement.End // Mengatur agar tombol berada di kanan
+                    .fillMaxWidth()
+                    .padding(bottom = 16.dp),
+                horizontalArrangement = Arrangement.Center
             ) {
                 ActionButton(
-                    onClick = {
-                        coroutineScope.launch {
-                            handleFormSubmit()
-                        }
-                    },
-                    buttonType = "submit" // This will create a "Submit" button
+                    onClick = { coroutineScope.launch { handleFormSubmit() } },
+                    buttonType = "submit"
                 )
             }
 
             if (isLoading) {
-                // Show loading indicator
-                Text("Submitting...", fontSize = 18.sp, color = Maroon)
+                Row(
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .padding(bottom = 16.dp),
+                    horizontalArrangement = Arrangement.Center
+                ) {
+                    CircularProgressIndicator(color = Maroon, strokeWidth = 3.dp)
+                }
             }
+
         }
     }
 }
+
 
 
 @Composable

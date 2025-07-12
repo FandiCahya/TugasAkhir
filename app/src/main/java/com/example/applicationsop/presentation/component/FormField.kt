@@ -15,19 +15,29 @@ import androidx.compose.ui.unit.dp
 import com.example.applicationsop.ui.theme.Maroon
 
 @Composable
-fun FormField(label: String, placeholder: String, value: String, onValueChange: (String) -> Unit) {
+fun FormField(
+    label: String,
+    placeholder: String,
+    value: String,
+    onValueChange: (String) -> Unit
+) {
     OutlinedTextField(
         value = value,
-        onValueChange = { onValueChange(it) }, // Update the state when the text changes
-        label = { Text(label, color = Color.DarkGray) },
-        placeholder = { Text(placeholder) },
+        onValueChange = onValueChange,
+        label = { Text(text = label, color = Color.Black) },
+        placeholder = { Text(text = placeholder, color = Color.Gray) },
         modifier = Modifier.fillMaxWidth(),
-        shape = RoundedCornerShape(8.dp),
+        shape = RoundedCornerShape(12.dp),
+        singleLine = true,
+        textStyle = TextStyle(color = Color.Black),
         colors = OutlinedTextFieldDefaults.colors(
-            focusedBorderColor = Maroon,
-            unfocusedBorderColor = Color.LightGray
+            focusedTextColor = Color.Black,
+            unfocusedTextColor = Color.Black,
+            focusedContainerColor = Color.Transparent,
+            unfocusedContainerColor = Color.Transparent,
+            focusedLabelColor = Color.Black,
+            unfocusedLabelColor = Color.Black,
         ),
-        keyboardOptions = KeyboardOptions.Default.copy(imeAction = ImeAction.Next),
-        textStyle = TextStyle(color = Color.Black) // Set the text color to black
+        keyboardOptions = KeyboardOptions.Default.copy(imeAction = ImeAction.Next)
     )
 }

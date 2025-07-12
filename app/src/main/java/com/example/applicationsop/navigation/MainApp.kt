@@ -9,6 +9,7 @@ import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
 import com.example.applicationsop.loginScreen.LoginScreen
+import com.example.applicationsop.presentation.component.ListPengajuan.DetailUsulanScreen
 import com.example.applicationsop.presentation.screen.ProfileUser
 import com.example.applicationsop.presentation.screen.admin.DetailApproval
 import com.example.applicationsop.presentation.screen.admin.DetailPengujianAdmin
@@ -175,36 +176,53 @@ fun MainApp(
 
         ////////////////////////// Pemohon ///////////////////////
 
+        //Detail Pengajuan Pengguna
+        composable("detail_usulan?id={id}") { backStackEntry ->
+            val id = backStackEntry.arguments?.getString("id") ?: ""
+            val role = role // ambil dari shared state
+            val devisi = devisi
+            DetailUsulanScreen(navController, id, role, devisi)
+        }
+
+
         // Halaman FormUsulanScreen User
         composable("form_usulan?userId={userId}") { backStackEntry ->
             val userId = backStackEntry.arguments?.getString("userId")
             FormUsulanScreen(navController = navController, userId = userId)
         }
 
-        // Pengembangaan user
-        composable("form_edit_usulan?id={id}&hariTanggal={hariTanggal}&namaSistem={namaSistem}&jenisSistem={jenisSistem}&rencanaAnggaran={rencanaAnggaran}&masalahSistem={masalahSistem}&outputHasil={outputHasil}&status={status}&alasan={alasan}") { backStackEntry ->
+        // Edit Pengajuan Karyawan
+        composable("form_edit_usulan?id={id}") { backStackEntry ->
             val id = backStackEntry.arguments?.getString("id")
-            val namaSistem = backStackEntry.arguments?.getString("namaSistem")
-            val hariTanggal = backStackEntry.arguments?.getString("hariTanggal")
-            val jenisSistem = backStackEntry.arguments?.getString("jenisSistem")
-            val rencanaAnggaran = backStackEntry.arguments?.getString("rencanaAnggaran")
-            val masalahSistem = backStackEntry.arguments?.getString("masalahSistem")
-            val outputHasil = backStackEntry.arguments?.getString("outputHasil")
-            val status = backStackEntry.arguments?.getString("status")
-            val alasan = backStackEntry.arguments?.getString("alasan")
             FormEditUsulan(
                 navController = navController,
-                id = id,
-                nama_Sistem = namaSistem,
-                hari_Tanggal = hariTanggal,
-                jenis_Sistem = jenisSistem,
-                rencana_Anggaran = rencanaAnggaran,
-                masalah_Sistem = masalahSistem,
-                output_Hasil = outputHasil,
-                status = status,
-                alasan_penolakan = alasan
+                id = id
             )
         }
+
+//        composable("form_edit_usulan?id={id}&hariTanggal={hariTanggal}&namaSistem={namaSistem}&jenisSistem={jenisSistem}&rencanaAnggaran={rencanaAnggaran}&masalahSistem={masalahSistem}&outputHasil={outputHasil}&status={status}&alasan={alasan}") { backStackEntry ->
+//            val id = backStackEntry.arguments?.getString("id")
+//            val namaSistem = backStackEntry.arguments?.getString("namaSistem")
+//            val hariTanggal = backStackEntry.arguments?.getString("hariTanggal")
+//            val jenisSistem = backStackEntry.arguments?.getString("jenisSistem")
+//            val rencanaAnggaran = backStackEntry.arguments?.getString("rencanaAnggaran")
+//            val masalahSistem = backStackEntry.arguments?.getString("masalahSistem")
+//            val outputHasil = backStackEntry.arguments?.getString("outputHasil")
+//            val status = backStackEntry.arguments?.getString("status")
+//            val alasan = backStackEntry.arguments?.getString("alasan")
+//            FormEditUsulan(
+//                navController = navController,
+//                id = id,
+//                nama_Sistem = namaSistem,
+//                hari_Tanggal = hariTanggal,
+//                jenis_Sistem = jenisSistem,
+//                rencana_Anggaran = rencanaAnggaran,
+//                masalah_Sistem = masalahSistem,
+//                output_Hasil = outputHasil,
+//                status = status,
+//                alasan_penolakan = alasan
+//            )
+//        }
 
         // List Pengajuan
         composable("listUsulan1?role={role}&devisi={devisi}") { backStackEntry ->
