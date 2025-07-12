@@ -49,6 +49,7 @@ import kotlinx.coroutines.delay // Added for optional delay in refresh
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.filled.AccessTime
+import com.example.applicationsop.Api.fetchPengajuanHome
 import com.example.applicationsop.models.Pengajuan
 import com.example.applicationsop.presentation.component.ListPengajuan.PengajuanListItem
 import com.example.applicationsop.presentation.component.chartcard.PengajuanChartCard
@@ -81,12 +82,12 @@ fun HomeUserScreen(
     var pengajuanList by remember { mutableStateOf<List<Pengajuan>>(emptyList()) }
     val context = LocalContext.current
     val coroutineScope = rememberCoroutineScope() // Get a CoroutineScope
-
+    println("User ID home screen: $userId")
     // State to control the refresh indicator
     var isRefreshing by remember { mutableStateOf(false) }
 
     suspend fun loadDataCounts(appContext: Context) {
-        val allPengajuan = fetchPengajuanList(context, status = null, role, devisi)
+        val allPengajuan = fetchPengajuanHome(context, status = null, role, devisi, userId)
         pengajuanList = allPengajuan.sortedByDescending { it.tgl }
         pendingCount = fetchPengajuanList(context, "pending", role, devisi).size
         rejectedCount = fetchPengajuanList(context, "rejected", role, devisi).size
@@ -95,7 +96,7 @@ fun HomeUserScreen(
         pengujianCount = fetchPengujianList(context, user_id = userId, status_persetujuan = "approved").size
         riwayatCount = fetchPengajuanList(context, "finished", role, devisi).size
     }
-
+    println("Pengajuan List User: $pengajuanList")
 
     // Function to refresh all data
     val refreshAllData: suspend () -> Unit = {
@@ -231,9 +232,9 @@ fun HomeUserScreen(
                             onClick = {
                                 when (status) {
                                     "pending", "accepted", "rejected" -> {
-                                        navController.navigate("detail_usulan?id=${item.id}")
+                                        navController.navigate("detail_usulan?id=${item.id}&userId=${userId}&role=${role}&devisi=${devisi}")
                                     }
-                                    "developing" -> navController.navigate("pengembangan_detail?id=${item.id}")
+                                    "developing" -> navController.navigate("detail_pengembangan?id=${item.id}&userId=$userId&role=$role&devisi=$devisi")
                                     "testing" -> navController.navigate("pengujian?id=${item.id}")
                                     "finished" -> navController.navigate("hasil_akhir?id=${item.id}")
                                     else -> {} // atau tampilkan toast/snackbar

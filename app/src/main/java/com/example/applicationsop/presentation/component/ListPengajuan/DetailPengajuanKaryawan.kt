@@ -17,6 +17,7 @@ import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.navigation.NavController
+import com.example.applicationsop.Api.fetchPengajuanHome
 import com.example.applicationsop.Api.fetchPengajuanList
 import com.example.applicationsop.models.Pengajuan
 import com.example.applicationsop.ui.theme.abang
@@ -31,6 +32,7 @@ import java.util.Locale
 fun DetailUsulanScreen(
     navController: NavController,
     id: String,
+    userId: String?,
     role: String?,
     devisi: String?
 ) {
@@ -39,7 +41,10 @@ fun DetailUsulanScreen(
 
     LaunchedEffect(id) {
         if (role != null && devisi != null) {
-            val data = fetchPengajuanList(context, status = null, role, devisi)
+            val data = fetchPengajuanHome(context, status = null, role, devisi, userId)
+            println("User ID Detail Pengajuan: $userId")
+            println("List ID pengajuan: ${data.map { it.id }}")
+            println("ID pengajuan yang dicari: $id")
             usulan = data.find { it.id == id }
         }
     }
@@ -139,7 +144,7 @@ fun DetailUsulanScreen(
             if (usulan?.status == "rejected") {
                 Button(
                     onClick = {
-                        navController.navigate("form_edit_usulan?id=${usulan?.id}")
+                        navController.navigate("form_edit_usulan?id=${usulan?.id}&hariTanggal=${usulan?.tgl}&namaSistem=${usulan?.nama_sistem}&jenisSistem=${usulan?.jenis}&rencanaAnggaran=${usulan?.rencana_anggaran}&masalahSistem=${usulan?.masalah}&outputHasil=${usulan?.output}&status=${usulan?.status}&")
                     },
                     modifier = Modifier
                         .align(Alignment.CenterHorizontally)

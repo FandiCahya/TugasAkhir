@@ -67,7 +67,7 @@ fun ProfileUser(
                     // Navigate to login after successful logout
                     navController.navigate("login") {
                         // Clear the back stack
-                        popUpTo("profile") { inclusive = true }
+                        popUpTo(0) { inclusive = true }
                     }
                     println("Logout Successfully")
                 } else {
@@ -227,6 +227,8 @@ fun ProfileUser(
 fun clearUserData(context: Context) {
     val sharedPreferences = context.getSharedPreferences("MyPrefs", Activity.MODE_PRIVATE)
     val editor = sharedPreferences.edit()
+    sharedPreferences.edit().clear().apply()
+    println("✅ Semua data di SharedPreferences telah dibersihkan.")
     editor.clear() // Clear all stored data
     editor.apply() // Commit the changes
 }

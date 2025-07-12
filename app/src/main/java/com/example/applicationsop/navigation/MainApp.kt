@@ -9,6 +9,7 @@ import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
 import com.example.applicationsop.loginScreen.LoginScreen
+import com.example.applicationsop.presentation.component.DetailPengembangan.DetailPengembanganScreen
 import com.example.applicationsop.presentation.component.ListPengajuan.DetailUsulanScreen
 import com.example.applicationsop.presentation.screen.ProfileUser
 import com.example.applicationsop.presentation.screen.admin.DetailApproval
@@ -177,13 +178,38 @@ fun MainApp(
         ////////////////////////// Pemohon ///////////////////////
 
         //Detail Pengajuan Pengguna
-        composable("detail_usulan?id={id}") { backStackEntry ->
+        composable("detail_usulan?id={id}&userId={userId}&role={role}&devisi={devisi}") { backStackEntry ->
             val id = backStackEntry.arguments?.getString("id") ?: ""
-            val role = role // ambil dari shared state
-            val devisi = devisi
-            DetailUsulanScreen(navController, id, role, devisi)
+            val DetailuserId = backStackEntry.arguments?.getString("userId")
+            val role = backStackEntry.arguments?.getString("role")
+            val devisi = backStackEntry.arguments?.getString("devisi")
+
+            println("Navigating to detail_usulan with User ID: $DetailuserId")
+
+            DetailUsulanScreen(
+                navController = navController,
+                id = id ,
+                userId = DetailuserId,
+                role = role,
+                devisi = devisi
+            )
         }
 
+        //Detail Pengembangan Pengguna
+        composable("detail_pengembangan?id={id}&userId={userId}&role={role}&devisi={devisi}") { backStackEntry ->
+            val id = backStackEntry.arguments?.getString("id") ?: ""
+            val userId = backStackEntry.arguments?.getString("userId")
+            val role = backStackEntry.arguments?.getString("role")
+            val devisi = backStackEntry.arguments?.getString("devisi")
+
+            DetailPengembanganScreen(
+                navController = navController,
+                id = id,
+                userId = userId,
+                role = role,
+                devisi = devisi
+            )
+        }
 
         // Halaman FormUsulanScreen User
         composable("form_usulan?userId={userId}") { backStackEntry ->
@@ -192,37 +218,29 @@ fun MainApp(
         }
 
         // Edit Pengajuan Karyawan
-        composable("form_edit_usulan?id={id}") { backStackEntry ->
+        composable("form_edit_usulan?id={id}&hariTanggal={hariTanggal}&namaSistem={namaSistem}&jenisSistem={jenisSistem}&rencanaAnggaran={rencanaAnggaran}&masalahSistem={masalahSistem}&outputHasil={outputHasil}&status={status}&alasan={alasan}") { backStackEntry ->
             val id = backStackEntry.arguments?.getString("id")
+            val namaSistem = backStackEntry.arguments?.getString("namaSistem")
+            val hariTanggal = backStackEntry.arguments?.getString("hariTanggal")
+            val jenisSistem = backStackEntry.arguments?.getString("jenisSistem")
+            val rencanaAnggaran = backStackEntry.arguments?.getString("rencanaAnggaran")
+            val masalahSistem = backStackEntry.arguments?.getString("masalahSistem")
+            val outputHasil = backStackEntry.arguments?.getString("outputHasil")
+            val status = backStackEntry.arguments?.getString("status")
+            val alasan = backStackEntry.arguments?.getString("alasan")
             FormEditUsulan(
                 navController = navController,
-                id = id
+                id = id,
+                nama_Sistem = namaSistem,
+                hari_Tanggal = hariTanggal,
+                jenis_Sistem = jenisSistem,
+                rencana_Anggaran = rencanaAnggaran,
+                masalah_Sistem = masalahSistem,
+                output_Hasil = outputHasil,
+                status = status,
+                alasan_penolakan = alasan
             )
         }
-
-//        composable("form_edit_usulan?id={id}&hariTanggal={hariTanggal}&namaSistem={namaSistem}&jenisSistem={jenisSistem}&rencanaAnggaran={rencanaAnggaran}&masalahSistem={masalahSistem}&outputHasil={outputHasil}&status={status}&alasan={alasan}") { backStackEntry ->
-//            val id = backStackEntry.arguments?.getString("id")
-//            val namaSistem = backStackEntry.arguments?.getString("namaSistem")
-//            val hariTanggal = backStackEntry.arguments?.getString("hariTanggal")
-//            val jenisSistem = backStackEntry.arguments?.getString("jenisSistem")
-//            val rencanaAnggaran = backStackEntry.arguments?.getString("rencanaAnggaran")
-//            val masalahSistem = backStackEntry.arguments?.getString("masalahSistem")
-//            val outputHasil = backStackEntry.arguments?.getString("outputHasil")
-//            val status = backStackEntry.arguments?.getString("status")
-//            val alasan = backStackEntry.arguments?.getString("alasan")
-//            FormEditUsulan(
-//                navController = navController,
-//                id = id,
-//                nama_Sistem = namaSistem,
-//                hari_Tanggal = hariTanggal,
-//                jenis_Sistem = jenisSistem,
-//                rencana_Anggaran = rencanaAnggaran,
-//                masalah_Sistem = masalahSistem,
-//                output_Hasil = outputHasil,
-//                status = status,
-//                alasan_penolakan = alasan
-//            )
-//        }
 
         // List Pengajuan
         composable("listUsulan1?role={role}&devisi={devisi}") { backStackEntry ->

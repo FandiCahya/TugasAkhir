@@ -26,6 +26,50 @@ val GetPengajuan = HttpClient(OkHttp) {
     }
 }
 
+suspend fun fetchPengajuanHome(
+    context: Context,
+    status: String? = null,
+    role: String? = null,
+    devisi: String? = null,
+    userId: String? = null
+): List<Pengajuan> {
+    println("API Dipanggil dengan userId = $userId")
+    return try {
+        val userData = UserUtils.getUserData(context)
+        val token = userData["token"]as? String
+
+        val url = buildString {
+            append("${ApiConfig.BASE_URL}pengajuan?")
+            if (status != null) append("status=$status&")
+            if (role != null) append("role=$role&")
+            if (devisi != null) append("devisi=$devisi&")
+            if (userId != null) append("userId=$userId&")
+            if (endsWith("&")) deleteCharAt(length - 1)
+        }
+
+        val response: HttpResponse = GetPengajuan.get(url) {
+            contentType(ContentType.Application.Json)
+            if (!token.isNullOrEmpty()) {
+                headers {
+                    bearerAuth(token)
+                }
+            }
+        }
+
+        if (response.status.value in 200..299) {
+            println("Successful response Get Pengajuan!")
+        }
+        println("URL Final yang Dipanggil: $url")
+        val responsePengajuan: ResponsePengajuan = response.body()
+        println("Pengajuan List: ${responsePengajuan.payload}")
+
+        responsePengajuan.payload
+    } catch (e: Exception) {
+        e.printStackTrace()
+        emptyList()
+    }
+}
+
 suspend fun fetchPengajuanList(
     context: Context,
     status: String? = null,
@@ -66,7 +110,5 @@ suspend fun fetchPengajuanList(
         emptyList()
     }
 }
-
-
 
 
