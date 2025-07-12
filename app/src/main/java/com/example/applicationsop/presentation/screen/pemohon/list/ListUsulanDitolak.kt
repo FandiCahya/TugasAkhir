@@ -153,8 +153,8 @@ fun ListPengajuanScreenDitolak(navController: NavController, role: String?, devi
             nama_user = selectedDetail.nama_user ,
             devisi = selectedDetail.devisi ,
             onEditClick = {
-//                navController.navigate("form_edit_usulan?id=${selectedDetail.id}&hariTanggal=${selectedDetail.tanggal}&namaSistem=${selectedDetail.namaSistem}&jenisSistem=${selectedDetail.jenisSistem}&rencanaAnggaran=${selectedDetail.rencanaAnggaran}&masalahSistem=${selectedDetail.masalahSistem}&outputHasil=${selectedDetail.outputHasil}&status=${selectedDetail.status}&alasan=${selectedDetail.alasan_penolakan}") // Ganti dengan rute yang sesuai
-                navController.navigate("form_edit_usulan?id=${selectedDetail.id}")
+                navController.navigate("form_edit_usulan?id=${selectedDetail.id}&hariTanggal=${selectedDetail.tanggal}&namaSistem=${selectedDetail.namaSistem}&jenisSistem=${selectedDetail.jenisSistem}&rencanaAnggaran=${selectedDetail.rencanaAnggaran}&masalahSistem=${selectedDetail.masalahSistem}&outputHasil=${selectedDetail.outputHasil}&status=${selectedDetail.status}&alasan=${selectedDetail.alasan_penolakan}") // Ganti dengan rute yang sesuai
+//                navController.navigate("form_edit_usulan?id=${selectedDetail.id}")
 
             }
         )
