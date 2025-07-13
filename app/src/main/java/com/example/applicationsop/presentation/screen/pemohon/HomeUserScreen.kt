@@ -235,8 +235,8 @@ fun HomeUserScreen(
                                         navController.navigate("detail_usulan?id=${item.id}&userId=${userId}&role=${role}&devisi=${devisi}")
                                     }
                                     "developing" -> navController.navigate("detail_pengembangan?id=${item.id}&userId=$userId&role=$role&devisi=$devisi")
-                                    "testing" -> navController.navigate("pengujian?id=${item.id}")
-                                    "finished" -> navController.navigate("hasil_akhir?id=${item.id}")
+                                    "testing","approval" -> navController.navigate("detail_pengujian?id=${item.id}&userId=$userId")
+                                    "finished" -> navController.navigate("detail_dokumentasi?id=${item.id}")
                                     else -> {} // atau tampilkan toast/snackbar
                                 }
                             }

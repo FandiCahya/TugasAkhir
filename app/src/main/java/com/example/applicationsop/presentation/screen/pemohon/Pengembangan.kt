@@ -73,7 +73,6 @@ fun ListPengembanganScreen(navController: NavController) {
 
     }
     val dateFormat = SimpleDateFormat("yyyy-MM-dd", Locale.getDefault()) // Parsing the date format
-    val todayDate = dateFormat.format(Date()) // Current date for fallback
     // Sort pengajuanList by tanggal
     val sortedPengembanganList = pengembanganList.sortedByDescending { pengembangan ->
         try {

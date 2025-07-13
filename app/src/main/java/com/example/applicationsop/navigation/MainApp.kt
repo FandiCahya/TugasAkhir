@@ -10,6 +10,7 @@ import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
 import com.example.applicationsop.loginScreen.LoginScreen
 import com.example.applicationsop.presentation.component.DetailPengembangan.DetailPengembanganScreen
+import com.example.applicationsop.presentation.component.DetailPengujian.DetailPengujianScreen
 import com.example.applicationsop.presentation.component.ListPengajuan.DetailUsulanScreen
 import com.example.applicationsop.presentation.screen.ProfileUser
 import com.example.applicationsop.presentation.screen.admin.DetailApproval
@@ -184,7 +185,7 @@ fun MainApp(
             val role = backStackEntry.arguments?.getString("role")
             val devisi = backStackEntry.arguments?.getString("devisi")
 
-            println("Navigating to detail_usulan with User ID: $DetailuserId")
+
 
             DetailUsulanScreen(
                 navController = navController,
@@ -208,6 +209,18 @@ fun MainApp(
                 userId = userId,
                 role = role,
                 devisi = devisi
+            )
+        }
+
+        composable("detail_pengujian?id={id}&userId={userId}") { backStackEntry ->
+            val id = backStackEntry.arguments?.getString("id") ?: ""
+            val userId = backStackEntry.arguments?.getString("userId")
+            println("Navigating to detail_pengujian with User ID: $userId")
+            println("Navigating to detail_pengujian with ID: $id")
+            DetailPengujianScreen(
+                navController = navController,
+                id = id,
+                userId = userId,
             )
         }
 

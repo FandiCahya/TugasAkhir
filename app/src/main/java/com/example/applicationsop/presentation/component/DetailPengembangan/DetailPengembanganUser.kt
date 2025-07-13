@@ -23,6 +23,7 @@ import androidx.navigation.NavController
 import com.example.applicationsop.Api.fetchPengembanganSortList
 import com.example.applicationsop.models.Pengembangan
 import com.example.applicationsop.ui.theme.abang
+import com.example.applicationsop.ui.theme.birutua
 import com.example.applicationsop.ui.theme.ijo
 import com.example.applicationsop.ui.theme.kuning
 
@@ -118,7 +119,7 @@ fun DetailPengembanganScreen(
                     Text(
                         text = "Informasi Usulan",
                         style = MaterialTheme.typography.titleMedium,
-                        color = Color.Black
+                        color = birutua
                     )
                     Spacer(modifier = Modifier.height(8.dp))
                     DetailItem("Masalah", dev?.masalah)
@@ -141,7 +142,7 @@ fun DetailPengembanganScreen(
                     Text(
                         text = "Informasi Pengembangan",
                         style = MaterialTheme.typography.titleMedium,
-                        color = Color.Black
+                        color = birutua
                     )
                     Spacer(modifier = Modifier.height(8.dp))
 
@@ -153,7 +154,7 @@ fun DetailPengembanganScreen(
                     // Tahap Pengerjaan sebagai checklist
                     Text(text = "Tahap Pengerjaan", fontSize = 12.sp, color = Color.Gray)
 
-                    val tahapList = listOf("Analisis", "Desain UI/UX", "Pengerjaan", "Penyelesaian", "Testing")
+                    val tahapList = listOf("Analisis", "Desain UI UX", "Pengerjaan", "Penyelesaian", "Testing")
                     val selesai = (pengembangan?.persentase ?: 0) >= 100
                     val tahapSelesai = pengembangan?.tahap
                         ?.lowercase()
