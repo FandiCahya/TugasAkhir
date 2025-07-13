@@ -73,7 +73,7 @@ fun SubmissionSection(
         SubmissionCard(
             color = BiruMuda,
             icon = Icons.Filled.Science,
-            label = "Testing",
+            label = "Approval",
             count = pengujianCount,
             onClick = {
                 navController.navigate("pengujianUser")

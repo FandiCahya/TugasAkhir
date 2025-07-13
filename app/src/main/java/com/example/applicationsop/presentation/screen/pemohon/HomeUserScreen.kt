@@ -50,6 +50,7 @@ import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.filled.AccessTime
 import com.example.applicationsop.Api.fetchPengajuanHome
+import com.example.applicationsop.helper.Notification.showNotification
 import com.example.applicationsop.models.Pengajuan
 import com.example.applicationsop.presentation.component.ListPengajuan.PengajuanListItem
 import com.example.applicationsop.presentation.component.chartcard.PengajuanChartCard
@@ -88,14 +89,34 @@ fun HomeUserScreen(
 
     suspend fun loadDataCounts(appContext: Context) {
         val allPengajuan = fetchPengajuanHome(context, status = null, role, devisi, userId)
-        pengajuanList = allPengajuan.sortedByDescending { it.tgl }
+        pengajuanList = allPengajuan.sortedByDescending { it.tgl } // yang ditampilkan di List
+
         pendingCount = fetchPengajuanList(context, "pending", role, devisi).size
         rejectedCount = fetchPengajuanList(context, "rejected", role, devisi).size
         acceptedCount = fetchPengajuanList(context, "accepted", role, devisi).size
         pengembanganCount = fetchPengembanganSortList(context, role, devisi, userId).size
         pengujianCount = fetchPengujianList(context, user_id = userId, status_persetujuan = "approved").size
         riwayatCount = fetchPengajuanList(context, "finished", role, devisi).size
+
+        val rejectedPengajuanList = fetchPengajuanList(context, "rejected", role, devisi)
+        val pengujianList = fetchPengajuanList(context, "approval", role, devisi)
+        // Kirim notifikasi kalau ada data ditolak
+        if (rejectedPengajuanList.isNotEmpty()) {
+            showNotification(
+                context = context,
+                title = "Pengajuan Ditolak",
+                message = "Terdapat $rejectedCount pengajuan ditolak"
+            )
+        }
+        if (pengujianList.isNotEmpty()) {
+            showNotification(
+                context = context,
+                title = "Butuh Persetujuan",
+                message = "Terdapat $pengujianCount pengajuan yang belum disetujui"
+            )
+        }
     }
+
     println("Pengajuan List User: $pengajuanList")
 
     // Function to refresh all data
@@ -187,14 +208,8 @@ fun HomeUserScreen(
                     finishedCount = riwayatCount
                 )
 
-                Spacer(modifier = Modifier.height(16.dp))
+                Spacer(modifier = Modifier.height(5.dp))
 
-                // Garis tengah
-                Divider(
-                    color = Color.Gray,
-                    thickness = 1.dp,
-                    modifier = Modifier.padding(horizontal = 25.dp)
-                )
                 SectionTitle("List Pengajuan")
                 Column(
                     modifier = Modifier

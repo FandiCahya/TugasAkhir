@@ -18,15 +18,15 @@ fun LogoComposable() {
         modifier = Modifier
             .fillMaxWidth()
             .padding(
-                bottom = 40.dp,
-                start = 25.dp
+                bottom = 10.dp,
+                start = 1.dp
             ) // Beri sedikit padding agar tidak terlalu ke tepi layar
     ) {
         Image(
-            painter = painterResource(id = R.drawable.ic_key),
+            painter = painterResource(id = R.drawable.icon_cicle),
             contentDescription = "logo",
             modifier = Modifier
-                .size(100.dp) // Sesuaikan ukuran jika terlalu besar
+                .size(50.dp) // Sesuaikan ukuran jika terlalu besar
                 .align(Alignment.TopStart) // Memastikan logo ada di kiri atas
         )
     }

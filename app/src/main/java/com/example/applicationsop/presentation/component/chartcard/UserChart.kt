@@ -31,7 +31,7 @@ fun PengajuanChartCard(
         ChartBar("Accepted", accepted, ijo),
         ChartBar("Rejected", rejected, abang),
         ChartBar("Dev", pengembangan, biru),
-        ChartBar("Testing", pengujian, BiruMuda),
+        ChartBar("Approval", pengujian, BiruMuda),
         ChartBar("Finished", finished, Purple40)
     )
 
