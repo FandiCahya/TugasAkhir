@@ -29,21 +29,16 @@ import com.example.applicationsop.ui.theme.kuning
 
 @SuppressLint("SimpleDateFormat")
 @Composable
-fun DetailPengembanganScreen(
+fun DetailPengembanganScreenKacab(
     navController: NavController,
     id: String,
-    userId: String?,
-    role: String?,
-    devisi: String?
 ) {
     val context = LocalContext.current
     var pengembangan by remember { mutableStateOf<Pengembangan?>(null) }
 
     LaunchedEffect(id) {
-        if (role != null && devisi != null) {
-            val data = fetchPengembanganSortList(context, role, devisi, userId)
+            val data = fetchPengembanganSortList(context)
             pengembangan = data.find { it.pengajuan.id == id }
-        }
     }
 
     if (pengembangan == null) {
@@ -201,11 +196,3 @@ fun DetailPengembanganScreen(
     }
 }
 
-
-@Composable
-fun DetailItem(title: String, value: String?) {
-    Column(modifier = Modifier.padding(vertical = 8.dp)) {
-        Text(text = title, fontSize = 12.sp, color = Color.Gray)
-        Text(text = value ?: "-", fontSize = 14.sp, color = Color.Black)
-    }
-}

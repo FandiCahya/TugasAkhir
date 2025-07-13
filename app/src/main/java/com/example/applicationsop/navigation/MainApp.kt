@@ -11,8 +11,11 @@ import androidx.navigation.compose.rememberNavController
 import com.example.applicationsop.loginScreen.LoginScreen
 import com.example.applicationsop.presentation.component.DetailLaporan.DetailLaporanScreen
 import com.example.applicationsop.presentation.component.DetailPengembangan.DetailPengembanganScreen
+import com.example.applicationsop.presentation.component.DetailPengembangan.DetailPengembanganScreenKacab
+import com.example.applicationsop.presentation.component.DetailPengujian.DetailPengujianAll
 import com.example.applicationsop.presentation.component.DetailPengujian.DetailPengujianScreen
 import com.example.applicationsop.presentation.component.ListPengajuan.DetailUsulanScreen
+import com.example.applicationsop.presentation.component.ListPengajuan.DetailUsulanScreenKacab
 import com.example.applicationsop.presentation.screen.ProfileUser
 import com.example.applicationsop.presentation.screen.admin.DetailApproval
 import com.example.applicationsop.presentation.screen.admin.DetailPengujianAdmin
@@ -457,7 +460,36 @@ fun MainApp(
             ListPengembanganKacab(navController = navController)
         }
 
-        ////////////////////////// Kacab ///////////////////////
+        //Detail Pengajuan Kacab
+        composable("detail_usulan_kacab?id={id}") { backStackEntry ->
+            val id = backStackEntry.arguments?.getString("id") ?: ""
+            DetailUsulanScreenKacab(
+                navController = navController,
+                id = id ,
+            )
+        }
+        //Detail Pengembangan KACAB
+        composable("detail_pengembangan_kacab?id={id}") { backStackEntry ->
+            val id = backStackEntry.arguments?.getString("id") ?: ""
+
+            DetailPengembanganScreenKacab(
+                navController = navController,
+                id = id
+            )
+        }
+
+        //Detail Pengujian Kacab
+        composable("detail_pengujian_all?id={id}") { backStackEntry ->
+            val id = backStackEntry.arguments?.getString("id") ?: ""
+//            println("Navigating to detail_pengujian with User ID: $userId")
+//            println("Navigating to detail_pengujian with ID: $id")
+            DetailPengujianAll(
+                navController = navController,
+                id = id,
+            )
+        }
+
+        ////////////////////////// QMR ///////////////////////
 
         // List Pengajuan Admin
         composable("list_pengajuanQmr1") {

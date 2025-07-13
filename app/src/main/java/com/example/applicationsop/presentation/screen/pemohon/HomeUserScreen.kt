@@ -80,10 +80,11 @@ fun HomeUserScreen(
     var pengembanganCount by remember { mutableStateOf(0) }
     var pengujianCount by remember { mutableStateOf(0) }
     var riwayatCount by remember { mutableStateOf(0) }
+
     var pengajuanList by remember { mutableStateOf<List<Pengajuan>>(emptyList()) }
     val context = LocalContext.current
     val coroutineScope = rememberCoroutineScope() // Get a CoroutineScope
-    println("User ID home screen: $userId")
+//    println("User ID home screen: $userId")
     // State to control the refresh indicator
     var isRefreshing by remember { mutableStateOf(false) }
 

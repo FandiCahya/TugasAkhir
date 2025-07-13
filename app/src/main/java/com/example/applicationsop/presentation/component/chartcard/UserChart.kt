@@ -80,12 +80,6 @@ fun PengajuanChartCard(
                                 .fillMaxHeight(barHeightRatio)
                                 .background(bar.color, RoundedCornerShape(4.dp))
                         )
-                        Spacer(modifier = Modifier.height(4.dp))
-                        Text(
-                            text = bar.label,
-                            fontSize = 10.sp,
-                            color = Color(0xFF666666)
-                        )
                     }
                 }
             }
