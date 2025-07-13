@@ -75,8 +75,7 @@ fun HomeKacabScreen(
     email: String?,
     devisi: String?
 ) {
-    val isVisible = remember { mutableStateOf(true) }
-    val fabOffset = remember { mutableStateOf(1000) }
+
     var pendingCount by remember { mutableStateOf(0) }
     var rejectedCount by remember { mutableStateOf(0) }
     var acceptedCount by remember { mutableStateOf(0) }
@@ -102,7 +101,7 @@ fun HomeKacabScreen(
         pengembanganCount = fetchPengembanganList(appContext).size
         pengujianCount = fetchPengujianList(appContext, status_persetujuan = "approved").size
         riwayatCount = fetchPengajuanList(appContext, "finished").size
-        val pengujianList = fetchPengajuanList(context, "approval", role, devisi)
+        val pengujianList = fetchPengajuanList(context, "approval")
 
         if (pengujianList.isNotEmpty()) {
             showNotification(
@@ -151,6 +150,7 @@ fun HomeKacabScreen(
                     .fillMaxSize()
                     .padding(bottom = 80.dp) // Memberikan ruang bawah agar FAB tidak tertutup
                     .verticalScroll(rememberScrollState()) // **Crucial for pull-to-refresh**
+                    .navigationBarsPadding()
             ) {
                 // Header
                 HeaderHomeKacab(
@@ -191,8 +191,6 @@ fun HomeKacabScreen(
                 SectionTitle("Pengajuan")
                 SubmissionSectionKacab(
                     navController = navController,
-                    roleUS = role,
-                    devisiUS = devisi,
                     pendingCount = pendingCount,
                     rejectedCount = rejectedCount,
                     acceptedCount = acceptedCount,
@@ -249,42 +247,7 @@ fun HomeKacabScreen(
                         )
                     }
                 }
-                // Progres Section
-//                SectionTitle("Progres")
-//                ProgressSection(
-//                    navController = navController,
-//                    pengembanganCount = pengembanganCount,
-//                    pengujianCount = pengujianCount,
-//                    riwayatCount = riwayatCount
-//                )
             }
         }
-    }
-}
-
-
-@Composable
-fun ProgressSection(navController: NavController,pengembanganCount: Int,pengujianCount: Int, riwayatCount:Int) {
-    Column(
-        modifier = Modifier
-            .fillMaxWidth()
-            .padding(horizontal = 16.dp) // Memberikan padding horizontal pada ProgressSection
-    ) {
-        // Menampilkan beberapa ProgressCard
-        ProgressCard("Pengembangan Kacab", Icons.Filled.Timer, Maroon, count = pengembanganCount, navController)
-        ProgressCard("Pengujian Admin", Icons.Filled.History, Maroon, count = pengujianCount, navController)
-
-        // Garis tengah
-        Divider(
-            color = Color.Gray,
-            thickness = 1.dp,
-            modifier = Modifier.padding(
-                horizontal = 5.dp,
-                vertical = 10.dp
-            ) // Berikan ruang kiri dan kanan
-        )
-
-        // Card Riwayat dengan Icon di bawah
-        ProgressCardRiwayat("Riwayat Admin", Icons.Filled.History, Maroon, count = riwayatCount, navController)
     }
 }

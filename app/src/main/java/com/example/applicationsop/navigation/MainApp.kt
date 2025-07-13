@@ -10,10 +10,12 @@ import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
 import com.example.applicationsop.loginScreen.LoginScreen
 import com.example.applicationsop.presentation.component.DetailLaporan.DetailLaporanScreen
+import com.example.applicationsop.presentation.component.DetailPengembangan.DetailPengembanganAdmin
 import com.example.applicationsop.presentation.component.DetailPengembangan.DetailPengembanganScreen
 import com.example.applicationsop.presentation.component.DetailPengembangan.DetailPengembanganScreenKacab
 import com.example.applicationsop.presentation.component.DetailPengujian.DetailPengujianAll
 import com.example.applicationsop.presentation.component.DetailPengujian.DetailPengujianScreen
+import com.example.applicationsop.presentation.component.ListPengajuan.DetailUsulanAdmin
 import com.example.applicationsop.presentation.component.ListPengajuan.DetailUsulanScreen
 import com.example.applicationsop.presentation.component.ListPengajuan.DetailUsulanScreenKacab
 import com.example.applicationsop.presentation.screen.ProfileUser
@@ -189,8 +191,6 @@ fun MainApp(
             val role = backStackEntry.arguments?.getString("role")
             val devisi = backStackEntry.arguments?.getString("devisi")
 
-
-
             DetailUsulanScreen(
                 navController = navController,
                 id = id ,
@@ -334,6 +334,28 @@ fun MainApp(
         }
 
         ////////////////////////// ADMIN ///////////////////////
+
+        //Detail Pengajuan Admin
+        composable("detail_usulan_admin?id={id}&userId={userId}") { backStackEntry ->
+            val id = backStackEntry.arguments?.getString("id") ?: ""
+            val userId = backStackEntry.arguments?.getString("userId")
+
+            DetailUsulanAdmin(
+                navController = navController,
+                id = id ,
+                userId = userId,
+            )
+        }
+
+        //Detail Pengembangan Admin
+        composable("detail_pengembangan_admin?id={id}") { backStackEntry ->
+            val id = backStackEntry.arguments?.getString("id") ?: ""
+
+            DetailPengembanganAdmin(
+                navController = navController,
+                id = id,
+            )
+        }
 
         // List Pengajuan Admin
         composable("list_pengajuanAdmin1") {

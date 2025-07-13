@@ -9,12 +9,11 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 import androidx.navigation.NavController
 import androidx.compose.foundation.layout.*
-import androidx.compose.ui.graphics.Color
 import com.example.applicationsop.presentation.component.SubmissionCard
 import com.example.applicationsop.ui.theme.*
 
 @Composable
-fun SubmissionSectionKacab(
+fun SubmissionSectionAdmin(
     navController: NavController,
     pendingCount: Int,
     rejectedCount: Int,
@@ -36,7 +35,7 @@ fun SubmissionSectionKacab(
             label = "Pending",
             count = pendingCount,
             onClick = {
-                navController.navigate("list_pengajuanKacab1")
+                navController.navigate("list_pengajuanAdmin1")
             }
         )
 
@@ -46,7 +45,7 @@ fun SubmissionSectionKacab(
             label = "Rejected",
             count = rejectedCount,
             onClick = {
-                navController.navigate("list_pengajuanKacab2")
+                navController.navigate("list_pengajuanAdmin2")
             }
         )
 
@@ -56,7 +55,7 @@ fun SubmissionSectionKacab(
             label = "Accepted",
             count = acceptedCount,
             onClick = {
-                navController.navigate("list_pengajuanKacab3")
+                navController.navigate("list_pengajuanAdmin3")
             }
         )
 
@@ -66,7 +65,7 @@ fun SubmissionSectionKacab(
             label = "Dev",
             count = pengembanganCount,
             onClick = {
-                navController.navigate("pengembanganKacab")
+                navController.navigate("pengembanganAdmin")
             }
         )
 

@@ -10,20 +10,12 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.unit.dp
 import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.Close
-import androidx.compose.material.icons.filled.History
-import androidx.compose.material.icons.filled.Timer
-import androidx.compose.material.icons.filled.Verified
-import com.example.applicationsop.ui.theme.Maroon
 import com.example.applicationsop.ui.theme.Putih
 import com.example.applicationsop.ui.theme.ijo
 import com.example.applicationsop.ui.theme.abang
 import com.example.applicationsop.ui.theme.kuning
 import androidx.navigation.NavController
-import com.example.applicationsop.presentation.component.ProgressCard
-import com.example.applicationsop.presentation.component.ProgressCardRiwayat
 import com.example.applicationsop.presentation.component.SectionTitle
-import com.example.applicationsop.presentation.component.SubmissionCard
 import com.example.applicationsop.presentation.component.header.HeaderHomeAdmin
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.mutableStateOf
@@ -42,6 +34,23 @@ import kotlinx.coroutines.launch
 import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
+import androidx.compose.material.icons.filled.Build
+import androidx.compose.material.icons.filled.Cancel
+import androidx.compose.material.icons.filled.CheckCircle
+import androidx.compose.material.icons.filled.DoneAll
+import androidx.compose.material.icons.filled.Help
+import androidx.compose.material.icons.filled.Schedule
+import androidx.compose.material.icons.filled.Science
+import com.example.applicationsop.Api.fetchPengajuanHome
+import com.example.applicationsop.helper.Notification.showNotification
+import com.example.applicationsop.models.Pengajuan
+import com.example.applicationsop.presentation.component.ListPengajuan.PengajuanListItem
+import com.example.applicationsop.presentation.component.ListPengajuan.SubmissionSectionAdmin
+import com.example.applicationsop.presentation.component.chartcard.PengajuanChartCard
+import com.example.applicationsop.ui.theme.BiruMuda
+import com.example.applicationsop.ui.theme.PinkPudar
+import com.example.applicationsop.ui.theme.Purple40
+import com.example.applicationsop.ui.theme.birutua
 
 @RequiresApi(Build.VERSION_CODES.O)
 @Composable
@@ -61,18 +70,48 @@ fun HomeAdminScreen(
     var pengujianCount by remember { mutableStateOf(0) }
     var riwayatCount by remember { mutableStateOf(0) }
 
+    var pengajuanList by remember { mutableStateOf<List<Pengajuan>>(emptyList()) }
+
     val context = LocalContext.current
     val coroutineScope = rememberCoroutineScope()
 
     var isRefreshing by remember { mutableStateOf(false) }
 
     suspend fun loadDataCounts(appContext: Context) {
+        val allPengajuan = fetchPengajuanHome(context, status = null)
+        pengajuanList = allPengajuan.sortedByDescending { it.tgl }
+
         pendingCount = fetchPengajuanList(appContext, "pending").size
         rejectedCount = fetchPengajuanList(appContext, "rejected").size
         acceptedCount = fetchPengajuanList(appContext, "accepted").size
         pengembanganCount = fetchPengembanganList(appContext).size
         pengujianCount = fetchPengujianList(appContext, status_persetujuan = "approved").size
         riwayatCount = fetchPengajuanList(appContext, "finished").size
+        val pengujianList = fetchPengajuanList(context, "approval")
+        val pendingList = fetchPengajuanList(context, "pending")
+        val acceptedList = fetchPengajuanList(context, "accepted")
+
+        if (pengujianList.isNotEmpty()) {
+            showNotification(
+                context = context,
+                title = "Butuh Persetujuan",
+                message = "Terdapat $pengujianCount pengajuan yang belum disetujui"
+            )
+        }
+        if (pendingList.isNotEmpty()) {
+            showNotification(
+                context = context,
+                title = "Butuh Konfirmasi",
+                message = "Terdapat $pendingCount pengajuan yang belum dikonfirmasi"
+            )
+        }
+        if (acceptedList.isNotEmpty()) {
+            showNotification(
+                context = context,
+                title = "Butuh Persetujuan",
+                message = "Terdapat $acceptedCount pengajuan yang belum dikembangkan"
+            )
+        }
     }
 
     val refreshAllData: suspend () -> Unit = {
@@ -115,97 +154,90 @@ fun HomeAdminScreen(
                 adminemail = email,
                 admindevisi = devisi
             )
+            // Greeting section
+            Text(
+                text = "Hello, ${name.orEmpty()} 👋",
+                style = MaterialTheme.typography.headlineSmall,
+                color = birutua,
+                modifier = Modifier
+                    .padding(start = 16.dp, top = 8.dp, bottom = 4.dp)
+            )
 
+            Text(
+                text = "Let’s see what’s going on today!",
+                style = MaterialTheme.typography.bodyMedium,
+                color = Color.Gray,
+                modifier = Modifier
+                    .padding(start = 16.dp, bottom = 16.dp)
+            )
+            PengajuanChartCard(
+                pending = pendingCount,
+                accepted = acceptedCount,
+                rejected = rejectedCount,
+                pengembangan = pengembanganCount,
+                pengujian = pengujianCount,
+                finished = riwayatCount
+            )
+            //Pengajuan Section
             SectionTitle("Pengajuan")
-            SubmissionSection(
+            SubmissionSectionAdmin(
                 navController = navController,
                 pendingCount = pendingCount,
                 rejectedCount = rejectedCount,
-                acceptedCount = acceptedCount
-            )
-            Spacer(modifier = Modifier.height(16.dp))
-
-            Divider(
-                color = Color.Gray,
-                thickness = 1.dp,
-                modifier = Modifier.padding(horizontal = 25.dp)
-            )
-
-            SectionTitle("Progres")
-            ProgressSection(
-                navController = navController,
+                acceptedCount = acceptedCount,
                 pengembanganCount = pengembanganCount,
                 pengujianCount = pengujianCount,
-                riwayatCount = riwayatCount
+                finishedCount = riwayatCount
             )
+            Spacer(modifier = Modifier.height(5.dp))
+            SectionTitle("List Pengajuan")
+            Column(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .heightIn(min = 100.dp, max = 400.dp) // Ubah tinggi sesuai kebutuhan
+                    .verticalScroll(rememberScrollState())
+                    .padding(horizontal = 16.dp)
+            ) {
+                pengajuanList.forEach { item ->
+                    val status = item.status ?: "-"
+                    val icon = when (status) {
+                        "pending" -> Icons.Default.Schedule
+                        "accepted" -> Icons.Default.CheckCircle
+                        "rejected" -> Icons.Default.Cancel
+                        "developing" -> Icons.Default.Build
+                        "testing" -> Icons.Default.Science
+                        "finished" -> Icons.Default.DoneAll
+                        else -> Icons.Default.Help
+                    }
+                    PengajuanListItem(
+                        title = item.nama_sistem,
+                        status = status,
+                        time = item.tgl ?: "-",
+                        typeColor = when (item.status) {
+                            "pending" -> kuning
+                            "accepted" -> ijo
+                            "rejected" -> abang
+                            "developing" -> PinkPudar
+                            "testing" -> BiruMuda
+                            "finished" -> Purple40
+                            else -> BiruMuda
+                        },
+                        icon = icon,
+                        pengajuName = item.user.name ?: "Tidak diketahui",
+                        onClick = {
+                            when (status) {
+                                "pending", "accepted", "rejected" -> {
+                                    navController.navigate("detail_usulan_admin?id=${item.id}&userId=${item.user.id}")
+                                }
+                                "developing" -> navController.navigate("detail_pengembangan_admin?id=${item.id}")
+                                "testing","approval" -> navController.navigate("detail_pengujian_all?id=${item.id}")
+                                "finished" -> navController.navigate("detail_laporan?id=${item.id}")
+                                else -> {} // atau tampilkan toast/snackbar
+                            }
+                        }
+                    )
+                }
+            }
         }
-    }
-}
-
-// ... (SubmissionSection dan ProgressSection tetap sama) ...
-@Composable
-fun SubmissionSection(navController: NavController, pendingCount: Int, rejectedCount: Int, acceptedCount: Int) {
-    Row(
-        modifier = Modifier
-            .fillMaxWidth()
-            .padding(horizontal = 30.dp),
-        horizontalArrangement = Arrangement.SpaceBetween // Jarak antar kartu
-    ) {
-        // Card Butuh Konfirmasi (kuning)
-        SubmissionCard(
-            color = kuning,
-            icon = Icons.Filled.Timer,
-            count = pendingCount,
-            onClick = {
-                navController.navigate("list_pengajuanAdmin1")
-            }
-        )
-
-        // Card Ditolak (merah)
-        SubmissionCard(
-            color = abang,
-            icon = Icons.Filled.Close,
-            count = rejectedCount,
-            onClick = {
-                navController.navigate("list_pengajuanAdmin2")
-            }
-        )
-
-        // Card Dikembangkan (hijau)
-        SubmissionCard(
-            color = ijo,
-            icon = Icons.Filled.Verified,
-            count = acceptedCount,
-            onClick = {
-                navController.navigate("list_pengajuanAdmin3")
-            }
-        )
-    }
-}
-
-
-@Composable
-fun ProgressSection(navController: NavController,pengembanganCount: Int,pengujianCount: Int, riwayatCount: Int) {
-    Column(
-        modifier = Modifier
-            .fillMaxWidth()
-            .padding(horizontal = 16.dp) // Memberikan padding horizontal pada ProgressSection
-    ) {
-        // Menampilkan beberapa ProgressCard
-        ProgressCard("Pengembangan Admin", Icons.Filled.Timer, Maroon,count = pengembanganCount, navController)
-        ProgressCard("Pengujian Admin", Icons.Filled.History, Maroon,count = pengujianCount, navController)
-
-        // Garis tengah
-        Divider(
-            color = Color.Gray,
-            thickness = 1.dp,
-            modifier = Modifier.padding(
-                horizontal = 5.dp,
-                vertical = 10.dp
-            ) // Berikan ruang kiri dan kanan
-        )
-
-        // Card Riwayat dengan Icon di bawah
-        ProgressCardRiwayat("Riwayat Admin", Icons.Filled.History, Maroon, count = riwayatCount, navController)
     }
 }
