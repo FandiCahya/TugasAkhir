@@ -1,6 +1,4 @@
 package com.example.applicationsop.presentation.component.DetailPengujian
-
-import android.content.Context
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.rememberScrollState
@@ -28,7 +26,7 @@ import com.example.applicationsop.ui.theme.abang
 import com.example.applicationsop.ui.theme.biru
 import com.example.applicationsop.ui.theme.birutua
 import com.example.applicationsop.ui.theme.ijo
-import com.example.applicationsop.ui.theme.kuning
+
 
 @Composable
 fun DetailPengujianScreen(

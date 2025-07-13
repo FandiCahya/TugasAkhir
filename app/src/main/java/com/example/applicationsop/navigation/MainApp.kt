@@ -9,6 +9,7 @@ import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
 import com.example.applicationsop.loginScreen.LoginScreen
+import com.example.applicationsop.presentation.component.DetailLaporan.DetailLaporanScreen
 import com.example.applicationsop.presentation.component.DetailPengembangan.DetailPengembanganScreen
 import com.example.applicationsop.presentation.component.DetailPengujian.DetailPengujianScreen
 import com.example.applicationsop.presentation.component.ListPengajuan.DetailUsulanScreen
@@ -212,12 +213,26 @@ fun MainApp(
             )
         }
 
+        //Detail Pengujian Pengguna
         composable("detail_pengujian?id={id}&userId={userId}") { backStackEntry ->
             val id = backStackEntry.arguments?.getString("id") ?: ""
             val userId = backStackEntry.arguments?.getString("userId")
-            println("Navigating to detail_pengujian with User ID: $userId")
-            println("Navigating to detail_pengujian with ID: $id")
+//            println("Navigating to detail_pengujian with User ID: $userId")
+//            println("Navigating to detail_pengujian with ID: $id")
             DetailPengujianScreen(
+                navController = navController,
+                id = id,
+                userId = userId,
+            )
+        }
+
+        //Detail Laporan Pengguna
+        composable("detail_laporan?id={id}&userId={userId}") { backStackEntry ->
+            val id = backStackEntry.arguments?.getString("id") ?: ""
+            val userId = backStackEntry.arguments?.getString("userId")
+            println("Navigating to detail_laporan with User ID: $userId")
+            println("Navigating to detail_laporan with ID: $id")
+            DetailLaporanScreen(
                 navController = navController,
                 id = id,
                 userId = userId,
