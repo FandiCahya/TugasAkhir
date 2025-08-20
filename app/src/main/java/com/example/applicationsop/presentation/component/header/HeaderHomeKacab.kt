@@ -31,6 +31,7 @@ import androidx.compose.ui.unit.sp
 import androidx.navigation.NavController
 import com.example.applicationsop.ui.theme.Maroon
 import com.example.applicationsop.ui.theme.Putih
+import com.example.applicationsop.ui.theme.birutua
 import java.time.LocalTime
 
 @RequiresApi(Build.VERSION_CODES.O)
@@ -76,15 +77,9 @@ fun HeaderHomeKacab(
             ) {
                 Text(
                     text = greeting, // Menampilkan ucapan berdasarkan waktu
-                    fontSize = 16.sp,
-                    fontWeight = FontWeight.Normal,
-                    color = Putih
-                )
-                Text(
-                    text = "Hi, ${adminName ?: "Kepala Cabang"}",
-                    fontSize = 24.sp,
+                    fontSize = 28.sp,
                     fontWeight = FontWeight.Bold,
-                    color = Putih
+                    color = birutua
                 )
             }
 

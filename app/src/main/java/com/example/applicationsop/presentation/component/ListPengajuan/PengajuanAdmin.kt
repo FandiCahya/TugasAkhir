@@ -1,3 +1,5 @@
+package com.example.applicationsop.presentation.component.ListPengajuan
+
 import androidx.compose.foundation.horizontalScroll
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.material.icons.Icons
@@ -7,15 +9,12 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 import androidx.navigation.NavController
 import androidx.compose.foundation.layout.*
-import androidx.compose.ui.graphics.Color
 import com.example.applicationsop.presentation.component.SubmissionCard
 import com.example.applicationsop.ui.theme.*
 
 @Composable
-fun SubmissionSection(
+fun SubmissionSectionAdmin(
     navController: NavController,
-    roleUS: String?,
-    devisiUS: String?,
     pendingCount: Int,
     rejectedCount: Int,
     acceptedCount: Int,
@@ -36,7 +35,7 @@ fun SubmissionSection(
             label = "Pending",
             count = pendingCount,
             onClick = {
-                navController.navigate("listUsulan1?role=$roleUS&devisi=$devisiUS")
+                navController.navigate("list_pengajuanAdmin1")
             }
         )
 
@@ -46,7 +45,7 @@ fun SubmissionSection(
             label = "Rejected",
             count = rejectedCount,
             onClick = {
-                navController.navigate("listUsulan3?role=$roleUS&devisi=$devisiUS")
+                navController.navigate("list_pengajuanAdmin2")
             }
         )
 
@@ -56,7 +55,7 @@ fun SubmissionSection(
             label = "Accepted",
             count = acceptedCount,
             onClick = {
-                navController.navigate("listUsulan2?role=$roleUS&devisi=$devisiUS")
+                navController.navigate("list_pengajuanAdmin3")
             }
         )
 
@@ -66,7 +65,7 @@ fun SubmissionSection(
             label = "Dev",
             count = pengembanganCount,
             onClick = {
-                navController.navigate("pengembanganUser")
+                navController.navigate("pengembanganAdmin")
             }
         )
 
@@ -76,7 +75,7 @@ fun SubmissionSection(
             label = "Approval",
             count = pengujianCount,
             onClick = {
-                navController.navigate("pengujianUser")
+                navController.navigate("pengujianAdmin")
             }
         )
 
@@ -86,7 +85,7 @@ fun SubmissionSection(
             label = "Finished",
             count = finishedCount,
             onClick = {
-                navController.navigate("historyUser")
+                navController.navigate("historyAdmin")
             }
         )
     }

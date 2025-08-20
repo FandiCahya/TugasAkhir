@@ -31,6 +31,7 @@ import androidx.compose.ui.unit.sp
 import androidx.navigation.NavController
 import com.example.applicationsop.ui.theme.Maroon
 import com.example.applicationsop.ui.theme.Putih
+import com.example.applicationsop.ui.theme.birutua
 import java.time.LocalTime
 
 @RequiresApi(Build.VERSION_CODES.O)
@@ -76,25 +77,15 @@ fun HeaderHomeQmr(
             ) {
                 Text(
                     text = greeting, // Menampilkan ucapan berdasarkan waktu
-                    fontSize = 16.sp,
+                    fontSize = 28.sp,
                     fontWeight = FontWeight.Normal,
-                    color = Putih
-                )
-                Text(
-                    text = "Hi, ${adminName ?: "Kepala Cabang"}",
-                    fontSize = 24.sp,
-                    fontWeight = FontWeight.Bold,
-                    color = Putih
+                    color = birutua
                 )
             }
 
             // Ikon profil di sebelah kanan
             IconButton(onClick = {
-                // Arahkan ke menu profil ketika ikon diklik
-//                navController.navigate("profile")
                 navController.navigate("profile?token=$adminToken&userId=$adminuserId&role=$adminrole&name=$adminName&email=$adminemail&devisi=$admindevisi")
-
-
             }) {
                 Icon(
                     imageVector = Icons.Filled.Person, // Menggunakan ikon "Person" dari Material Icons

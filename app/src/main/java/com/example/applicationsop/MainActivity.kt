@@ -5,11 +5,9 @@ import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.material3.Surface
-import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.navigation.compose.rememberNavController
 import com.example.applicationsop.core.UserUtils
-import com.example.applicationsop.navigation.MainApp
 import com.example.applicationsop.navigation.MainApp
 import com.example.applicationsop.ui.theme.ApplicationSOPTheme
 
@@ -38,6 +36,7 @@ class MainActivity : ComponentActivity() {
         val name = intentName ?: fallbackName
         val email = intentEmail ?: fallbackEmail
         val devisi = intentDevisi ?: fallbackDevisi
+
 
         setContent {
             ApplicationSOPTheme {

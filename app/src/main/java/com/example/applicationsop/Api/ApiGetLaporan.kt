@@ -29,7 +29,8 @@ suspend fun fetchLaporanList(
     context: Context,
     status_pengajuan: String? = null,
     role: String? = null,
-    devisi: String? = null
+    devisi: String? = null,
+    userId: String? = null
 ): List<Laporan> {
     return try {
         val userData = UserUtils.getUserData(context)
@@ -40,6 +41,7 @@ suspend fun fetchLaporanList(
             if (status_pengajuan != null) append("status_pengajuan=$status_pengajuan&")
             if (role != null) append("role=$role&")
             if (devisi != null) append("devisi=$devisi&")
+            if (userId != null) append("userId=$userId&")
             if (endsWith("&")) deleteCharAt(length - 1)
         }
 

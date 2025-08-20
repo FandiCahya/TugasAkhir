@@ -38,6 +38,8 @@ fun LoginScreen(navController: NavController) {
             // Logo
             LogoComposable()
 
+            Spacer(modifier = Modifier.height(80.dp))
+
             // Title Text
             TitleTextComposable()
 

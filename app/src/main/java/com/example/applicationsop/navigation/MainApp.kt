@@ -9,8 +9,15 @@ import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
 import com.example.applicationsop.loginScreen.LoginScreen
+import com.example.applicationsop.presentation.component.DetailLaporan.DetailLaporanScreen
+import com.example.applicationsop.presentation.component.DetailPengembangan.DetailPengembanganAdmin
 import com.example.applicationsop.presentation.component.DetailPengembangan.DetailPengembanganScreen
+import com.example.applicationsop.presentation.component.DetailPengembangan.DetailPengembanganScreenKacab
+import com.example.applicationsop.presentation.component.DetailPengujian.DetailPengujianAll
+import com.example.applicationsop.presentation.component.DetailPengujian.DetailPengujianScreen
+import com.example.applicationsop.presentation.component.ListPengajuan.DetailUsulanAdmin
 import com.example.applicationsop.presentation.component.ListPengajuan.DetailUsulanScreen
+import com.example.applicationsop.presentation.component.ListPengajuan.DetailUsulanScreenKacab
 import com.example.applicationsop.presentation.screen.ProfileUser
 import com.example.applicationsop.presentation.screen.admin.DetailApproval
 import com.example.applicationsop.presentation.screen.admin.DetailPengujianAdmin
@@ -184,8 +191,6 @@ fun MainApp(
             val role = backStackEntry.arguments?.getString("role")
             val devisi = backStackEntry.arguments?.getString("devisi")
 
-            println("Navigating to detail_usulan with User ID: $DetailuserId")
-
             DetailUsulanScreen(
                 navController = navController,
                 id = id ,
@@ -208,6 +213,32 @@ fun MainApp(
                 userId = userId,
                 role = role,
                 devisi = devisi
+            )
+        }
+
+        //Detail Pengujian Pengguna
+        composable("detail_pengujian?id={id}&userId={userId}") { backStackEntry ->
+            val id = backStackEntry.arguments?.getString("id") ?: ""
+            val userId = backStackEntry.arguments?.getString("userId")
+//            println("Navigating to detail_pengujian with User ID: $userId")
+//            println("Navigating to detail_pengujian with ID: $id")
+            DetailPengujianScreen(
+                navController = navController,
+                id = id,
+                userId = userId,
+            )
+        }
+
+        //Detail Laporan Pengguna
+        composable("detail_laporan?id={id}&userId={userId}") { backStackEntry ->
+            val id = backStackEntry.arguments?.getString("id") ?: ""
+            val userId = backStackEntry.arguments?.getString("userId")
+            println("Navigating to detail_laporan with User ID: $userId")
+            println("Navigating to detail_laporan with ID: $id")
+            DetailLaporanScreen(
+                navController = navController,
+                id = id,
+                userId = userId,
             )
         }
 
@@ -303,6 +334,28 @@ fun MainApp(
         }
 
         ////////////////////////// ADMIN ///////////////////////
+
+        //Detail Pengajuan Admin
+        composable("detail_usulan_admin?id={id}&userId={userId}") { backStackEntry ->
+            val id = backStackEntry.arguments?.getString("id") ?: ""
+            val userId = backStackEntry.arguments?.getString("userId")
+
+            DetailUsulanAdmin(
+                navController = navController,
+                id = id ,
+                userId = userId,
+            )
+        }
+
+        //Detail Pengembangan Admin
+        composable("detail_pengembangan_admin?id={id}") { backStackEntry ->
+            val id = backStackEntry.arguments?.getString("id") ?: ""
+
+            DetailPengembanganAdmin(
+                navController = navController,
+                id = id,
+            )
+        }
 
         // List Pengajuan Admin
         composable("list_pengajuanAdmin1") {
@@ -429,7 +482,36 @@ fun MainApp(
             ListPengembanganKacab(navController = navController)
         }
 
-        ////////////////////////// Kacab ///////////////////////
+        //Detail Pengajuan Kacab
+        composable("detail_usulan_kacab?id={id}") { backStackEntry ->
+            val id = backStackEntry.arguments?.getString("id") ?: ""
+            DetailUsulanScreenKacab(
+                navController = navController,
+                id = id ,
+            )
+        }
+        //Detail Pengembangan KACAB
+        composable("detail_pengembangan_kacab?id={id}") { backStackEntry ->
+            val id = backStackEntry.arguments?.getString("id") ?: ""
+
+            DetailPengembanganScreenKacab(
+                navController = navController,
+                id = id
+            )
+        }
+
+        //Detail Pengujian Kacab
+        composable("detail_pengujian_all?id={id}") { backStackEntry ->
+            val id = backStackEntry.arguments?.getString("id") ?: ""
+//            println("Navigating to detail_pengujian with User ID: $userId")
+//            println("Navigating to detail_pengujian with ID: $id")
+            DetailPengujianAll(
+                navController = navController,
+                id = id,
+            )
+        }
+
+        ////////////////////////// QMR ///////////////////////
 
         // List Pengajuan Admin
         composable("list_pengajuanQmr1") {

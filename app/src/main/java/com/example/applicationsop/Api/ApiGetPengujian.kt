@@ -52,7 +52,7 @@ suspend fun fetchPengujianList(
             append(params.joinToString("&"))
         }
 
-        println("Fetching URL: $url") // Debug
+        println(" Fetch Pengujian URL: $url") // Debug
 
         val response: HttpResponse = GetPengajuan.get(url) {
             contentType(ContentType.Application.Json)
